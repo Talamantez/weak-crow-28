@@ -1,3 +1,13 @@
+# Resource Roadmap
+
+This application generates customizable pdfs for NAMI's Roadmap to Mental Health publications. 
+
+$ Libraries
+
+- Image Upload: Uppload
+- PDF Generation: pdf-lib
+- UI: DaisyUI
+
 # Fresh project
 
 Your new Fresh project is ready to go. You can follow the Fresh "Getting
