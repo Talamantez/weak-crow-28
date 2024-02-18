@@ -1,1 +1,0 @@
-import { daisyui } from https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css
