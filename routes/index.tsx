@@ -6,16 +6,11 @@ import Sidebar from "../components/Sidebar.tsx";
 
 export default function Home() {
   return (
-    <div>
+    <>
       <Header active="Home" />
-      <div class="flex flex-row">
-        <Sidebar />
-        <div class="flex flex-col">
-          <Hero />
-          <Testimonial />
-        </div>
-      </div>
+      <Hero />
+      <Testimonial />
       <Footer />
-    </div>
+    </>
   );
 }
