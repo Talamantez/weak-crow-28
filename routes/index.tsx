@@ -1,16 +1,8 @@
-import Hero from "../components/Hero.tsx";
-import Footer from "../components/Footer.tsx";
-import Header from "../components/Header.tsx";
-import Testimonial from "../components/Testimonial.tsx";
-import Sidebar from "../components/Sidebar.tsx";
+import { HandlerContext } from "$fresh/server.ts";
+import * as base58 from "$std/encoding/base58.ts";
 
-export default function Home() {
-  return (
-    <>
-      <Header active="Home" />
-      <Hero />
-      <Testimonial />
-      <Footer />
-    </>
-  );
-}
+export const handler = (req: Request, _ctx: HandlerContext): Response => {
+  const listId = base58.encode(crypto.getRandomValues(new Uint8Array(8)));
+  const url = new URL(req.url);
+  return Response.redirect(`${url.origin}/${listId}`, 302);
+};
