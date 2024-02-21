@@ -14,9 +14,8 @@ export default function Header({ active }: Props) {
   return (
     <div class="bg-white w-full max-w-screen-lg py-6 px-8 flex flex-col md:flex-row gap-4">
       <div class="flex items-center flex-1">
-        <LemonIcon aria-hidden="true" />
-        <div class="text-2xl ml-1 font-bold">
-          Fresh
+        <div class="max-w-[200px]">
+          <image src="https://consciousrobot-956159009.imgix.net/logo.png" />
         </div>
       </div>
       <ul class="flex items-center gap-6">
