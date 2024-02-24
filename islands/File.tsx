@@ -1,7 +1,7 @@
 import { useRef, useState } from "preact/hooks";
 import { IS_BROWSER } from "$fresh/runtime.ts";
 import type { FileDropEvent } from "https://esm.sh/file-drop-element@1.0.1";
-import { TensorFlow } from "../components/TensorFlow.tsx";
+import ImageLayout from "../components/ImageLayout.tsx";
 
 if (IS_BROWSER) {
   await import("https://esm.sh/file-drop-element");
@@ -15,7 +15,7 @@ interface FileDropProps {
 export default function FileDrop(props: FileDropProps) {
   const [accept] = useState(props.accept);
   const [multiple] = useState(props.multiple);
-  const tensorFlow = useRef(null);
+  const imageLayout = useRef(null);
   let [files, setFiles] = useState("");
   let x: FileDropEvent;
 
@@ -28,34 +28,32 @@ export default function FileDrop(props: FileDropProps) {
   };
 
   return (
-    <div class="flex gap-2 w-full items-center justify-center py-4 xl:py-16 px-2">
-      <div class="rounded w-full xl:max-w-xl">
-        <div class="flex flex-col gap-4 pb-4">
-          <div class="flex flex-row gap-2 items-center">
-            <file-drop
-              onfiledrop={onFileDrop}
-              accept={accept}
-              multiple={multiple}
-            >
-              <input
-                id="file-picker"
-                class="file-picker__input p-2 bg-blue-600 text-white rounded disabled:opacity-50"
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={onFileSelect}
-              />
-              <label for="file-picker" class="file-picker__label">
-                <svg viewBox="0 0 24 24" class="file-picker__icon">
-                  <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5a2 2 0 00-2 2v12c0 1.1.9 2 2 2h12a2 2 0 002-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z" />
-                </svg>
-              </label>
-            </file-drop>
-            <TensorFlow url="/model/model.json" files={files} ref={tensorFlow}>
-            </TensorFlow>
-          </div>
-        </div>
+    <div class="flex flex-col">
+      <div>
+        <file-drop
+          onfiledrop={onFileDrop}
+          accept={accept}
+          multiple={multiple}
+        >
+          <input
+            id="file-picker"
+            class="file-picker__input p-2 bg-blue-600 text-white rounded disabled:opacity-50"
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={onFileSelect}
+          />
+          <label for="file-picker" class="file-picker__label">
+            <svg viewBox="0 0 24 24" class="file-picker__icon">
+              <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5a2 2 0 00-2 2v12c0 1.1.9 2 2 2h12a2 2 0 002-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z" />
+            </svg>
+          </label>
+        </file-drop>
       </div>
+      <div>
+        <ImageLayout files={files} ref={imageLayout}>
+        </ImageLayout>
       </div>
+    </div>
   );
 }
