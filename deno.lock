@@ -1,5 +1,8 @@
 {
   "version": "3",
+  "redirects": {
+    "https://esm.sh/file-drop-element": "https://esm.sh/file-drop-element@1.0.1"
+  },
   "remote": {
     "https://deno.land/std@0.140.0/_util/assert.ts": "e94f2eb37cebd7f199952e242c77654e43333c1ac4c5c700e929ea3aa5489f74",
     "https://deno.land/std@0.140.0/_util/os.ts": "3b4c6e27febd119d36a416d7a97bd3b0251b77c88942c8f16ee5953ea13e2e49",
@@ -363,6 +366,7 @@
     "https://esm.sh/*preact-render-to-string@6.3.1": "07807f027acf54b994b630bbb2a923f5a835f9544e01144f67ab292e90a431e4",
     "https://esm.sh/@babel/helper-validator-identifier@7.22.20": "daace34e028130297fddf97f3ef6deb4b05ec3eb46f5c5cacd6eaa43d6323b0a",
     "https://esm.sh/axios@1.3.2?target=es2022": "98b462d0db2b32732443838ac0da9222b40815132c8b71a0b73231ebb3dfa869",
+    "https://esm.sh/file-drop-element@1.0.1": "796809cffd1a6431602cd59e51bb52cefdbeb4f23df4baddadcb8cdf7addf764",
     "https://esm.sh/preact@10.19.2": "41f31ba8eecf666f08289f2205f57c45f74baba5be815a55c15c4cc61086143c",
     "https://esm.sh/preact@10.19.2/debug": "e1434406abe1f663b8992a77100a3491142ef22032405ea96a4a8ee5f58795d1",
     "https://esm.sh/preact@10.19.2/hooks": "725034ea48c9ad8aa8d9919bc3c1afaf469cee10fb815ac372d318043a5688d6",
@@ -378,6 +382,7 @@
     "https://esm.sh/v135/axios@1.3.2/es2022/axios.mjs": "1fd171978adc5788f0c9926b9743d221049a8b200fe17d637d144a21e6110a7c",
     "https://esm.sh/v135/base64-js@1.5.1/es2022/base64-js.mjs": "56594379eed23d8e1b5a5312cd48e179ec97ec7a5b55e24c75c58decca1f49e3",
     "https://esm.sh/v135/buffer@6.0.3/es2022/buffer.mjs": "8035f954f4483b847e34b46c0947a55b2af4db29d91718bf766212b3b2fabd7f",
+    "https://esm.sh/v135/file-drop-element@1.0.1/denonext/file-drop-element.mjs": "eb347d1254c8d5d603df0872bf84efd9e05240ff7df6964ef6680d607f7f77a1",
     "https://esm.sh/v135/ieee754@1.2.1/es2022/ieee754.mjs": "6e9f43f2599ed8bbcc9cdb19bf9d1b8caea9882fe4717c97edc397d363a5d1c7",
     "https://esm.sh/v135/preact-render-to-string@6.3.1/X-ZS8q/denonext/preact-render-to-string.mjs": "bcaceb8c3938310aee3dd4f7b6f2136cf0b2b890988c2e6679485e052e76e920",
     "https://esm.sh/v135/style-vendorizer@2.2.3/denonext/style-vendorizer.mjs": "121455e7b04b631ef6463ce63cdcd29febd74d88c37713c774ceca8a1561c83d",

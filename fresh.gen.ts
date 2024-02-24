@@ -4,7 +4,10 @@
 
 import * as $_listId_ from "./routes/[listId].tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $_index from "./routes/_index.tsx";
+import * as $home from "./routes/home.tsx";
 import * as $index from "./routes/index.tsx";
+import * as $File from "./islands/File.tsx";
 import * as $TodoListView from "./islands/TodoListView.tsx";
 import { type Manifest } from "$fresh/server.ts";
 
@@ -12,9 +15,12 @@ const manifest = {
   routes: {
     "./routes/[listId].tsx": $_listId_,
     "./routes/_app.tsx": $_app,
+    "./routes/_index.tsx": $_index,
+    "./routes/home.tsx": $home,
     "./routes/index.tsx": $index,
   },
   islands: {
+    "./islands/File.tsx": $File,
     "./islands/TodoListView.tsx": $TodoListView,
   },
   baseUrl: import.meta.url,
