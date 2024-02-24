@@ -6,6 +6,7 @@ import Header from "../components/Header.tsx";
 import TodoListView from "../islands/TodoListView.tsx";
 import { db, inputSchema, loadList, writeItems } from "../services/database.ts";
 import { TodoList } from "../shared/api.ts";
+import FileDrop from "../islands/File.tsx";
 
 export const handler: Handlers = {
   GET: async (req, ctx) => {
@@ -77,13 +78,19 @@ export default function Home(
     <>
       <Head>
         <title>Roadmap</title>
-      </Head>      
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js">
+        </script>
+        <script src="/script.js" defer></script>
+        <link rel="stylesheet" href="/style.css" />
+      </Head>
       <div class="p-4 mx-auto max-w-screen-md">
-      <Header active="Home" />
-      <Hero />
-      <TodoListView initialData={data} latency={latency} />
-      <Footer />
-
+        <Header active="Home" />
+        <Hero />
+        <TodoListView initialData={data} latency={latency} />
+        <FileDrop accept="image/*" multiple />
+        <Footer />
       </div>
     </>
   );
