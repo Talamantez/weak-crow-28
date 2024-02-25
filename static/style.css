@@ -1,15 +1,15 @@
 file-drop {
   margin-top: 9vh;
-  height: 40vh;
+  height: 10vh;
   width: 100%;
   border-radius: 5dvh;
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 10px dashed #b8daff;
+  border: none;
   background: #f4f8ff;
-  opacity: 0.8;
+  opacity: .8;
 }
 
 .file-picker__input {
@@ -19,8 +19,9 @@ file-drop {
 
 .file-picker__icon {
   fill: #0a7df8;
-  width: 10rem;
-  height: 10rem;
+  width: 5rem;
+  height: 5rem;
+  opacity: 1;
 }
 
 .file-picker__label {
