@@ -8,6 +8,7 @@ import * as $index from "./routes/index.tsx";
 import * as $File from "./islands/File.tsx";
 import * as $TodoItem from "./islands/TodoItem.tsx";
 import * as $TodoListView from "./islands/TodoListView.tsx";
+import * as $UploadImageView from "./islands/UploadImageView.tsx";
 import * as $missing_types from "./islands/missing-types.ts";
 import { type Manifest } from "$fresh/server.ts";
 
@@ -21,6 +22,7 @@ const manifest = {
     "./islands/File.tsx": $File,
     "./islands/TodoItem.tsx": $TodoItem,
     "./islands/TodoListView.tsx": $TodoListView,
+    "./islands/UploadImageView.tsx": $UploadImageView,
     "./islands/missing-types.ts": $missing_types,
   },
   baseUrl: import.meta.url,

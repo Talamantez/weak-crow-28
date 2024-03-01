@@ -7,6 +7,7 @@ import TodoListView from "../islands/TodoListView.tsx";
 import { db, inputSchema, loadList, writeItems } from "../services/database.ts";
 import { TodoList } from "../shared/api.ts";
 import FileDrop from "../islands/File.tsx";
+import UploadImageView from "../islands/UploadImageView.tsx";
 
 export const handler: Handlers = {
   GET: async (req, ctx) => {
@@ -89,6 +90,7 @@ export default function Home(
         <Header active="Home" />
         <Hero />
         <TodoListView initialData={data} latency={latency} />
+        <UploadImageView />
         <FileDrop accept="image/*" multiple />
         <Footer />
       </div>
