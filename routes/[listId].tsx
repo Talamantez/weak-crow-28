@@ -4,13 +4,13 @@ import Hero from "../components/Hero.tsx";
 import Footer from "../components/Footer.tsx";
 import Header from "../components/Header.tsx";
 import TodoListView from "../islands/TodoListView.tsx";
-import { db, inputSchema, loadList, writeItems, file } from "../services/database.ts";
+import { db, inputSchema, loadList, writeItems, postImage } from "../services/database.ts";
 import { TodoList } from "../shared/api.ts";
 import FileDrop from "../islands/File.tsx";
 
 export const handler: Handlers = {
   GET: async (req, ctx) => {
-    console.log('file: ', file);
+    postImage();
     const listId = ctx.params.listId;
     const accept = req.headers.get("accept");
     const url = new URL(req.url);
@@ -75,14 +75,13 @@ export const handler: Handlers = {
 export default function Home(
   { data: { data, latency } }: { data: { data: TodoList; latency: number } },
 ) {
+
   return (
     <>
       <Head>
         <title>Roadmap</title>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js">
-        </script>
         <script src="/script.js" defer></script>
         <link rel="stylesheet" href="/style.css" />
       </Head>
