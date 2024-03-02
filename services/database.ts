@@ -63,14 +63,14 @@ export async function writeItems(
 }
 
 export async function postImage() {
-  const token = 'ya29.a0AfB_byDVV_sHcYV3qMV_fOnEHnqATQPkKjfBR94ylGzXdMkIq6LYG7vqw-1f_kumG0quJEvT7QuTzruzXIprOj9SrZqA4jyMXh-oQVsQGPveu9vQq1fl8s7iUiLG7CXx9jRjkX7Zv5RdhY5uLIEnWeTDeXtiPQn-p2guaCgYKAbkSARISFQHGX2MiGml5pIQbqU3gv8NIgdvpiA0171';
+  const token = 'ya29.a0AfB_byDECEnBY3yl2dKpHwOp1xuMUX_Oq6EsYHSlj4m4BrHomFfWoAvXC2_pCZgVPmOXdrEGhqUwgSilu-l62v9RhXJkDDjdU2aUvtNVmzi5NcPHwCUUOtdxlARP_3QWxn41IK6mhdBye4DbLHbT4ihmojxnizTdctWbaCgYKAf4SARISFQHGX2MiylOfgxl4Dx_oG5wCapJMAA0171';
   const bucket = 'nami-resource-roadmap';
   
-  const file = await Deno.readFile('sample.txt');
+  const file = await Deno.readFile('static\\screenshot.png');
   
-  const res = await fetch(`https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=sample.txt`, {
+  const res = await fetch(`https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=screenshot.png`, {
       headers: {
-          'Content-Type': 'text/plain',
+          'Content-Type': 'image/png',
           Authorization: `Bearer ${token}`
       },
       method: 'POST',
