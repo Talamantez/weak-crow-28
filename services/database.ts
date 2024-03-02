@@ -61,3 +61,5 @@ export async function writeItems(
   op.set(["list_updated", listId], true);
   await op.commit();
 }
+
+export const file = await Deno.readFile('sample.txt')

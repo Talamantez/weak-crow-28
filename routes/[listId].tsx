@@ -4,13 +4,13 @@ import Hero from "../components/Hero.tsx";
 import Footer from "../components/Footer.tsx";
 import Header from "../components/Header.tsx";
 import TodoListView from "../islands/TodoListView.tsx";
-import { db, inputSchema, loadList, writeItems } from "../services/database.ts";
+import { db, inputSchema, loadList, writeItems, file } from "../services/database.ts";
 import { TodoList } from "../shared/api.ts";
 import FileDrop from "../islands/File.tsx";
-import UploadImageView from "../islands/UploadImageView.tsx";
 
 export const handler: Handlers = {
   GET: async (req, ctx) => {
+    console.log('file: ', file);
     const listId = ctx.params.listId;
     const accept = req.headers.get("accept");
     const url = new URL(req.url);
@@ -90,7 +90,6 @@ export default function Home(
         <Header active="Home" />
         <Hero />
         <TodoListView initialData={data} latency={latency} />
-        <UploadImageView />
         <FileDrop accept="image/*" multiple />
         <Footer />
       </div>
