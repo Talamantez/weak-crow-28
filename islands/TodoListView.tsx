@@ -164,7 +164,7 @@ export default function TodoListView(
 function TodoItem(
   { item, save }: {
     item: TodoListItem;
-    save: (item: TodoListItem, text: string | null, completed: boolean) => void;
+    save: (item: TodoListItem, text: string | null, imgUrl: string | null) => void;
   },
 ) {
   const imageLayout = useRef(null);
@@ -199,7 +199,7 @@ function TodoItem(
   return (
     <div>
       <div
-        class="flex my-2 border-b border-gray-300 items-center"
+        class="flex my-2 items-center"
         {...{ "data-item-id": item.id! }}
       >
         {editing && (
@@ -209,6 +209,19 @@ function TodoItem(
               ref={input}
               defaultValue={item.text}
             />
+            <input
+              id="file-picker"
+              class="file-picker__input p-2 bg-blue-600 text-white rounded disabled:opacity-50"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={onFileSelect}
+            />
+            <label for="file-picker" class="file-picker__label">
+              <svg viewBox="0 0 24 24" class="file-picker__icon">
+                <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5a2 2 0 00-2 2v12c0 1.1.9 2 2 2h12a2 2 0 002-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z" />
+              </svg>
+            </label>
             <button
               class="p-2 rounded mr-2 disabled:opacity-50"
               title="Save"
@@ -244,21 +257,6 @@ function TodoItem(
             >
               ✏️
             </button>
-            <div>
-              <input
-                id="file-picker"
-                class="file-picker__input p-2 bg-blue-600 text-white rounded disabled:opacity-50"
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={onFileSelect}
-              />
-              <label for="file-picker" class="file-picker__label">
-                <svg viewBox="0 0 24 24" class="file-picker__icon">
-                  <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5a2 2 0 00-2 2v12c0 1.1.9 2 2 2h12a2 2 0 002-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z" />
-                </svg>
-              </label>
-            </div>
             <button
               class="p-2 disabled:opacity-50"
               title="Delete"
