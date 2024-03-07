@@ -64,7 +64,7 @@ export const handler: Handlers = {
     return res;
   },
   POST: async (req, ctx) => {
-    postImage();
+    // postImage();
     const listId = ctx.params.listId;
     const body = inputSchema.parse(await req.json());
     await writeItems(listId, body);

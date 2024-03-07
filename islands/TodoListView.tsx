@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { TodoList, TodoListItem } from "../shared/api.ts";
 import axios from "axios-web";
+import ImageLayout from "../components/ImageLayout.tsx";
 
 interface LocalMutation {
   text: string | null;
   completed: boolean;
 }
+
+
 
 export default function TodoListView(
   props: { initialData: TodoList; latency: number },
@@ -16,7 +19,6 @@ export default function TodoListView(
   const [hasLocalMutations, setHasLocalMutations] = useState(false);
   const busy = hasLocalMutations || dirty;
   const [adding, setAdding] = useState(false);
-
   useEffect(() => {
     let es = new EventSource(window.location.href);
 
@@ -167,6 +169,12 @@ function TodoItem(
     save: (item: TodoListItem, text: string | null, completed: boolean) => void;
   },
 ) {
+  
+  const imageLayout = useRef(null);
+  let [files, setFiles] = useState("");
+  const onFileSelect: Event = (event) => {
+    setFiles(event.target.files);
+  };
   const input = useRef<HTMLInputElement>(null);
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -223,13 +231,27 @@ function TodoItem(
       )}
       {!editing && (
         <>
+    <div class="flex flex-col border-2 border-gray-300 rounded-lg p-2">
+      <div>
           <input
-            type="checkbox"
-            checked={item.completed}
-            disabled={busy}
-            onChange={(e) => doSaveCompleted(e.currentTarget.checked)}
-            class="mr-2"
+            id="file-picker"
+            class="file-picker__input p-2 bg-blue-600 text-white rounded disabled:opacity-50"
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={onFileSelect}
           />
+          <label for="file-picker" class="file-picker__label">
+            <svg viewBox="0 0 24 24" class="file-picker__icon">
+              <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5a2 2 0 00-2 2v12c0 1.1.9 2 2 2h12a2 2 0 002-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z" />
+            </svg>
+          </label>
+      </div>
+      <div>
+        <ImageLayout files={files} ref={imageLayout}>
+        </ImageLayout>
+      </div>
+    </div>
           <div class="flex flex-col w-full font-mono">
             <p>
               {item.text}
