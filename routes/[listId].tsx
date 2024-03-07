@@ -10,7 +10,6 @@ import FileDrop from "../islands/File.tsx";
 
 export const handler: Handlers = {
   GET: async (req, ctx) => {
-    postImage();
     const listId = ctx.params.listId;
     const accept = req.headers.get("accept");
     const url = new URL(req.url);
@@ -65,6 +64,7 @@ export const handler: Handlers = {
     return res;
   },
   POST: async (req, ctx) => {
+    postImage();
     const listId = ctx.params.listId;
     const body = inputSchema.parse(await req.json());
     await writeItems(listId, body);

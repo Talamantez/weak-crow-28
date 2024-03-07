@@ -9,6 +9,7 @@ import * as $File from "./islands/File.tsx";
 import * as $TodoItem from "./islands/TodoItem.tsx";
 import * as $TodoListView from "./islands/TodoListView.tsx";
 import * as $missing_types from "./islands/missing-types.ts";
+import * as $renderImages from "./islands/renderImages.tsx";
 import { type Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -22,6 +23,7 @@ const manifest = {
     "./islands/TodoItem.tsx": $TodoItem,
     "./islands/TodoListView.tsx": $TodoListView,
     "./islands/missing-types.ts": $missing_types,
+    "./islands/renderImages.tsx": $renderImages,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;
