@@ -2,10 +2,11 @@ import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { TodoList, TodoListItem } from "../shared/api.ts";
 import axios from "axios-web";
 import ImageLayout from "../components/ImageLayout.tsx";
+import { CHAR_0 } from "https://deno.land/std@0.140.0/path/_constants.ts";
 
 interface LocalMutation {
   text: string | null;
-  completed: boolean;
+  imgUrl: string | null;
 }
 
 export default function TodoListView(
@@ -51,7 +52,7 @@ export default function TodoListView(
             ) => ({
               id,
               text: mut.text,
-              completed: mut.completed,
+              imgUrl: mut.imgUrl,
             }));
             while (true) {
               try {
@@ -83,17 +84,17 @@ export default function TodoListView(
     const id = generateItemId();
     localMutations.current.set(id, {
       text: value,
-      completed: false,
+      imgUrl: value,
     });
     setHasLocalMutations(true);
     setAdding(true);
   }, []);
 
   const saveTodo = useCallback(
-    (item: TodoListItem, text: string | null, completed: boolean) => {
+    (item: TodoListItem, text: string | null, imgUrl: string | null) => {
       localMutations.current.set(item.id!, {
         text,
-        completed,
+        imgUrl,
       });
       setHasLocalMutations(true);
     },
@@ -167,18 +168,30 @@ function TodoItem(
     save: (item: TodoListItem, text: string | null, imgUrl: string | null) => void;
   },
 ) {
-  const imageLayout = useRef(null);
+
   let [files, setFiles] = useState("");
   const onFileSelect: Event = (event) => {
     setFiles(event.target.files);
   };
+
   const input = useRef<HTMLInputElement>(null);
+  const imageLayout = useRef<HTMLInputElement>(null);
+
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const doSave = useCallback(() => {
     if (!input.current) return;
+    if (!imageLayout.current) return;
+    console.log(`input.current:`)
+    console.dir(input.current);
+    console.log(`files:`)
+    console.dir(files);
+    console.log(`imageLayout.current.files[0]:`)
+
+    imageLayout.current.files && console.dir(imageLayout.current.files[0]);
+
     setBusy(true);
-    save(item, input.current.value, item.completed);
+    save(item, input.current.value, imageLayout.current.value);
   }, [item]);
   const cancelEdit = useCallback(() => {
     if (!input.current) return;
@@ -189,11 +202,7 @@ function TodoItem(
     const yes = confirm("Are you sure you want to delete this item?");
     if (!yes) return;
     setBusy(true);
-    save(item, null, item.completed);
-  }, [item]);
-  const doSaveCompleted = useCallback((completed: boolean) => {
-    setBusy(true);
-    save(item, item.text, completed);
+    save(item, null, null);
   }, [item]);
 
   return (
@@ -216,6 +225,7 @@ function TodoItem(
               accept="image/*"
               multiple
               onChange={onFileSelect}
+              ref={imageLayout}
             />
             <label for="file-picker" class="file-picker__label">
               <svg viewBox="0 0 24 24" class="file-picker__icon">

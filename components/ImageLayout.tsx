@@ -9,7 +9,7 @@ export default function ImageLayout({ files }) {
   const [images, setImages] = useState();
 
   useEffect(async () => {
-    console.log(files);
+    console.log(`From ImageLayout.tsx. files: ${files}`);
 
     const images: Image[] = [];
     for (const file of files) {
