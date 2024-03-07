@@ -89,7 +89,6 @@ export default function Home(
         <Header active="Home" />
         <Hero />
         <TodoListView initialData={data} latency={latency} />
-        <FileDrop accept="image/*" multiple />
         <Footer />
       </div>
     </>

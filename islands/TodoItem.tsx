@@ -5,7 +5,7 @@ import FileDrop from "./File.tsx";
 export function TodoItem(
   { item, save }: {
     item: TodoListItem;
-    save: (item: TodoListItem, text: string | null, completed: boolean) => void;
+    save: (item: TodoListItem, text: string | null, imgUrl: string) => void;
   }
 ) {
   const input = useRef<HTMLInputElement>(null);
@@ -15,7 +15,7 @@ export function TodoItem(
   const doSave = useCallback(() => {
     if (!input.current) return;
     setBusy(true);
-    save(item, input.current.value, item.completed);
+    save(item, input.current.value, item.imgUrl);
   }, [item]);
 
   const cancelEdit = useCallback(() => {
@@ -28,17 +28,17 @@ export function TodoItem(
     const yes = confirm("Are you sure you want to delete this item?");
     if (!yes) return;
     setBusy(true);
-    save(item, null, item.completed);
+    save(item, null, item.imgUrl);
   }, [item]);
 
-  const doSaveCompleted = useCallback((completed: boolean) => {
+  const doSaveImage = useCallback((imgUrl: string) => {
     setBusy(true);
     save(item, item.text, completed);
   }, [item]);
 
   return (
     <div 
-      class="flex my-2 border-b border-gray-300 items-center h-16"
+      class="flex my-2 border-b border-gray-300 items-center"
       {...{ "data-item-id": item.id! }}
     >
       {editing && (
@@ -72,9 +72,9 @@ export function TodoItem(
         <>
           <input 
             type="checkbox"
-            checked={item.completed}
+            checked={item.imgUrl}
             disabled={busy}
-            onChange={(e) => doSaveCompleted(e.currentTarget.checked)}
+            onChange={(e) => doSaveImage(e.currentTarget.checked)}
             class="mr-2" />
           <div class="flex flex-col w-full font-mono">
             <p>

@@ -13,7 +13,6 @@ export default function FileDrop() {
   return (
     <div class="flex flex-col border-2 border-gray-300 rounded-lg p-2">
       <div>
-
           <input
             id="file-picker"
             class="file-picker__input p-2 bg-blue-600 text-white rounded disabled:opacity-50"
