@@ -64,7 +64,7 @@ export async function writeItems(
 
 export async function postImage(imgUrl: string) {
   console.log(`imgUrl: ${imgUrl}`);
-  const token = 'ya29.a0Ad52N3_JqMOYaeqsIGYA7IXk97vC5_OlzSqILx3fFWBGqGGAgB7LHUTDWVj73CWTXW9VzpPYyy9KlTw6R4zXYmlBi27Zc_IJRbTpojM8rLPkDMHbKF6Vt6l28-jE9IeEFUHk4jLwZtXS2xq5WgznMTsJVL1PqU52cPvKaCgYKAXMSARISFQHGX2MiZNFxcLINDjQsTJedOWVeGA0171';
+  const token = 'ya29.a0Ad52N381rOuS7JHQP1MHVxPuzhTTfddLTLFvspmPKXBGeTnaQN08qXDos0bBXWXN81u6luyAsjJjgCgPGubkMHAxnGAPJKa5gvlPTh-B7wfQGWD9d6WTqiTeU7zAR7R50juxFkv_dq2IdVEEG6-8jCnKaHo8QP6OZJ8AaCgYKAUQSARISFQHGX2MibIqs0-97SMqkA1sO2uXkow0171';
   const bucket = 'nami-resource-roadmap';
   
   const file = await Deno.readFile(imgUrl);

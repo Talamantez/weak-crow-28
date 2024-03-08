@@ -66,19 +66,30 @@ export const handler: Handlers = {
     const listId = ctx.params.listId;
     const rawObjectArray = await req.json();
     // let myImgUrl = 'static\\screenshot.png'
-    const postResponse = await postImage('static\\screenshot.png');
     console.log("rawObjectArray: ", rawObjectArray)
-    const updatedObject = {
-      ...rawObjectArray[0],
-    imgUrl: postResponse.selfLink
-    }
-    const updatedObjectArray = []
-    updatedObjectArray.push(updatedObject)
-    console.log("updated: ", updatedObjectArray);
+    if (rawObjectArray[0].imgUrl === undefined || rawObjectArray[0].imgUrl === ""){
 
-    const body = inputSchema.parse(updatedObjectArray);
-    await writeItems(listId, body);
-    return Response.json({ ok: true });
+      const body = inputSchema.parse(rawObjectArray);
+      
+      await writeItems(listId, body);
+      return Response.json({ ok: true });
+
+    } else {
+      const postResponse = await postImage('static\\screenshot.png');
+      const updatedObject = {
+        ...rawObjectArray[0],
+      imgUrl: postResponse.selfLink
+      }
+      const updatedObjectArray = []
+      updatedObjectArray.push(updatedObject)
+      console.log("updated: ", updatedObjectArray);
+  
+      const body = inputSchema.parse(updatedObjectArray);
+      
+      await writeItems(listId, body);
+      return Response.json({ ok: true });
+    }
+
   },
 };
 
