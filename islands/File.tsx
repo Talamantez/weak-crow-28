@@ -3,7 +3,7 @@ import ImageLayout from "../components/ImageLayout.tsx";
 
 
 export default function FileDrop() {
-  const imageLayout = useRef(null);
+  const imageLayout = useRef(ImageLayout);
   let [files, setFiles] = useState("");
 
   const onFileSelect: Event = (event) => {

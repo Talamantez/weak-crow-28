@@ -4,9 +4,8 @@ import Hero from "../components/Hero.tsx";
 import Footer from "../components/Footer.tsx";
 import Header from "../components/Header.tsx";
 import TodoListView from "../islands/TodoListView.tsx";
-import { db, inputSchema, loadList, writeItems, postImage } from "../services/database.ts";
+import { db, inputSchema, loadList, postImage, writeItems } from "../services/database.ts";
 import { TodoList } from "../shared/api.ts";
-import FileDrop from "../islands/File.tsx";
 
 export const handler: Handlers = {
   GET: async (req, ctx) => {
@@ -64,9 +63,15 @@ export const handler: Handlers = {
     return res;
   },
   POST: async (req, ctx) => {
-    // postImage();
     const listId = ctx.params.listId;
-    const body = inputSchema.parse(await req.json());
+    const raw = await req.json();
+    console.log("raw: ", raw)
+    const updated = {
+      ...raw[0],
+    imgUrl: 'static\\screenshot.png'
+    }
+    console.log("updated: ", updated);
+    const body = inputSchema.parse(updated);
     await writeItems(listId, body);
     return Response.json({ ok: true });
   },

@@ -5,7 +5,7 @@ export const db = await Deno.openKv();
 export const inputSchema = z.array(z.object({
   id: z.string(),
   text: z.string().nullable(),
-  imgUrl: z.string().nullable(),
+  imgUrl: z.string(),
 }));
 export type InputSchema = z.infer<typeof inputSchema>;
 
@@ -51,7 +51,7 @@ export async function writeItems(
 
       const item: TodoListItem = {
         text: input.text,
-        completed: input.completed,
+        imgUrl: input.imgUrl,
         createdAt,
         updatedAt: now,
       };
@@ -62,11 +62,11 @@ export async function writeItems(
   await op.commit();
 }
 
-export async function postImage() {
-  const token = 'ya29.a0AfB_byDbqbnDs_KV6VYt5YmM7bvgrR1V3oyXrYFMQmzzymQGe3P48q8T91xy6099uFPFpM3zJ3ThOqBwlQFIiLdi48xPw9ACsx-AGmrs5S0IQf1wV83LlJw5FnMJ28grZudL7rMaaPbqP7UHvqBdFC-7ZRmrKHdSm9tbaCgYKAZQSARISFQHGX2MiBrb-VBRsSIAZY3IvH3eXTg0171';
+export async function postImage(imgUrl: string) {
+  const token = 'ya29.a0Ad52N3_GD4190k6sgfVbwGn4BRiVDwhyBRFwCs7hIaZJKC3ttfh7LRLBpPbORLAEICzhysTqP7qlaCL1FPNmmuosS-jhrcD_5iMjwik9B_dalJCH5JvIsIdHK2L_DZ6ERN4XfWjrWMKJDZWDQftIecpkWuMoMaOOitDfaCgYKAaISARISFQHGX2Mij4sc4CIj-OkfhCu5IsacIg0171';
   const bucket = 'nami-resource-roadmap';
   
-  const file = await Deno.readFile('static\\screenshot.png');
+  const file = await Deno.readFile(imgUrl);
   
   const res = await fetch(`https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=screenshot.png`, {
       headers: {
@@ -79,4 +79,5 @@ export async function postImage() {
   
   const data = await res.json();
   console.log(data);  
+  return data.mediaLink;
 }

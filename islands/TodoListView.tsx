@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { TodoList, TodoListItem } from "../shared/api.ts";
 import axios from "axios-web";
-import ImageLayout from "../components/ImageLayout.tsx";
-import { CHAR_0 } from "https://deno.land/std@0.140.0/path/_constants.ts";
+import { postImage } from "../services/database.ts";
 
 interface LocalMutation {
   text: string | null;
-  imgUrl: string | null;
+  imgUrl: string;
 }
+
+type Image = {
+  fileUrl: string;
+};
 
 export default function TodoListView(
   props: { initialData: TodoList; latency: number },
@@ -18,6 +21,7 @@ export default function TodoListView(
   const [hasLocalMutations, setHasLocalMutations] = useState(false);
   const busy = hasLocalMutations || dirty;
   const [adding, setAdding] = useState(false);
+
   useEffect(() => {
     let es = new EventSource(window.location.href);
 
@@ -84,14 +88,15 @@ export default function TodoListView(
     const id = generateItemId();
     localMutations.current.set(id, {
       text: value,
-      imgUrl: value,
+      imgUrl: "",
     });
     setHasLocalMutations(true);
     setAdding(true);
   }, []);
 
   const saveTodo = useCallback(
-    (item: TodoListItem, text: string | null, imgUrl: string | null) => {
+    (item: TodoListItem, text: string | null, imgUrl: string) => {
+      
       localMutations.current.set(item.id!, {
         text,
         imgUrl,
@@ -165,11 +170,10 @@ export default function TodoListView(
 function TodoItem(
   { item, save }: {
     item: TodoListItem;
-    save: (item: TodoListItem, text: string | null, imgUrl: string | null) => void;
+    save: (item: TodoListItem, text: string | null, imgUrl: string) => void;
   },
 ) {
-
-  let [files, setFiles] = useState("");
+  const [files, setFiles] = useState("");
   const onFileSelect: Event = (event) => {
     setFiles(event.target.files);
   };
@@ -179,19 +183,20 @@ function TodoItem(
 
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
+
   const doSave = useCallback(() => {
     if (!input.current) return;
     if (!imageLayout.current) return;
-    console.log(`input.current:`)
-    console.dir(input.current);
-    console.log(`files:`)
-    console.dir(files);
-    console.log(`imageLayout.current.files[0]:`)
+    if (!imageLayout.current.files) return;
+    // console.log(`files:`)
+    // console.dir(files);
+    // console.log(`imageLayout.current.files[0]:`)
 
-    imageLayout.current.files && console.dir(imageLayout.current.files[0]);
-
+    // imageLayout.current.files && console.dir(imageLayout.current.files[0]);
     setBusy(true);
-    save(item, input.current.value, imageLayout.current.value);
+    const newImgUrl = URL.createObjectURL(imageLayout.current.files[0]);
+
+    save(item, input.current.value, newImgUrl);
   }, [item]);
   const cancelEdit = useCallback(() => {
     if (!input.current) return;
@@ -202,7 +207,7 @@ function TodoItem(
     const yes = confirm("Are you sure you want to delete this item?");
     if (!yes) return;
     setBusy(true);
-    save(item, null, null);
+    save(item, null, "");
   }, [item]);
 
   return (
@@ -289,4 +294,37 @@ function TodoItem(
 
 function generateItemId(): string {
   return `${Date.now()}-${crypto.randomUUID()}`;
+}
+
+const renderImages = (fileUrls) => {
+  return (
+    <div>
+      {fileUrls && fileUrls.map((fileUrl) => (
+        <div key={fileUrl.fileUrl}>
+          <img src={fileUrl.fileUrl} />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+function ImageLayout({ files }) {
+  const [images, setImages] = useState();
+
+  useEffect(async () => {
+    // console.log(`From ImageLayout.tsx. files: ${files}`);
+
+    const images: Image[] = [];
+    for (const file of files) {
+      const fileUrl = URL.createObjectURL(file);
+      images.push({ fileUrl });
+    }
+    setImages(images);
+  }, [files]);
+
+  return (
+    <>
+      {renderImages(images)}
+    </>
+  );
 }

@@ -10,7 +10,7 @@ export interface TodoListItem {
   versionstamp?: string;
 
   text: string;
-  imgUrl: string | null;
+  imgUrl: string;
   createdAt: number;
   updatedAt: number;
 }

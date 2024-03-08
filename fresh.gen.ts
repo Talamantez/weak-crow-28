@@ -6,7 +6,6 @@ import * as $_listId_ from "./routes/[listId].tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $File from "./islands/File.tsx";
-import * as $TodoItem from "./islands/TodoItem.tsx";
 import * as $TodoListView from "./islands/TodoListView.tsx";
 import * as $missing_types from "./islands/missing-types.ts";
 import * as $renderImages from "./islands/renderImages.tsx";
@@ -20,7 +19,6 @@ const manifest = {
   },
   islands: {
     "./islands/File.tsx": $File,
-    "./islands/TodoItem.tsx": $TodoItem,
     "./islands/TodoListView.tsx": $TodoListView,
     "./islands/missing-types.ts": $missing_types,
     "./islands/renderImages.tsx": $renderImages,
