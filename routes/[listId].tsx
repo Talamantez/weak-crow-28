@@ -71,7 +71,9 @@ export const handler: Handlers = {
     imgUrl: 'static\\screenshot.png'
     }
     console.log("updated: ", updated);
-    const body = inputSchema.parse(updated);
+    const updatedArray = []
+    updatedArray.push(updated)
+    const body = inputSchema.parse(updatedArray);
     await writeItems(listId, body);
     return Response.json({ ok: true });
   },
