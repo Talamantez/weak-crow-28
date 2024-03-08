@@ -64,16 +64,19 @@ export const handler: Handlers = {
   },
   POST: async (req, ctx) => {
     const listId = ctx.params.listId;
-    const raw = await req.json();
-    console.log("raw: ", raw)
-    const updated = {
-      ...raw[0],
-    imgUrl: 'static\\screenshot.png'
+    const rawObjectArray = await req.json();
+    // let myImgUrl = 'static\\screenshot.png'
+    const postResponse = await postImage('static\\screenshot.png');
+    console.log("rawObjectArray: ", rawObjectArray)
+    const updatedObject = {
+      ...rawObjectArray[0],
+    imgUrl: postResponse.selfLink
     }
-    console.log("updated: ", updated);
-    const updatedArray = []
-    updatedArray.push(updated)
-    const body = inputSchema.parse(updatedArray);
+    const updatedObjectArray = []
+    updatedObjectArray.push(updatedObject)
+    console.log("updated: ", updatedObjectArray);
+
+    const body = inputSchema.parse(updatedObjectArray);
     await writeItems(listId, body);
     return Response.json({ ok: true });
   },

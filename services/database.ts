@@ -63,7 +63,8 @@ export async function writeItems(
 }
 
 export async function postImage(imgUrl: string) {
-  const token = 'ya29.a0Ad52N3_GD4190k6sgfVbwGn4BRiVDwhyBRFwCs7hIaZJKC3ttfh7LRLBpPbORLAEICzhysTqP7qlaCL1FPNmmuosS-jhrcD_5iMjwik9B_dalJCH5JvIsIdHK2L_DZ6ERN4XfWjrWMKJDZWDQftIecpkWuMoMaOOitDfaCgYKAaISARISFQHGX2Mij4sc4CIj-OkfhCu5IsacIg0171';
+  console.log(`imgUrl: ${imgUrl}`);
+  const token = 'ya29.a0Ad52N3_JqMOYaeqsIGYA7IXk97vC5_OlzSqILx3fFWBGqGGAgB7LHUTDWVj73CWTXW9VzpPYyy9KlTw6R4zXYmlBi27Zc_IJRbTpojM8rLPkDMHbKF6Vt6l28-jE9IeEFUHk4jLwZtXS2xq5WgznMTsJVL1PqU52cPvKaCgYKAXMSARISFQHGX2MiZNFxcLINDjQsTJedOWVeGA0171';
   const bucket = 'nami-resource-roadmap';
   
   const file = await Deno.readFile(imgUrl);
@@ -78,6 +79,5 @@ export async function postImage(imgUrl: string) {
   })
   
   const data = await res.json();
-  console.log(data);  
-  return data.mediaLink;
+  return data;
 }
