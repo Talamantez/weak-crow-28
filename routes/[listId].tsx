@@ -4,7 +4,13 @@ import Hero from "../components/Hero.tsx";
 import Footer from "../components/Footer.tsx";
 import Header from "../components/Header.tsx";
 import TodoListView from "../islands/TodoListView.tsx";
-import { db, inputSchema, loadList, postImage, writeItems } from "../services/database.ts";
+import {
+  db,
+  inputSchema,
+  loadList,
+  postImage,
+  writeItems,
+} from "../services/database.ts";
 import { TodoList } from "../shared/api.ts";
 
 export const handler: Handlers = {
@@ -66,37 +72,44 @@ export const handler: Handlers = {
     const listId = ctx.params.listId;
     const rawObjectArray = await req.json();
     // let myImgUrl = 'static\\screenshot.png'
-    console.log("rawObjectArray: ", rawObjectArray)
-    if (rawObjectArray[0].imgUrl === undefined || rawObjectArray[0].imgUrl === ""){
+    console.log("rawObjectArray: ", rawObjectArray);
+    let body = inputSchema.parse(rawObjectArray);
+    if (
+      !rawObjectArray[0].imgUrl === undefined || rawObjectArray[0].imgUrl !== ""
+    ) {
+      // it the image object has an imgUrl, try to post that image to gcp
+      // if it succeeds, copy the image's gcp url to the body of 
+      // the post request
+      // if not return the raw object
+      try {
+        // Send and image to gcp:
+        const myImgUrl = "static\\screenshot.png"
+        // const myImgUrl = rawObjectArray[0].imgUrl;
+        const postResponse = await postImage(myImgUrl);
 
-      const body = inputSchema.parse(rawObjectArray);
-      
-      await writeItems(listId, body);
-      return Response.json({ ok: true });
+        const updatedObject = {
+          ...rawObjectArray[0],
+          imgUrl: postResponse.selfLink,
+        };
+        const updatedObjectArray = [];
+        updatedObjectArray.push(updatedObject);
+        console.log("updated: ", updatedObjectArray);
 
-    } else {
-      const postResponse = await postImage('static\\screenshot.png');
-      const updatedObject = {
-        ...rawObjectArray[0],
-      imgUrl: postResponse.selfLink
+        body = inputSchema.parse(updatedObjectArray);
+        await writeItems(listId, body);
+        return Response.json({ ok: true });
+      } catch (error) {
+        console.log("Image failed to post, try checking Auth")
       }
-      const updatedObjectArray = []
-      updatedObjectArray.push(updatedObject)
-      console.log("updated: ", updatedObjectArray);
-  
-      const body = inputSchema.parse(updatedObjectArray);
-      
-      await writeItems(listId, body);
-      return Response.json({ ok: true });
     }
-
+    await writeItems(listId, body);
+    return Response.json({ ok: true });
   },
 };
 
 export default function Home(
   { data: { data, latency } }: { data: { data: TodoList; latency: number } },
 ) {
-
   return (
     <>
       <Head>

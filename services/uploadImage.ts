@@ -4,11 +4,9 @@ export async function uploadImage(
   fileUrl: string
 ) {
   const file = await Deno.readFile(`${fileUrl}`);
-  const fileSplit = fileUrl.split('/');
-  const fileName = fileSplit[fileSplit.length]
 
   const res = await fetch(
-    `https://storage.googleapis.com/upload/storage/v1/b/${bucketName}/o?uploadType=media&name=${fileName}`,
+    `https://storage.googleapis.com/upload/storage/v1/b/${bucketName}/o?uploadType=media&name=Jeff`,
     {
       headers: {
         "Content-Type": "text/plain",
@@ -20,5 +18,6 @@ export async function uploadImage(
   );
 
   const data = await res.json();
-  console.dir(data);
+  console.log(`data: ${data}`);
+  return data;
 };

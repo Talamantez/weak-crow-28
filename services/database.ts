@@ -1,5 +1,6 @@
 import { TodoList, TodoListItem } from "../shared/api.ts";
 import { z } from "zod";
+import { load } from "https://deno.land/std@0.219.0/dotenv/mod.ts";
 
 export const db = await Deno.openKv();
 export const inputSchema = z.array(z.object({
@@ -63,8 +64,8 @@ export async function writeItems(
 }
 
 export async function postImage(imgUrl: string) {
-  console.log(`imgUrl: ${imgUrl}`);
-  const token = 'ya29.a0Ad52N39hFcjLJINGlyyL5K_IVAyfHfPxx3YDiJeDMyORX_BswHYLXRK49EEAFxptd84O8c20FY0JHu14SzLH3FYCHvtwRbWfh_WyR1g_J3gRpYP_evv4_jljVFlCEcGIlcoJ9zIHj-n1-qLwDrqaNHkLRx0wU4S8D15GaCgYKAYQSARISFQHGX2MiVlqyu36BbZd3saYN1L8hdw0171';
+  const env = await load();
+  const token = env["TOKEN"];
   const bucket = 'nami-resource-roadmap';
   
   const file = await Deno.readFile(imgUrl);
