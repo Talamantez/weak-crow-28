@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { TodoList, TodoListItem } from "../shared/api.ts";
 import axios from "axios-web";
-import { postImage } from "../services/database.ts";
 
 interface LocalMutation {
   text: string | null;
@@ -152,14 +151,6 @@ export default function TodoListView(
         <div class="pt-6 opacity-50 text-sm">
           <p>
             Initial data fetched in {props.latency}ms
-          </p>
-          <p>
-            <a
-              href="https://github.com/denoland/showcase_todo"
-              class="underline"
-            >
-              Source code
-            </a>
           </p>
         </div>
       </div>

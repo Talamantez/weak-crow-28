@@ -1,6 +1,8 @@
 import { TodoList, TodoListItem } from "../shared/api.ts";
 import { z } from "zod";
 import { load } from "https://deno.land/std@0.219.0/dotenv/mod.ts";
+import { PDFDocument } from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
+import { degrees } from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
 
 export const db = await Deno.openKv();
 export const inputSchema = z.array(z.object({
@@ -66,19 +68,59 @@ export async function writeItems(
 export async function postImage(imgUrl: string) {
   const env = await load();
   const token = env["TOKEN"];
-  const bucket = 'nami-resource-roadmap';
-  
+  const bucket = "nami-resource-roadmap";
+
   const file = await Deno.readFile(imgUrl);
-  
-  const res = await fetch(`https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=screenshot.png`, {
+
+  const res = await fetch(
+    `https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=screenshot.png`,
+    {
       headers: {
-          'Content-Type': 'image/png',
-          Authorization: `Bearer ${token}`
+        "Content-Type": "image/png",
+        Authorization: `Bearer ${token}`,
       },
-      method: 'POST',
-      body: file
-  })
-  
+      method: "POST",
+      body: file,
+    },
+  );
   const data = await res.json();
+
+  // Create a new PDFDocument
+  const pdfDoc = await PDFDocument.create();
+  console.log(`
+    
+    
+    
+    `);
+  // Add a page to the PDFDocument and draw some text
+  const page = pdfDoc.addPage();
+  console.log("Hello");
+
+  async function image() {
+  console.log("Hello");
+
+    // const imageBytes = await fetch(
+    //   "static\\Bernadine-1_Bush-Medicine-Leaves.jpg"
+    // ).then((res) => res.arrayBuffer());
+    console.log('imageBytes');
+    // console.log(imageBytes);
+    // const jpgImage = await pdfDoc.embedJpg(imageBytes);
+    // console.log(jpgImage);
+    // page.drawImage(jpgImage, {
+    //   x: 100,
+    //   y: 100,
+    //   width: jpgImage.width,
+    //   height: jpgImage.height,
+    // });
+    // Save the PDFDocument and write it to a file
+    const pdfBytes = await pdfDoc.save();
+    await Deno.writeFile("create.pdf", pdfBytes);
+    console.log("PDF file written to create.pdf");
+
+  }
+  await image();
+  // Serialize the PDFDocument to a Uint8Array and write it to apage.drawImage()
+
+  // Done! 💥
   return data;
 }
