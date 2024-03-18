@@ -2,7 +2,6 @@ import { TodoList, TodoListItem } from "../shared/api.ts";
 import { z } from "zod";
 import { load } from "https://deno.land/std@0.219.0/dotenv/mod.ts";
 import { PDFDocument } from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
-import { degrees } from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
 
 export const db = await Deno.openKv();
 export const inputSchema = z.array(z.object({
@@ -30,7 +29,6 @@ export async function loadList(
     item.versionstamp = entry.versionstamp!;
     out.items.push(item);
   }
-
   return out;
 }
 
@@ -66,61 +64,57 @@ export async function writeItems(
 }
 
 export async function postImage(imgUrl: string) {
-  const env = await load();
-  const token = env["TOKEN"];
-  const bucket = "nami-resource-roadmap";
+  try {
+    const env = await load();
+    const token = env["TOKEN"];
+    const bucket = "nami-resource-roadmap";
 
-  const file = await Deno.readFile(imgUrl);
+    const file = await Deno.readFile(imgUrl);
 
-  const res = await fetch(
-    `https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=screenshot.png`,
-    {
-      headers: {
-        "Content-Type": "image/png",
-        Authorization: `Bearer ${token}`,
+    const res = await fetch(
+      `https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=${imgUrl}`,
+      {
+        headers: {
+          "Content-Type": "image/png",
+          Authorization: `Bearer ${token}`,
+        },
+        method: "POST",
+        body: file,
       },
-      method: "POST",
-      body: file,
-    },
-  );
-  const data = await res.json();
+    );
+    const data = await res.json();
 
-  // Create a new PDFDocument
-  const pdfDoc = await PDFDocument.create();
-  console.log(`
-    
-    
-    
-    `);
-  // Add a page to the PDFDocument and draw some text
-  const page = pdfDoc.addPage();
-  console.log("Hello");
+    // Serialize the PDFDocument to a Uint8Array and write it to apage.drawImage()
 
-  async function image() {
-  console.log("Hello");
-
-    // const imageBytes = await fetch(
-    //   "static\\Bernadine-1_Bush-Medicine-Leaves.jpg"
-    // ).then((res) => res.arrayBuffer());
-    console.log('imageBytes');
-    // console.log(imageBytes);
-    // const jpgImage = await pdfDoc.embedJpg(imageBytes);
-    // console.log(jpgImage);
-    // page.drawImage(jpgImage, {
-    //   x: 100,
-    //   y: 100,
-    //   width: jpgImage.width,
-    //   height: jpgImage.height,
-    // });
-    // Save the PDFDocument and write it to a file
-    const pdfBytes = await pdfDoc.save();
-    await Deno.writeFile("create.pdf", pdfBytes);
-    console.log("PDF file written to create.pdf");
-
+    // Done! 💥
+    return data;
+  } catch (error) {
+    return error as Error;
   }
-  await image();
-  // Serialize the PDFDocument to a Uint8Array and write it to apage.drawImage()
+}
 
-  // Done! 💥
-  return data;
+export async function embedImage() {
+  // const jpgUrl = 'https://pdf-lib.js.org/assets/cat_riding_unicorn.jpg'
+  const pngUrl = 'https://consciousrobot-956159009.imgix.net/logo.png'
+
+  const pngImageBytes = await fetch(pngUrl).then((res) => res.arrayBuffer());
+
+  const pdfDoc = await PDFDocument.create();
+
+  const pngImage = await pdfDoc.embedPng(pngImageBytes);
+
+  const pngDims = pngImage.scale(0.5);
+
+  const page = pdfDoc.addPage();
+
+  page.drawImage(pngImage, {
+    x: page.getWidth() / 2 - pngDims.width / 2 + 75,
+    y: page.getHeight() / 2 - pngDims.height + 250,
+    width: pngDims.width,
+    height: pngDims.height,
+  });
+
+  const pdfBytes = await pdfDoc.save();
+  await Deno.writeFile("image.pdf", pdfBytes);
+  console.log("PDF file written to create.pdf");
 }

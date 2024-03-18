@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { TodoList, TodoListItem } from "../shared/api.ts";
 import axios from "axios-web";
+import { createContext } from "preact";
 
 interface LocalMutation {
   text: string | null;
@@ -10,16 +11,22 @@ interface LocalMutation {
 type Image = {
   fileUrl: string;
 };
-
+const ImageContext = createContext(null);
 export default function TodoListView(
   props: { initialData: TodoList; latency: number },
 ) {
   const [data, setData] = useState(props.initialData);
+  const [myImgUrl, setMyImgUrl] = useState("https://consciousrobot-956159009.imgix.net/logo.png");
+
   const [dirty, setDirty] = useState(false);
   const localMutations = useRef(new Map<string, LocalMutation>());
   const [hasLocalMutations, setHasLocalMutations] = useState(false);
   const busy = hasLocalMutations || dirty;
   const [adding, setAdding] = useState(false);
+
+  useEffect(() => {
+    console.log(`myImgUrl Changed: ${myImgUrl}`)
+  }, [myImgUrl]);
 
   useEffect(() => {
     let es = new EventSource(window.location.href);
@@ -87,7 +94,7 @@ export default function TodoListView(
     const id = generateItemId();
     localMutations.current.set(id, {
       text: value,
-      imgUrl: "",
+      imgUrl: myImgUrl,
     });
     setHasLocalMutations(true);
     setAdding(true);
@@ -95,7 +102,6 @@ export default function TodoListView(
 
   const saveTodo = useCallback(
     (item: TodoListItem, text: string | null, imgUrl: string) => {
-      
       localMutations.current.set(item.id!, {
         text,
         imgUrl,
@@ -145,13 +151,9 @@ export default function TodoListView(
               key={item.id! + ":" + item.versionstamp!}
               item={item}
               save={saveTodo}
+              imgUrl={myImgUrl}
             />
           ))}
-        </div>
-        <div class="pt-6 opacity-50 text-sm">
-          <p>
-            Initial data fetched in {props.latency}ms
-          </p>
         </div>
       </div>
     </div>
@@ -161,6 +163,7 @@ export default function TodoListView(
 function TodoItem(
   { item, save }: {
     item: TodoListItem;
+    imgUrl: string;
     save: (item: TodoListItem, text: string | null, imgUrl: string) => void;
   },
 ) {
@@ -179,16 +182,15 @@ function TodoItem(
     if (!input.current) return;
     if (!imageLayout.current) return;
     if (!imageLayout.current.files) return;
-    // console.log(`files:`)
-    // console.dir(files);
-    // console.log(`imageLayout.current.files[0]:`)
-
-    // imageLayout.current.files && console.dir(imageLayout.current.files[0]);
     setBusy(true);
     const newImgUrl = URL.createObjectURL(imageLayout.current.files[0]);
 
+    console.log("\n\n*******  SAVING  *******\n\n")
+
     save(item, input.current.value, newImgUrl);
+
   }, [item]);
+  
   const cancelEdit = useCallback(() => {
     if (!input.current) return;
     setEditing(false);
@@ -200,6 +202,8 @@ function TodoItem(
     setBusy(true);
     save(item, null, "");
   }, [item]);
+
+
 
   return (
     <div>
@@ -276,9 +280,9 @@ function TodoItem(
       </div>
 
       <div>
-        <ImageLayout files={files} ref={imageLayout}>
-        </ImageLayout>
+        <ImageLayout files={files} />
       </div>
+
     </div>
   );
 }
@@ -302,8 +306,13 @@ const renderImages = (fileUrls) => {
 function ImageLayout({ files }) {
   const [images, setImages] = useState();
 
-  useEffect(async () => {
-    // console.log(`From ImageLayout.tsx. files: ${files}`);
+  useEffect(()=>{
+    console.log(`images changed:`)
+    console.dir(images)
+  }, [images])
+
+  useEffect(() => {
+    console.log(`From ImageLayout.tsx. files: ${files}`);
 
     const images: Image[] = [];
     for (const file of files) {

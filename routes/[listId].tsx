@@ -12,6 +12,7 @@ import {
   writeItems,
 } from "../services/database.ts";
 import { TodoList } from "../shared/api.ts";
+import { embedImage } from "../services/database.ts";
 
 export const handler: Handlers = {
   GET: async (req, ctx) => {
@@ -74,34 +75,38 @@ export const handler: Handlers = {
     // let myImgUrl = 'static\\screenshot.png'
     console.log("rawObjectArray: ", rawObjectArray);
     let body = inputSchema.parse(rawObjectArray);
-    if (
-      !rawObjectArray[0].imgUrl === undefined || rawObjectArray[0].imgUrl !== ""
-    ) {
-      // it the image object has an imgUrl, try to post that image to gcp
-      // if it succeeds, copy the image's gcp url to the body of 
-      // the post request
-      // if not return the raw object
-      try {
-        // Send and image to gcp:
-        const myImgUrl = "static\\screenshot.png"
-        // const myImgUrl = rawObjectArray[0].imgUrl;
-        const postResponse = await postImage(myImgUrl);
 
-        const updatedObject = {
-          ...rawObjectArray[0],
-          imgUrl: postResponse.selfLink,
-        };
-        const updatedObjectArray = [];
-        updatedObjectArray.push(updatedObject);
-        console.log("updated: ", updatedObjectArray);
+    // Send an image to gcp:
+    // if the image object has an imgUrl, try to post that image to gcp
+    // if it succeeds, copy the image's gcp url to the body of
+    // the post request
+    // if not return the raw object
 
-        body = inputSchema.parse(updatedObjectArray);
-        await writeItems(listId, body);
-        return Response.json({ ok: true });
-      } catch (error) {
-        console.log("Image failed to post, try checking Auth")
-      }
+    const myImgUrl = "static\\Bernadine-1_Bush-Medicine-Leaves.jpg"
+    // const myImgUrl = rawObjectArray[0].imgUrl;
+    console.log("POST [listid].tsx myImgUrl: ", myImgUrl);
+    
+      // postImage(`static\\screenshot.png`);
+      embedImage();
+    
+    const postResponse = await postImage(myImgUrl);
+    if (!postResponse.selfLink) {
+      body = inputSchema.parse(rawObjectArray);
+      await writeItems(listId, body);
+      return Response.json({ ok: false });
     }
+    console.log(`postResponse: `);
+    console.dir(postResponse)
+
+    const updatedObject = {
+      ...rawObjectArray[0],
+      imgUrl: postResponse.selfLink,
+    };
+    const updatedObjectArray = [];
+    updatedObjectArray.push(updatedObject);
+  
+    console.log("updated: ", updatedObjectArray);
+    body = inputSchema.parse(updatedObjectArray);
     await writeItems(listId, body);
     return Response.json({ ok: true });
   },
