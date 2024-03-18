@@ -82,8 +82,8 @@ export const handler: Handlers = {
     // the post request
     // if not return the raw object
 
-    const myImgUrl = "static\\Bernadine-1_Bush-Medicine-Leaves.jpg"
-    // const myImgUrl = rawObjectArray[0].imgUrl;
+    // const myImgUrl = "static\\Bernadine-1_Bush-Medicine-Leaves.jpg"
+    const myImgUrl = rawObjectArray[0].imgUrl;
     console.log("POST [listid].tsx myImgUrl: ", myImgUrl);
     
       // postImage(`static\\screenshot.png`);

@@ -286,7 +286,7 @@ function TodoItem(
         </div>
 
         <div>
-          <ImageLayout files={files} />
+          <ImageLayout files={files}/>
         </div>
       </div>
   );
