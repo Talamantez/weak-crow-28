@@ -1,13 +1,6 @@
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "preact/hooks";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { TodoList, TodoListItem } from "../shared/api.ts";
 import axios from "axios-web";
-import { createContext } from "preact";
 
 interface LocalMutation {
   text: string | null;
@@ -17,10 +10,6 @@ interface LocalMutation {
 type Image = {
   fileUrl: string;
 };
-
-const ImageContext = createContext(
-  "https://consciousrobot-956159009.imgix.net/logo.png",
-);
 
 export default function TodoListView(
   props: { initialData: TodoList; latency: number },
@@ -93,6 +82,10 @@ export default function TodoListView(
       }
     })();
   }, []);
+  useEffect(() => {
+    console.log('myImgUrl changed')
+    console.log(myImgUrl)
+  }, [myImgUrl]);
 
   const addTodoInput = useRef<HTMLInputElement>(null);
   const addTodo = useCallback(() => {
@@ -121,71 +114,69 @@ export default function TodoListView(
   );
 
   return (
-    <ImageContext.Provider value={myImgUrl}>
-      <div class="flex gap-2 w-full items-center justify-center py-4 xl:py-16 px-2">
-        <div class="rounded w-full xl:max-w-xl">
-          <div class="flex flex-col gap-4 pb-4">
-            <div class="flex flex-row gap-2 items-center">
-              <h1 class="font-bold text-xl">Local Resource List</h1>
-              <div
-                class={`inline-block h-2 w-2 ${
-                  busy ? "bg-yellow-600" : "bg-green-600"
-                }`}
-                style={{ borderRadius: "50%" }}
-              >
-              </div>
-            </div>
-            <img src={myImgUrl} class="w-full h-full object-cover" />
-
-            <div class="flex">
-              <p class="opacity-50 text-sm">
-                Local Resources
-              </p>
-            </div>
-            <div class="flex">
-              <input
-                class="border rounded w-full py-2 px-3 mr-4"
-                placeholder="Name your resource here"
-                ref={addTodoInput}
-              />
-              <button
-                class="p-2 bg-blue-600 text-white rounded disabled:opacity-50"
-                onClick={addTodo}
-                disabled={adding}
-              >
-                Add
-              </button>
+    <div class="flex gap-2 w-full items-center justify-center py-4 xl:py-16 px-2">
+      <div class="rounded w-full xl:max-w-xl">
+        <div class="flex flex-col gap-4 pb-4">
+          <div class="flex flex-row gap-2 items-center">
+            <h1 class="font-bold text-xl">Local Resource List</h1>
+            <div
+              class={`inline-block h-2 w-2 ${
+                busy ? "bg-yellow-600" : "bg-green-600"
+              }`}
+              style={{ borderRadius: "50%" }}
+            >
             </div>
           </div>
-          <div>
-            {data.items.map((item) => (
-              <TodoItem
-                key={item.id! + ":" + item.versionstamp!}
-                item={item}
-                save={saveTodo}
-                imgUrl={myImgUrl}
-                setMyImgUrl={setMyImgUrl}
-              />
-            ))}
+          <img src={myImgUrl} class="w-full h-full object-cover" />
+
+          <div class="flex">
+            <p class="opacity-50 text-sm">
+              Local Resources
+            </p>
+          </div>
+          <div class="flex">
+            <input
+              class="border rounded w-full py-2 px-3 mr-4"
+              placeholder="Name your resource here"
+              ref={addTodoInput}
+            />
+            <button
+              class="p-2 bg-blue-600 text-white rounded disabled:opacity-50"
+              onClick={addTodo}
+              disabled={adding}
+            >
+              Add
+            </button>
           </div>
         </div>
+        <div>
+          {data.items.map((item) => (
+            <TodoItem
+              key={item.id! + ":" + item.versionstamp!}
+              item={item}
+              save={saveTodo}
+              imgUrl={myImgUrl}
+              setMyImgUrl={setMyImgUrl}
+            />
+          ))}
+        </div>
       </div>
-    </ImageContext.Provider>
+    </div>
   );
 }
 
 function TodoItem(
-  { item, imgUrl, save, setMyImgUrl }: {
+  { item, save, setMyImgUrl }: {
     item: TodoListItem;
     imgUrl: string;
+
     save: (item: TodoListItem, text: string | null, imgUrl: string) => void;
     setMyImgUrl: (url: string) => void;
   },
 ) {
+  console.log("imgUrl:", item.imgUrl);
   const input = useRef<HTMLInputElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
-
-  const imageContext = useContext(ImageContext);
 
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -193,12 +184,9 @@ function TodoItem(
   const [files, setFiles] = useState("");
 
   const onFileSelect: Event = (event) => {
-    // console.log(event.target.files)
-    // console.log("files", files)
-    // setMyImgUrl(URL.createObjectURL(event.target.files[0]));
-    // console.log("myImgUrl", myImgUrl)
-
-    // setFiles(event.target.files);
+    console.log(event.target.files);
+    console.log("files", files);
+    setFiles(event.target.files);
   };
 
   const doSave = useCallback(() => {
@@ -229,9 +217,6 @@ function TodoItem(
   }, [item]);
 
   const handleImageChange = (e) => {
-    alert("hi");
-    alert(e.target.files[0].name);
-
     let objUrl = "";
     if (
       fileInput.current && fileInput.current.files && fileInput.current.files[0]
@@ -247,6 +232,7 @@ function TodoItem(
         class="flex my-2 items-center"
         {...{ "data-item-id": item.id! }}
       >
+        <img src={item.imgUrl} class="w-full h-full object-cover" />
         {editing && (
           <>
             <input
@@ -315,9 +301,6 @@ function TodoItem(
         )}
       </div>
 
-      <div>
-        <ImageLayout files={files} />
-      </div>
     </div>
   );
 }
