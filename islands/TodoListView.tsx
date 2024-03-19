@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "preact/hooks";
 import type { TodoList, TodoListItem } from "../shared/api.ts";
 import axios from "axios-web";
 import { createContext } from "preact";
@@ -12,7 +18,9 @@ type Image = {
   fileUrl: string;
 };
 
-const ImageContext = createContext("https://consciousrobot-956159009.imgix.net/logo.png");
+const ImageContext = createContext(
+  "https://consciousrobot-956159009.imgix.net/logo.png",
+);
 
 export default function TodoListView(
   props: { initialData: TodoList; latency: number },
@@ -25,7 +33,9 @@ export default function TodoListView(
   const busy = hasLocalMutations || dirty;
   const [adding, setAdding] = useState(false);
 
-  const [myImgUrl, setMyImgUrl] = useState("https://consciousrobot-956159009.imgix.net/logo.png");
+  const [myImgUrl, setMyImgUrl] = useState(
+    "https://consciousrobot-956159009.imgix.net/logo.png",
+  );
 
   useEffect(() => {
     let es = new EventSource(window.location.href);
@@ -125,6 +135,8 @@ export default function TodoListView(
               >
               </div>
             </div>
+            <img src={myImgUrl} class="w-full h-full object-cover" />
+
             <div class="flex">
               <p class="opacity-50 text-sm">
                 Local Resources
@@ -152,6 +164,7 @@ export default function TodoListView(
                 item={item}
                 save={saveTodo}
                 imgUrl={myImgUrl}
+                setMyImgUrl={setMyImgUrl}
               />
             ))}
           </div>
@@ -162,16 +175,17 @@ export default function TodoListView(
 }
 
 function TodoItem(
-  { item, save }: {
+  { item, imgUrl, save, setMyImgUrl }: {
     item: TodoListItem;
     imgUrl: string;
     save: (item: TodoListItem, text: string | null, imgUrl: string) => void;
+    setMyImgUrl: (url: string) => void;
   },
 ) {
-
   const input = useRef<HTMLInputElement>(null);
-  const imageLayout = useRef<HTMLInputElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+
+  const imageContext = useContext(ImageContext);
 
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -179,21 +193,24 @@ function TodoItem(
   const [files, setFiles] = useState("");
 
   const onFileSelect: Event = (event) => {
-    console.log(event.target.files)
-    console.log("files", files)
-    setFiles(event.target.files);
+    // console.log(event.target.files)
+    // console.log("files", files)
+    // setMyImgUrl(URL.createObjectURL(event.target.files[0]));
+    // console.log("myImgUrl", myImgUrl)
+
+    // setFiles(event.target.files);
   };
 
   const doSave = useCallback(() => {
     console.log("\n\n*******  saving  *******\n\n");
-    if (!input.current || !fileInput.current || !fileInput.current.files ){
-      console.log('missing data')
+    if (!input.current || !fileInput.current || !fileInput.current.files) {
+      console.log("missing data");
       return;
     }
     setBusy(true);
 
     const newImgUrl = URL.createObjectURL(fileInput.current.files[0]);
-    console.log("newImgUrl", newImgUrl)
+    console.log("newImgUrl", newImgUrl);
     console.log("\n\n*******  SAVING  *******\n\n");
 
     save(item, input.current.value, newImgUrl);
@@ -211,84 +228,97 @@ function TodoItem(
     save(item, null, "");
   }, [item]);
 
-  return (
-      <div>
-        <div
-          class="flex my-2 items-center"
-          {...{ "data-item-id": item.id! }}
-        >
-          {editing && (
-            <>
-              <input
-                class="border rounded w-full py-2 px-3 mr-4"
-                ref={input}
-                defaultValue={item.text}
-              />
-              <input
-                id="file-picker"
-                class="file-picker__input p-2 bg-blue-600 text-white rounded disabled:opacity-50"
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={onFileSelect}
-                ref={fileInput}
-              />
-              <label for="file-picker" class="file-picker__label">
-                <svg viewBox="0 0 24 24" class="file-picker__icon">
-                  <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5a2 2 0 00-2 2v12c0 1.1.9 2 2 2h12a2 2 0 002-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z" />
-                </svg>
-              </label>
-              <button
-                class="p-2 rounded mr-2 disabled:opacity-50"
-                title="Save"
-                onClick={doSave}
-                disabled={busy}
-              >
-                💾
-              </button>
-              <button
-                class="p-2 rounded disabled:opacity-50"
-                title="Cancel"
-                onClick={cancelEdit}
-                disabled={busy}
-              >
-                🚫
-              </button>
-            </>
-          )}
-          {!editing && (
-            <>
-              <div class="flex flex-col w-full font-mono">
-                <div>
-                  <p>
-                    {item.text}
-                  </p>
-                </div>
-              </div>
-              <button
-                class="p-2 mr-2 disabled:opacity-50"
-                title="Edit"
-                onClick={() => setEditing(true)}
-                disabled={busy}
-              >
-                ✏️
-              </button>
-              <button
-                class="p-2 disabled:opacity-50"
-                title="Delete"
-                onClick={doDelete}
-                disabled={busy}
-              >
-                🗑️
-              </button>
-            </>
-          )}
-        </div>
+  const handleImageChange = (e) => {
+    alert("hi");
+    alert(e.target.files[0].name);
 
-        <div>
-          <ImageLayout files={files}/>
-        </div>
+    let objUrl = "";
+    if (
+      fileInput.current && fileInput.current.files && fileInput.current.files[0]
+    ) {
+      objUrl = URL.createObjectURL(fileInput.current.files[0]);
+    }
+    setMyImgUrl(objUrl);
+  };
+
+  return (
+    <div>
+      <div
+        class="flex my-2 items-center"
+        {...{ "data-item-id": item.id! }}
+      >
+        {editing && (
+          <>
+            <input
+              class="border rounded w-full py-2 px-3 mr-4"
+              ref={input}
+              defaultValue={item.text}
+            />
+            <input
+              id="file-picker"
+              class="file-picker__input p-2 bg-blue-600 text-white rounded disabled:opacity-50"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageChange}
+              ref={fileInput}
+            />
+            <label for="file-picker" class="file-picker__label">
+              <svg viewBox="0 0 24 24" class="file-picker__icon">
+                <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5a2 2 0 00-2 2v12c0 1.1.9 2 2 2h12a2 2 0 002-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z" />
+              </svg>
+            </label>
+            <button
+              class="p-2 rounded mr-2 disabled:opacity-50"
+              title="Save"
+              onClick={doSave}
+              disabled={busy}
+            >
+              💾
+            </button>
+            <button
+              class="p-2 rounded disabled:opacity-50"
+              title="Cancel"
+              onClick={cancelEdit}
+              disabled={busy}
+            >
+              🚫
+            </button>
+          </>
+        )}
+        {!editing && (
+          <>
+            <div class="flex flex-col w-full font-mono">
+              <div>
+                <p>
+                  {item.text}
+                </p>
+              </div>
+            </div>
+            <button
+              class="p-2 mr-2 disabled:opacity-50"
+              title="Edit"
+              onClick={() => setEditing(true)}
+              disabled={busy}
+            >
+              ✏️
+            </button>
+            <button
+              class="p-2 disabled:opacity-50"
+              title="Delete"
+              onClick={doDelete}
+              disabled={busy}
+            >
+              🗑️
+            </button>
+          </>
+        )}
       </div>
+
+      <div>
+        <ImageLayout files={files} />
+      </div>
+    </div>
   );
 }
 
