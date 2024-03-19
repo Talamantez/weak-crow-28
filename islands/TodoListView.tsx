@@ -83,8 +83,8 @@ export default function TodoListView(
     })();
   }, []);
   useEffect(() => {
-    console.log('myImgUrl changed')
-    console.log(myImgUrl)
+    console.log("myImgUrl changed");
+    console.log(myImgUrl);
   }, [myImgUrl]);
 
   const addTodoInput = useRef<HTMLInputElement>(null);
@@ -127,8 +127,6 @@ export default function TodoListView(
             >
             </div>
           </div>
-          <img src={myImgUrl} class="w-full h-full object-cover" />
-
           <div class="flex">
             <p class="opacity-50 text-sm">
               Local Resources
@@ -168,10 +166,14 @@ export default function TodoListView(
 function TodoItem(
   { item, save, setMyImgUrl }: {
     item: TodoListItem;
-    imgUrl: string;
+    imgUrl: string | null;
 
-    save: (item: TodoListItem, text: string | null, imgUrl: string) => void;
-    setMyImgUrl: (url: string) => void;
+    save: (
+      item: TodoListItem,
+      text: string | null,
+      imgUrl: string | null,
+    ) => void;
+    setMyImgUrl: (url: string | null) => void;
   },
 ) {
   console.log("imgUrl:", item.imgUrl);
@@ -191,17 +193,30 @@ function TodoItem(
 
   const doSave = useCallback(() => {
     console.log("\n\n*******  saving  *******\n\n");
-    if (!input.current || !fileInput.current || !fileInput.current.files) {
-      console.log("missing data");
+    // if fields haven't changed, don't update them
+    if (!input.current) {
+      console.log("you have to enter a name");
       return;
     }
-    setBusy(true);
 
-    const newImgUrl = URL.createObjectURL(fileInput.current.files[0]);
-    console.log("newImgUrl", newImgUrl);
-    console.log("\n\n*******  SAVING  *******\n\n");
-
-    save(item, input.current.value, newImgUrl);
+    if (
+      !fileInput || !fileInput.current || !fileInput.current.files ||
+      !fileInput.current.files[0]
+    ) {
+      if (input.current.value === item.text) {
+        return cancelEdit();
+      } else if (input.current.value !== item.text) {
+        save(item, input.current.value, item.imgUrl)
+      }
+    } else {
+      const newImgUrl = URL.createObjectURL(fileInput.current.files[0]);
+      console.log("newImgUrl", newImgUrl);
+      console.log("\n\n*******  SAVING  *******\n\n");
+      if (item.imgUrl === newImgUrl){
+        save(item, input.current.value, item.imgUrl);
+      }
+      save(item, input.current.value, newImgUrl);
+    }
   }, [item]);
 
   const cancelEdit = useCallback(() => {
@@ -209,6 +224,7 @@ function TodoItem(
     setEditing(false);
     input.current.value = item.text;
   }, []);
+
   const doDelete = useCallback(() => {
     const yes = confirm("Are you sure you want to delete this item?");
     if (!yes) return;
@@ -217,14 +233,16 @@ function TodoItem(
   }, [item]);
 
   const handleImageChange = (e) => {
+    // Hide "My img"
+    setMyImgUrl(null);
+    // Show replacement image
     setFiles(e.target.files);
-    let objUrl = "";
-    if (
-      fileInput.current && fileInput.current.files && fileInput.current.files[0]
-    ) {
-      objUrl = URL.createObjectURL(fileInput.current.files[0]);
-    }
-    setMyImgUrl(objUrl);
+    // let objUrl = "";
+    // if (
+    //   fileInput.current && fileInput.current.files && fileInput.current.files[0]
+    // ) {
+    //   objUrl = URL.createObjectURL(fileInput.current.files[0]);
+    // }
   };
 
   return (
@@ -233,9 +251,10 @@ function TodoItem(
         class="flex my-2 items-center"
         {...{ "data-item-id": item.id! }}
       >
-        <img src={item.imgUrl} class="w-full h-full object-cover" />
         {editing && (
           <>
+            <img src={item.imgUrl} class="w-full h-full object-cover" />
+
             <input
               class="border rounded w-full py-2 px-3 mr-4"
               ref={input}
@@ -275,6 +294,8 @@ function TodoItem(
         )}
         {!editing && (
           <>
+            <img src={item.imgUrl} class="w-full h-full object-cover" />
+
             <div class="flex flex-col w-full font-mono">
               <div>
                 <p>
@@ -301,7 +322,7 @@ function TodoItem(
           </>
         )}
       </div>
-            <ImageLayout files={files} />
+      <ImageLayout files={files} />
     </div>
   );
 }
@@ -327,7 +348,11 @@ function ImageLayout({ files }) {
 
   useEffect(() => {
     console.log(`images changed:`);
-    console.dir(images);
+    if (!images) {
+      console.log("images emptied");
+    } else {
+      console.dir(images);
+    }
   }, [images]);
 
   useEffect(() => {
