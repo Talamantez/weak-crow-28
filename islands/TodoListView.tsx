@@ -217,6 +217,7 @@ function TodoItem(
   }, [item]);
 
   const handleImageChange = (e) => {
+    setFiles(e.target.files);
     let objUrl = "";
     if (
       fileInput.current && fileInput.current.files && fileInput.current.files[0]
@@ -300,7 +301,7 @@ function TodoItem(
           </>
         )}
       </div>
-
+            <ImageLayout files={files} />
     </div>
   );
 }
