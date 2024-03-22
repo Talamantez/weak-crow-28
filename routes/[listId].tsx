@@ -12,7 +12,6 @@ import {
   writeItems,
 } from "../services/database.ts";
 import { TodoList } from "../shared/api.ts";
-import { embedImage } from "../services/database.ts";
 
 export const handler: Handlers = {
   GET: async (req, ctx) => {
@@ -82,22 +81,21 @@ export const handler: Handlers = {
     // the post request
     // if not return the raw object
 
-    const myImgUrl = "static\\Bernadine-1_Bush-Medicine-Leaves.jpg"
-    // const myImgUrl = rawObjectArray[0].imgUrl;
+    // const myImgUrl = "static\\Bernadine-1_Bush-Medicine-Leaves.jpg"
+    const myImgUrl = rawObjectArray[0].imgUrl;
     console.log("POST [listid].tsx myImgUrl: ", myImgUrl);
     
       // postImage(`static\\screenshot.png`);
-      embedImage();
+      // embedImage();
     
     const postResponse = await postImage(myImgUrl);
-
-    if (!postResponse.name) {
+    console.log(`postResponse: `);
+    console.dir(postResponse);
+    if (!postResponse.name ) {
       body = inputSchema.parse(rawObjectArray);
       await writeItems(listId, body);
       return Response.json({ ok: false });
-    }
-    console.log(`postResponse: `);
-    console.dir(postResponse)
+    };
     const updatedObject = {
       ...rawObjectArray[0],
       imgUrl: `https://storage.googleapis.com/nami-resource-roadmap/${postResponse.name}`

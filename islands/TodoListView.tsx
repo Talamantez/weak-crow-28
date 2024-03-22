@@ -294,7 +294,7 @@ function TodoItem(
         )}
         {!editing && (
           <>
-            <img src={item.imgUrl} class="w-full h-full object-cover" />
+            <img src={item.imgUrl} class="w-full h-full object-cover mr-20" />
 
             <div class="flex flex-col w-full font-mono">
               <div>
