@@ -210,12 +210,11 @@ function TodoItem(
       }
     } else {
       const newImgUrl = URL.createObjectURL(fileInput.current.files[0]);
-      console.log("newImgUrl", newImgUrl);
-      console.log("\n\n*******  SAVING  *******\n\n");
       if (item.imgUrl === newImgUrl){
         save(item, input.current.value, item.imgUrl);
+      } else {
+        save(item, input.current.value, newImgUrl);
       }
-      save(item, input.current.value, newImgUrl);
     }
   }, [item]);
 
@@ -361,6 +360,7 @@ function ImageLayout({ files }) {
     const images: Image[] = [];
     for (const file of files) {
       const fileUrl = URL.createObjectURL(file);
+      console.log(`fileUrl`, fileUrl)
       images.push({ fileUrl });
     }
     setImages(images);

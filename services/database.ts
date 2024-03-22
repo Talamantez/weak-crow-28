@@ -69,13 +69,21 @@ export async function postImage(imgUrl: string) {
     const token = env["TOKEN"];
     const bucket = "nami-resource-roadmap";
 
-    const file = await Deno.readFile(imgUrl);
-    console.log("Post Image File!")
-    console.dir(file)
-    const name = "Test.png";
-    console.log(imgUrl)
-    console.log(name)
+    // fetch the file first, we are getting a cors error
 
+
+    // const file = await fetch(imgUrl)
+    //   .then((res) => {
+    //     if (res.ok) {
+    //       return res;
+    //     } else{
+    //       throw new Error("Error fetching image");
+    //     }
+    //   });
+
+    const file = await Deno.readFile(imgUrl);
+
+    const name = "testFile.png"
     const res = await fetch(
       `https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=${name}`,
       {
@@ -94,7 +102,8 @@ export async function postImage(imgUrl: string) {
     // Done! 💥
     return data;
   } catch (error) {
-    return error as Error;
+    console.log(error);
+    return null;
   }
 }
 

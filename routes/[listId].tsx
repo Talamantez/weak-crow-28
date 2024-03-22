@@ -83,15 +83,16 @@ export const handler: Handlers = {
 
     // const myImgUrl = "static\\Bernadine-1_Bush-Medicine-Leaves.jpg"
     const myImgUrl = rawObjectArray[0].imgUrl;
-    console.log("POST [listid].tsx myImgUrl: ", myImgUrl);
+    // const myRelativeImgUrl = myImgUrl.replace("http://localhost:8000", "");
+    const freshUrl = URL.createObjectURL(myImgUrl)
+    console.log("POST [listid].tsx myImgUrl: ", freshUrl);
     
       // postImage(`static\\screenshot.png`);
       // embedImage();
-    
-    const postResponse = await postImage(myImgUrl);
+    const postResponse = await postImage(freshUrl);
     console.log(`postResponse: `);
     console.dir(postResponse);
-    if (!postResponse.name ) {
+    if (!postResponse || !postResponse.name ) {
       body = inputSchema.parse(rawObjectArray);
       await writeItems(listId, body);
       return Response.json({ ok: false });
@@ -102,8 +103,7 @@ export const handler: Handlers = {
     };
     const updatedObjectArray = [];
     updatedObjectArray.push(updatedObject);
-  
-    console.log("updated: ", updatedObjectArray);
+
     body = inputSchema.parse(updatedObjectArray);
     await writeItems(listId, body);
     return Response.json({ ok: true });
