@@ -70,9 +70,12 @@ export async function postImage(imgUrl: string) {
     const bucket = "nami-resource-roadmap";
 
     const file = await Deno.readFile(imgUrl);
+    const name = imgUrl.split('\\')[1]
+    console.log(imgUrl)
+    console.log(name)
 
     const res = await fetch(
-      `https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=${imgUrl}`,
+      `https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=${name}`,
       {
         headers: {
           "Content-Type": "image/png",

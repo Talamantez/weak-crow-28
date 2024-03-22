@@ -234,7 +234,7 @@ function TodoItem(
 
   const handleImageChange = (e) => {
     // Hide "My img"
-    setMyImgUrl(null);
+    // setMyImgUrl(null);
     // Show replacement image
     setFiles(e.target.files);
     // let objUrl = "";
