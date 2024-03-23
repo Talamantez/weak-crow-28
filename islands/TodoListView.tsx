@@ -13,7 +13,7 @@ type Image = {
 };
 
 export default function TodoListView(
-  props: { initialData: TodoList; latency: number; storeTempImage: (file: File) => void; },
+  props: { initialData: TodoList; latency: number; postImage: (imgUrl:string) => void; },
 ) {
   const [data, setData] = useState(props.initialData);
 
@@ -27,12 +27,21 @@ export default function TodoListView(
     "https://consciousrobot-956159009.imgix.net/logo.png",
   );
 
-  const [myTempImage, setMyTempImage] = useState(null);
+  const [myTempImage, setMyTempImage] = useState();
+  
+  const {postImage} = props;
+
+  // useEffect(() =>{
+  //   if(myTempImage)
+  //   alert(myTempImage.name)
+  //   postImage(myTempImage)
+  // },[myTempImage])
 
   useEffect(() =>{
-    if(myTempImage)
-    props.storeTempImage(myTempImage)
-  },[myTempImage])
+    if(!myImgUrl)
+      setMyImgUrl("https://consciousrobot-956159009.imgix.net")
+    postImage(myImgUrl)
+  },[myImgUrl])
 
   useEffect(() => {
     let es = new EventSource(window.location.href);

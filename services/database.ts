@@ -109,19 +109,11 @@ export async function postImage(imgUrl: string) {
   }
 }
 export async function storeTempImage(file: File){
-  const myTempDir = await makeTempDir();
+  console.log('Storing')
+  const myTempDir = await makeTempDir()
   const myUint8Array = new Uint8Array(await file.arrayBuffer());
-
-  // In a browser environment, you can use the File System Access API
-  // to write the file to a temporary directory
-  const root = await navigator.storage.getDirectory();
-  const tempDir = await root.getDirectoryHandle(myTempDir, { create: true });
-  const fileHandle = await tempDir.getFileHandle(file.name, { create: true });
-  const writable = await fileHandle.createWritable();
-  await writable.write(myUint8Array);
-  await writable.close();
-
-  return `${myTempDir}/${file.name}`;
+  Deno.writeFile(`${myTempDir}/${file.name}`, myUint8Array)
+  return `${myTempDir}/${file.name}`
 }
 async function makeTempDir(): Promise<string> {
   const tempDir = await Deno.makeTempDir();
