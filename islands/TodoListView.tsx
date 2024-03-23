@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { TodoList, TodoListItem } from "../shared/api.ts";
 import axios from "axios-web";
 
+
 interface LocalMutation {
   text: string | null;
   imgUrl: string;
@@ -12,7 +13,7 @@ type Image = {
 };
 
 export default function TodoListView(
-  props: { initialData: TodoList; latency: number },
+  props: { initialData: TodoList; latency: number; storeTempImage: (file: File) => void; },
 ) {
   const [data, setData] = useState(props.initialData);
 
@@ -25,6 +26,13 @@ export default function TodoListView(
   const [myImgUrl, setMyImgUrl] = useState(
     "https://consciousrobot-956159009.imgix.net/logo.png",
   );
+
+  const [myTempImage, setMyTempImage] = useState(null);
+
+  useEffect(() =>{
+    if(myTempImage)
+    props.storeTempImage(myTempImage)
+  },[myTempImage])
 
   useEffect(() => {
     let es = new EventSource(window.location.href);
@@ -82,12 +90,9 @@ export default function TodoListView(
       }
     })();
   }, []);
-  useEffect(() => {
-    console.log("myImgUrl changed");
-    console.log(myImgUrl);
-  }, [myImgUrl]);
 
   const addTodoInput = useRef<HTMLInputElement>(null);
+
   const addTodo = useCallback(() => {
     const value = addTodoInput.current!.value;
     if (!value) return;
@@ -155,6 +160,7 @@ export default function TodoListView(
               save={saveTodo}
               imgUrl={myImgUrl}
               setMyImgUrl={setMyImgUrl}
+              setMyTempImage={setMyTempImage}
             />
           ))}
         </div>
@@ -164,7 +170,7 @@ export default function TodoListView(
 }
 
 function TodoItem(
-  { item, save, setMyImgUrl }: {
+  { item, save, setMyImgUrl, setMyTempImage }: {
     item: TodoListItem;
     imgUrl: string | null;
 
@@ -174,9 +180,10 @@ function TodoItem(
       imgUrl: string | null,
     ) => void;
     setMyImgUrl: (url: string | null) => void;
+    setMyTempImage: (file:File | null) => void;
   },
 ) {
-  console.log("imgUrl:", item.imgUrl);
+  // console.log("imgUrl:", item.imgUrl);
   const input = useRef<HTMLInputElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -186,16 +193,17 @@ function TodoItem(
   const [files, setFiles] = useState("");
 
   const onFileSelect: Event = (event) => {
-    console.log(event.target.files);
-    console.log("files", files);
+    // console.log(event.target.files);
+    // console.log("files", files);
     setFiles(event.target.files);
+    //
   };
 
-  const doSave = useCallback(() => {
-    console.log("\n\n*******  saving  *******\n\n");
+  const doSave = useCallback(async () => {
+    // console.log("\n\n*******  saving  *******\n\n");
     // if fields haven't changed, don't update them
     if (!input.current) {
-      console.log("you have to enter a name");
+      // console.log("you have to enter a name");
       return;
     }
 
@@ -206,11 +214,11 @@ function TodoItem(
       if (input.current.value === item.text) {
         return cancelEdit();
       } else if (input.current.value !== item.text) {
-        save(item, input.current.value, item.imgUrl)
+        save(item, input.current.value, item.imgUrl);
       }
     } else {
       const newImgUrl = URL.createObjectURL(fileInput.current.files[0]);
-      if (item.imgUrl === newImgUrl){
+      if (item.imgUrl === newImgUrl) {
         save(item, input.current.value, item.imgUrl);
       } else {
         save(item, input.current.value, newImgUrl);
@@ -236,6 +244,7 @@ function TodoItem(
     // setMyImgUrl(null);
     // Show replacement image
     setFiles(e.target.files);
+    setMyTempImage(e.target.files[0]);
     // let objUrl = "";
     // if (
     //   fileInput.current && fileInput.current.files && fileInput.current.files[0]
@@ -346,21 +355,21 @@ function ImageLayout({ files }) {
   const [images, setImages] = useState();
 
   useEffect(() => {
-    console.log(`images changed:`);
+    // console.log(`images changed:`);
     if (!images) {
-      console.log("images emptied");
+      // console.log("images emptied");
     } else {
       console.dir(images);
     }
   }, [images]);
 
   useEffect(() => {
-    console.log(`From ImageLayout.tsx. files: ${files}`);
+    // console.log(`From ImageLayout.tsx. files: ${files}`);
 
     const images: Image[] = [];
     for (const file of files) {
       const fileUrl = URL.createObjectURL(file);
-      console.log(`fileUrl`, fileUrl)
+      // console.log(`fileUrl`, fileUrl);
       images.push({ fileUrl });
     }
     setImages(images);

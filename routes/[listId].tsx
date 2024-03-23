@@ -10,6 +10,7 @@ import {
   loadList,
   postImage,
   writeItems,
+  storeTempImage
 } from "../services/database.ts";
 import { TodoList } from "../shared/api.ts";
 
@@ -72,7 +73,7 @@ export const handler: Handlers = {
     const listId = ctx.params.listId;
     const rawObjectArray = await req.json();
     // let myImgUrl = 'static\\screenshot.png'
-    console.log("rawObjectArray: ", rawObjectArray);
+    // console.log("rawObjectArray: ", rawObjectArray);
     let body = inputSchema.parse(rawObjectArray);
 
     // Send an image to gcp:
@@ -83,23 +84,21 @@ export const handler: Handlers = {
 
     // const myImgUrl = "static\\Bernadine-1_Bush-Medicine-Leaves.jpg"
     const myImgUrl = rawObjectArray[0].imgUrl;
-    // const myRelativeImgUrl = myImgUrl.replace("http://localhost:8000", "");
-    const freshUrl = URL.createObjectURL(myImgUrl)
-    console.log("POST [listid].tsx myImgUrl: ", freshUrl);
-    
-      // postImage(`static\\screenshot.png`);
-      // embedImage();
-    const postResponse = await postImage(freshUrl);
+    console.log("POST [listid].tsx myImgUrl: ", myImgUrl);
+    // postImage(`static\\screenshot.png`);
+    // embedImage();
+    const postResponse = await postImage(myImgUrl);
     console.log(`postResponse: `);
     console.dir(postResponse);
-    if (!postResponse || !postResponse.name ) {
+    if (!postResponse || !postResponse.name) {
       body = inputSchema.parse(rawObjectArray);
       await writeItems(listId, body);
       return Response.json({ ok: false });
-    };
+    }
     const updatedObject = {
       ...rawObjectArray[0],
-      imgUrl: `https://storage.googleapis.com/nami-resource-roadmap/${postResponse.name}`
+      imgUrl:
+        `https://storage.googleapis.com/nami-resource-roadmap/${postResponse.name}`,
     };
     const updatedObjectArray = [];
     updatedObjectArray.push(updatedObject);
@@ -125,7 +124,7 @@ export default function Home(
       <div class="p-4 mx-auto max-w-screen-md">
         <Header active="Home" />
         <Hero />
-        <TodoListView initialData={data} latency={latency} />
+        <TodoListView initialData={data} latency={latency} storeTempImage={storeTempImage} />
         <Footer />
       </div>
     </>

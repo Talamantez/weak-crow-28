@@ -71,7 +71,6 @@ export async function postImage(imgUrl: string) {
 
     // fetch the file first, we are getting a cors error
 
-
     // const file = await fetch(imgUrl)
     //   .then((res) => {
     //     if (res.ok) {
@@ -82,8 +81,11 @@ export async function postImage(imgUrl: string) {
     //   });
 
     const file = await Deno.readFile(imgUrl);
+    console.log('/nnnnnnnnnnnnn************************ File: ')
+    console.dir(file)
 
-    const name = "testFile.png"
+
+    const name = "testFile.png";
     const res = await fetch(
       `https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=${name}`,
       {
@@ -106,10 +108,28 @@ export async function postImage(imgUrl: string) {
     return null;
   }
 }
+export async function storeTempImage(file: File){
+  const myTempDir = await makeTempDir();
+  const myUint8Array = new Uint8Array(await file.arrayBuffer());
 
+  // In a browser environment, you can use the File System Access API
+  // to write the file to a temporary directory
+  const root = await navigator.storage.getDirectory();
+  const tempDir = await root.getDirectoryHandle(myTempDir, { create: true });
+  const fileHandle = await tempDir.getFileHandle(file.name, { create: true });
+  const writable = await fileHandle.createWritable();
+  await writable.write(myUint8Array);
+  await writable.close();
+
+  return `${myTempDir}/${file.name}`;
+}
+async function makeTempDir(): Promise<string> {
+  const tempDir = await Deno.makeTempDir();
+  return tempDir;
+}
 export async function embedImage() {
   // const jpgUrl = 'https://pdf-lib.js.org/assets/cat_riding_unicorn.jpg'
-  const pngUrl = 'https://consciousrobot-956159009.imgix.net/logo.png'
+  const pngUrl = "https://consciousrobot-956159009.imgix.net/logo.png";
 
   const pngImageBytes = await fetch(pngUrl).then((res) => res.arrayBuffer());
 
