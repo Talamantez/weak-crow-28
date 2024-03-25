@@ -82,7 +82,7 @@ export const handler: Handlers = {
     // the post request
     // if not return the raw object
     if (rawObjectArray[0].imgUrl === "") {
-      return Response.json({ ok: true })
+      return Response.json({ ok: true });
     } else {
       // const myImgUrl = "static\\screenshot.png"
       const myImgUrl = rawObjectArray[0].imgUrl;
@@ -93,20 +93,21 @@ export const handler: Handlers = {
       console.log(`postResponse: `);
       console.dir(postResponse);
 
-      if (!postResponse || !postResponse.name) {
-        body = inputSchema.parse(rawObjectArray);
-        await writeItems(listId, body);
-        return Response.json({ ok: false });
-      }
-      const updatedObject = {
-        ...rawObjectArray[0],
-        imgUrl:
-          `https://storage.googleapis.com/nami-resource-roadmap/${postResponse.name}`,
-      };
-      const updatedObjectArray = [];
-      updatedObjectArray.push(updatedObject);
+      // if (!postResponse) {
+      //   body = inputSchema.parse(rawObjectArray);
+      //   await writeItems(listId, body);
+      //   return Response.json({ ok: false });
+      // }
+      // const updatedObject = {
+      //   ...rawObjectArray[0],
+      //   imgUrl:
+      //     `https://storage.googleapis.com/nami-resource-roadmap/${postResponse.name}`,
+      // };
+      // const updatedObjectArray = [];
+      // updatedObjectArray.push(updatedObject);
+      // body = inputSchema.parse(updatedObjectArray);
+      body = inputSchema.parse(rawObjectArray);
 
-      body = inputSchema.parse(updatedObjectArray);
       await writeItems(listId, body);
       return Response.json({ ok: true });
     }

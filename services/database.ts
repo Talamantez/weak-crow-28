@@ -70,6 +70,7 @@ export async function postImage(imgUrl: string) {
     const bucket = "nami-resource-roadmap";
     let file:Uint8Array;
     let data:object;
+    
     await fetch(imgUrl).then(function(response) {
       console.log(`fetched ${imgUrl}`)
       return response.blob();
@@ -83,7 +84,7 @@ export async function postImage(imgUrl: string) {
 
       const objectURL = URL.createObjectURL(myBlob);
       console.log(`objectURL: ${objectURL}`)
-      const updatedURL = objectURL.replace("null", "http://localhost:8000")
+      const updatedURL = objectURL.replace("null", "")
       console.log(`updatedURL:  ${updatedURL}`)
       file = await Deno.readFile(updatedURL)
 
