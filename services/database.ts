@@ -79,10 +79,22 @@ export async function postImage(imgUrl: string) {
     //       throw new Error("Error fetching image");
     //     }
     //   });
+    // const file = await Deno.readFile(imgUrl);
+    
+    fetch(imgUrl).then(function(response) {
+      console.log(`fetched ${imgUrl}`)
+      return response.blob();
+    }).then(function(myBlob) {
+      const objectURL = URL.createObjectURL(myBlob);
+      // file = await Deno.readFile(objectURL)
+      console.log(`objectURL: ${objectURL}`)
+      const updatedURL = objectURL.replace("null", "http://localhost:8000")
+      console.log(`updatedURL:  ${updatedURL}`)
+    });
 
-    const file = await Deno.readFile(imgUrl);
-    console.log('/nnnnnnnnnnnnn************************ File: ')
-    console.dir(file)
+    // const reader = new FileReader();
+    // const file = await reader.readAsDataURL(imgUrl)
+  
 
 
     const name = "testFile.png";

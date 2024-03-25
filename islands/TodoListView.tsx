@@ -27,9 +27,9 @@ export default function TodoListView(
     "https://consciousrobot-956159009.imgix.net/logo.png",
   );
 
-  const [myTempImage, setMyTempImage] = useState();
+  // const [myTempImage, setMyTempImage] = useState();
   
-  const {postImage} = props;
+  // const {postImage} = props;
 
   // useEffect(() =>{
   //   if(myTempImage)
@@ -37,11 +37,11 @@ export default function TodoListView(
   //   postImage(myTempImage)
   // },[myTempImage])
 
-  useEffect(() =>{
-    if(!myImgUrl)
-      setMyImgUrl("https://consciousrobot-956159009.imgix.net")
-    postImage(myImgUrl)
-  },[myImgUrl])
+  // useEffect(() =>{
+  //   if(!myImgUrl)
+  //     setMyImgUrl("https://consciousrobot-956159009.imgix.net")
+  //   // postImage(myImgUrl)
+  // },[myImgUrl])
 
   useEffect(() => {
     let es = new EventSource(window.location.href);
@@ -169,7 +169,7 @@ export default function TodoListView(
               save={saveTodo}
               imgUrl={myImgUrl}
               setMyImgUrl={setMyImgUrl}
-              setMyTempImage={setMyTempImage}
+              // setMyTempImage={setMyTempImage}
             />
           ))}
         </div>
@@ -253,7 +253,7 @@ function TodoItem(
     // setMyImgUrl(null);
     // Show replacement image
     setFiles(e.target.files);
-    setMyTempImage(e.target.files[0]);
+    // setMyTempImage(e.target.files[0]);
     // let objUrl = "";
     // if (
     //   fileInput.current && fileInput.current.files && fileInput.current.files[0]
