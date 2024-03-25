@@ -9,8 +9,8 @@ import {
   inputSchema,
   loadList,
   postImage,
+  storeTempImage,
   writeItems,
-  storeTempImage
 } from "../services/database.ts";
 import { TodoList } from "../shared/api.ts";
 
@@ -81,31 +81,35 @@ export const handler: Handlers = {
     // if it succeeds, copy the image's gcp url to the body of
     // the post request
     // if not return the raw object
+    if (rawObjectArray[0].imgUrl === "") {
+      return Response.json({ ok: true })
+    } else {
+      // const myImgUrl = "static\\screenshot.png"
+      const myImgUrl = rawObjectArray[0].imgUrl;
+      console.log("POST [listid].tsx myImgUrl: ", myImgUrl);
+      // postImage(`static\\screenshot.png`);
+      // embedImage();
+      const postResponse = await postImage(myImgUrl);
+      console.log(`postResponse: `);
+      console.dir(postResponse);
 
-    // const myImgUrl = "static\\screenshot.png"
-    const myImgUrl = rawObjectArray[0].imgUrl;
-    console.log("POST [listid].tsx myImgUrl: ", myImgUrl);
-    // postImage(`static\\screenshot.png`);
-    // embedImage();
-    const postResponse = await postImage(myImgUrl);
-    console.log(`postResponse: `);
-    console.dir(postResponse);
-    if (!postResponse || !postResponse.name) {
-      body = inputSchema.parse(rawObjectArray);
+      if (!postResponse || !postResponse.name) {
+        body = inputSchema.parse(rawObjectArray);
+        await writeItems(listId, body);
+        return Response.json({ ok: false });
+      }
+      const updatedObject = {
+        ...rawObjectArray[0],
+        imgUrl:
+          `https://storage.googleapis.com/nami-resource-roadmap/${postResponse.name}`,
+      };
+      const updatedObjectArray = [];
+      updatedObjectArray.push(updatedObject);
+
+      body = inputSchema.parse(updatedObjectArray);
       await writeItems(listId, body);
-      return Response.json({ ok: false });
+      return Response.json({ ok: true });
     }
-    const updatedObject = {
-      ...rawObjectArray[0],
-      imgUrl:
-        `https://storage.googleapis.com/nami-resource-roadmap/${postResponse.name}`,
-    };
-    const updatedObjectArray = [];
-    updatedObjectArray.push(updatedObject);
-
-    body = inputSchema.parse(updatedObjectArray);
-    await writeItems(listId, body);
-    return Response.json({ ok: true });
   },
 };
 
@@ -124,7 +128,11 @@ export default function Home(
       <div class="p-4 mx-auto max-w-screen-md">
         <Header active="Home" />
         <Hero />
-        <TodoListView initialData={data} latency={latency} storeTempImage={storeTempImage} />
+        <TodoListView
+          initialData={data}
+          latency={latency}
+          storeTempImage={storeTempImage}
+        />
         <Footer />
       </div>
     </>

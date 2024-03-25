@@ -13,7 +13,7 @@ type Image = {
 };
 
 export default function TodoListView(
-  props: { initialData: TodoList; latency: number; postImage: (imgUrl:string) => void; },
+  props: { initialData: TodoList; latency: number; },
 ) {
   const [data, setData] = useState(props.initialData);
 
@@ -24,7 +24,7 @@ export default function TodoListView(
   const [adding, setAdding] = useState(false);
 
   const [myImgUrl, setMyImgUrl] = useState(
-    "https://consciousrobot-956159009.imgix.net/logo.png",
+    "https://consciousrobot-956159009.imgix.net/logo.png"
   );
 
   // const [myTempImage, setMyTempImage] = useState();

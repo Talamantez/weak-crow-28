@@ -68,53 +68,47 @@ export async function postImage(imgUrl: string) {
     const env = await load();
     const token = env["TOKEN"];
     const bucket = "nami-resource-roadmap";
-
-    // fetch the file first, we are getting a cors error
-
-    // const file = await fetch(imgUrl)
-    //   .then((res) => {
-    //     if (res.ok) {
-    //       return res;
-    //     } else{
-    //       throw new Error("Error fetching image");
-    //     }
-    //   });
-    // const file = await Deno.readFile(imgUrl);
-    
-    fetch(imgUrl).then(function(response) {
+    let file:Uint8Array;
+    let data:object;
+    await fetch(imgUrl).then(function(response) {
       console.log(`fetched ${imgUrl}`)
       return response.blob();
-    }).then(function(myBlob) {
+    }).then(async function(myBlob) {
+      console.log('myBlob:')
+      console.dir(myBlob)
+      // file = myBlob
+
+      // Expect this form:  blob:http://localhost:8000/70612b33-77da-4c04-9ae4-ac2a5544165f
+      // Getting this form: blob:http://localhost:8000/524f1b1c-c773-47b6-a9f5-43182973ea01
+
       const objectURL = URL.createObjectURL(myBlob);
-      // file = await Deno.readFile(objectURL)
       console.log(`objectURL: ${objectURL}`)
       const updatedURL = objectURL.replace("null", "http://localhost:8000")
       console.log(`updatedURL:  ${updatedURL}`)
+      file = await Deno.readFile(updatedURL)
+
+      const name = "testFile.png";
+      const res = await fetch(
+        `https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=${name}`,
+        {
+          headers: {
+            "Content-Type": "image/png",
+            Authorization: `Bearer ${token}`,
+          },
+          method: "POST",
+          body: file,
+        },
+      );
+      data = await res.json();
+      return data;
     });
 
     // const reader = new FileReader();
     // const file = await reader.readAsDataURL(imgUrl)
   
-
-
-    const name = "testFile.png";
-    const res = await fetch(
-      `https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=${name}`,
-      {
-        headers: {
-          "Content-Type": "image/png",
-          Authorization: `Bearer ${token}`,
-        },
-        method: "POST",
-        body: file,
-      },
-    );
-    const data = await res.json();
-
     // Serialize the PDFDocument to a Uint8Array and write it to apage.drawImage()
 
     // Done! 💥
-    return data;
   } catch (error) {
     console.log(error);
     return null;
