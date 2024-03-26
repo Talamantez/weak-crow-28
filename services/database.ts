@@ -84,7 +84,7 @@ export async function postImage(imgUrl: string) {
 
       const objectURL = URL.createObjectURL(myBlob);
       console.log(`objectURL: ${objectURL}`)
-      const updatedURL = objectURL.replace("null", "")
+      const updatedURL = objectURL.replace("null", window.location.origin)
       console.log(`updatedURL:  ${updatedURL}`)
       file = await Deno.readFile(updatedURL)
 

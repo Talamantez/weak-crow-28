@@ -1,0 +1,31 @@
+{
+    "roadmap": {
+      "affiliate_name":String
+      "front_matter": {
+        "welcome":String,
+        "purpose": String,
+        "disclaimer": String,
+        "acknowledgements": String,
+        "toc": Object[]
+      },
+      "sections": {
+        "intro": {
+            "image": File,
+            "content": String
+
+        },
+        "overview_conditions": "",
+        "treatment_recovery": "",
+        "crisis_actions": {
+          "resources": ""
+        },
+        "justice_system": "",
+        "employment": "",
+        "housing": "",
+        "guardianship_alternatives": "",
+        "hipaa": "",
+        "toolkit": "",
+        "advocacy": ""
+      }
+    }
+  }
