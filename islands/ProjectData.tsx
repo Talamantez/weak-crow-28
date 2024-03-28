@@ -68,12 +68,6 @@ export default function ProjectData({ title }: { title: string }) {
             <div class="flex items-center justify-center md:justify-end w-full md:w-2/5 gap-x-2 md:gap-x-5 mt-2 md:mt-0">
               <button
                 onClick={() => deleteTask(task)}
-                class="border border-green-500 hover:bg-green-500 rounded-md py-1 px-5 text-green-500 hover:text-gray-100 transition-colors focus:outline-none outline-none"
-              >
-                Complete
-              </button>
-              <button
-                onClick={() => deleteTask(task)}
                 class="border border-red-500 hover:bg-red-500 rounded-md py-1 px-5 text-red-500 hover:text-gray-100 transition-colors focus:outline-none outline-none"
               >
                 Delete
@@ -95,7 +89,7 @@ export default function ProjectData({ title }: { title: string }) {
         onClick={() => setIsAddingTask(true)}
         class="text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors flex items-center justify-center mt-5 focus:outline-none"
       >
-        + Add Task
+        + Add Section
       </button>
     </>
   );
@@ -141,7 +135,7 @@ function AddTask(
     <div class={isAddingTask ? "block w-full mt-5" : "hidden"}>
       <input
         type="text"
-        placeholder="Task Description"
+        placeholder="Section Description"
         onChange={(e) => setTask((e.target as HTMLInputElement).value)}
         class="w-full border-2 rounded-md mt-2 p-5 text-left border-blue-500 focus:border-blue-600 outline-none"
       />

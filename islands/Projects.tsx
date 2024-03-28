@@ -62,7 +62,7 @@ export default function Projects() {
       </div>
       {!projects[0].title.length && (
         <div class="flex w-full m-0">
-          <h1 class="my-6 w-full text-left m-0">No projects yet</h1>
+          <h1 class="my-6 w-full text-left m-0">No chapters yet</h1>
         </div>
       )}
     </>
