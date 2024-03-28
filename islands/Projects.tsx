@@ -43,7 +43,7 @@ export default function Projects() {
                     <p class="text-gray-500 mt-2">
                       {project.tasks.length}{" "}
                       <span>
-                        {project.tasks.length === 1 ? <>task</> : <>tasks</>}
+                        {project.tasks.length === 1 ? <>Section</> : <>Sections</>}
                       </span>
                     </p>
                   </div>
