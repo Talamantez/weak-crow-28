@@ -16,13 +16,13 @@ export default function AddProject() {
     <>
       <input
         type="text"
-        placeholder="Project Title"
+        placeholder="Chapter Title"
         onChange={(e) => setTitle((e.target as HTMLInputElement).value)}
         class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-center border-blue-500 focus:border-blue-600 outline-none"
       />
       <textarea
         type="text"
-        placeholder="Project Description"
+        placeholder="Chapter Description"
         onChange={(e) => setDescription((e.target as HTMLInputElement).value)}
         rows={10}
         class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-left border-blue-500 focus:border-blue-600 outline-none"
