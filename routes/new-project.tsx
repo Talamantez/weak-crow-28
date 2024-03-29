@@ -1,7 +1,7 @@
 import { Head } from "$fresh/runtime.ts";
 import AddProject from "../islands/AddProject.tsx";
 
-export default function NewProject() {
+export default function NewChapter() {
   return (
     <>
       <Head>
