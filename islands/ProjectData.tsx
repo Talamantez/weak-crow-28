@@ -12,7 +12,7 @@ export default function ProjectData({ title }: { title: string }) {
 
   useEffect(() => {
     const stored = JSON.parse(
-      localStorage.getItem(`Fresh Project Manager: ${title}`)!,
+      localStorage.getItem(`Chapter Manager: ${title}`)!,
     );
     setDescription(stored.description);
     setSections(stored.sections);
@@ -20,20 +20,20 @@ export default function ProjectData({ title }: { title: string }) {
 
   useEffect(() => {
     const stored = JSON.parse(
-      localStorage.getItem(`Fresh Project Manager: ${title}`)!,
+      localStorage.getItem(`Chapter Manager: ${title}`)!,
     );
     setSections(stored.sections);
   }, [isAddingSection]);
 
   const deleteProject = () => {
-    localStorage.removeItem(`Fresh Project Manager: ${title}`);
+    localStorage.removeItem(`Chapter Manager: ${title}`);
     window.location.href = "/";
   };
 
   const deleteSection = (section: SectionData) => {
     const tempSections = sections.filter((t) => t.title !== section.title);
     localStorage.setItem(
-      "Fresh Project Manager: " + title,
+      "Chapter Manager: " + title,
       JSON.stringify({
         title: title,
         description: description,
@@ -131,7 +131,7 @@ function AddSection(
       else newSections = [...sections, section];
 
       localStorage.setItem(
-        "Fresh Project Manager: " + projectTitle,
+        "Chapter Manager: " + projectTitle,
         JSON.stringify({
           title: projectTitle,
           description: description,
@@ -149,7 +149,7 @@ function AddSection(
     <div class={isAddingSection ? "block w-full mt-5" : "hidden"}>
       <input
         type="text"
-        placeholder="Section Description"
+        placeholder="Section Wonder"
         // onChange={(e) => setSection((e.target as HTMLInputElement).value)}
         onChange={
           (e) => setSection({

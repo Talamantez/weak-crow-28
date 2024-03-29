@@ -1,4 +1,4 @@
-# Fresh Project Manager
+# Chapter Manager
 A Fresh local storage-driven web app to manage projects.
 
 ## Field

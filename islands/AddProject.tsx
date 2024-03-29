@@ -6,7 +6,7 @@ export default function AddProject() {
 
   const addProject = () => {
     localStorage.setItem(
-      "Fresh Project Manager: " + title,
+      "Chapter Manager: " + title,
       JSON.stringify({ title: title, description: description, sections: [] }),
     );
     window.location.href = "/";

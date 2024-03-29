@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Fresh Project Manager</title>
+        <title>Chapter Manager</title>
       </Head>
       <main class="flex flex-col items-center justify-start my-10 p-4 mx-auto max-w-screen-lg">
         <div class="w-full flex justify-between mb-10">

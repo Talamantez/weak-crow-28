@@ -18,7 +18,7 @@ export default function Projects() {
     let tempProjects = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key?.includes("Fresh Project Manager")) {
+      if (key?.includes("Chapter Manager")) {
         const stored = JSON.parse(localStorage.getItem(key)!);
         tempProjects.push(stored);
       }
@@ -44,7 +44,7 @@ export default function Projects() {
                     <p class="text-gray-500 mt-2">
                       
                       <span>
-                        {project.sections && project.sections.length && <>{project.sections.length}{''}Sections</>}
+                        {(project.sections && project.sections.length) ? <>{project.sections.length}{' '}Sections</>:<>0 Sections</>}
                       </span>
                     </p>
                   </div>

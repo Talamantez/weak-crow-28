@@ -135,7 +135,7 @@ function AddTask(
     <div class={isAddingTask ? "block w-full mt-5" : "hidden"}>
       <input
         type="text"
-        placeholder="Section Description"
+        placeholder="SubSection Name"
         onChange={(e) => setTask((e.target as HTMLInputElement).value)}
         class="w-full border-2 rounded-md mt-2 p-5 text-left border-blue-500 focus:border-blue-600 outline-none"
       />
