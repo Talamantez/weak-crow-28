@@ -6,7 +6,7 @@ export default function ProjectData({ title }: { title: string }) {
   const [sections, setSections] = useState<SectionData[]>([{
     title: "",
     description: "",
-    tasks: [],
+    subSections: [],
   }]);
   const [isAddingSection, setIsAddingSection] = useState(false);
 
@@ -119,7 +119,7 @@ function AddSection(
     {
       title: "",
       description: "",
-      tasks: [],
+      subSections: [],
     },
   );
 
@@ -155,7 +155,7 @@ function AddSection(
           (e) => setSection({
           "title": (e.target as HTMLInputElement).value,
           "description": "Example Description",
-          "tasks":[]
+          "subSections":[]
         })}
 
         class="w-full border-2 rounded-md mt-2 p-5 text-left border-blue-500 focus:border-blue-600 outline-none"

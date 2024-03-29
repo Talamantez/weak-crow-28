@@ -3,14 +3,14 @@ import { useEffect, useState } from "preact/hooks";
 export interface SectionData {
   title: string;
   description: string;
-  tasks: [];
+  subSections: [];
 }
 
 export default function Sections() {
   const [sections, setSections] = useState<SectionData[]>([{
     title: "",
     description: "",
-    tasks: [],
+    subSections: [],
   }]);
 
   useEffect(() => {
