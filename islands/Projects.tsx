@@ -1,10 +1,10 @@
 import { useEffect, useState } from "preact/hooks";
-import { SectionData } from "./Sections.tsx";
+import {Section} from "../util/SectionData.ts";
 
 interface ProjectData {
   title: string;
   description: string;
-  sections: SectionData[];
+  sections: Section[];
 }
 
 export default function Projects() {

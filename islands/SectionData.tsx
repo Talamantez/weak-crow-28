@@ -1,35 +1,37 @@
 import { useEffect, useState } from "preact/hooks";
+import { Section } from "../util/SectionData.ts"
 
-export default function SectionData({ title }: { title: string }) {
+export default function SectionData({ title, chapterTitle }: { title: string, chapterTitle: string }) {
   const [description, setDescription] = useState("");
   const [subSections, setSubSections] = useState([""]);
   const [isAddingSubSection, setIsAddingSubSection] = useState(false);
 
   useEffect(() => {
     const stored = JSON.parse(
-      localStorage.getItem(`Fresh Section Manager: ${title}`)!,
+      localStorage.getItem(`Chapter Manager: " + ${chapterTitle}`)!,
     );
-    setDescription(stored.description);
+    setDescription(stored.sections.description);
     setSubSections(stored.subSections);
   }, []);
 
   useEffect(() => {
     const stored = JSON.parse(
-      localStorage.getItem(`Fresh Section Manager: ${title}`)!,
+      localStorage.getItem(`Chapter Manager: " + ${chapterTitle}`)!,
     );
     setSubSections(stored.subSections);
   }, [isAddingSubSection]);
 
   const deleteSection = () => {
-    localStorage.removeItem(`Fresh Section Manager: ${title}`);
-    window.location.href = "/";
+    localStorage.removeItem(`Chapter Manager: " + ${chapterTitle}`);
+    window.location.href = `/${chapterTitle}`;
   };
 
   const deleteSubSection = (subSection: string) => {
     const tempSubSections = subSections.filter((t) => t !== subSection);
     localStorage.setItem(
-      "Fresh Section Manager: " + title,
+      "Chapter Manager:  " + chapterTitle + "/" + title,
       JSON.stringify({
+        chapterTitle: chapterTitle,
         title: title,
         description: description,
         subSections: tempSubSections,
@@ -43,7 +45,7 @@ export default function SectionData({ title }: { title: string }) {
       <div class="w-full flex items-center justify-between flex-col md:flex-row">
         <div class="w-full md:w-4/5 flex items-center justify-start flex-col">
           <a
-            href="/"
+            href={`/${chapterTitle}/${title}`}
             class="text-gray-500 hover:text-blue-500 transition-colors w-full text-left mb-5"
           >
             ⬅️ Back
@@ -78,6 +80,7 @@ export default function SectionData({ title }: { title: string }) {
       </div>
 
       <AddSubSection
+        chapterTitle={chapterTitle}
         sectionTitle={title}
         description={description}
         subSections={subSections}
@@ -96,6 +99,7 @@ export default function SectionData({ title }: { title: string }) {
 }
 
 interface AddSubSectionProps {
+  chapterTitle: string;
   sectionTitle: string;
   description: string;
   subSections: string[];
@@ -103,30 +107,64 @@ interface AddSubSectionProps {
   setIsAddingSubSection: (isAddingSubSection: boolean) => void;
 }
 
-function AddSubSection(
-  { sectionTitle, description, subSections, isAddingSubSection, setIsAddingSubSection }:
+export function AddSubSection(
+  { chapterTitle, sectionTitle, description, subSections, isAddingSubSection, setIsAddingSubSection }:
     AddSubSectionProps,
 ) {
+
   const [subSection, setSubSection] = useState("");
 
   const addSubSection = () => {
     let newSubSections: string[] = [];
+    let newSections: Section[] = [];
 
     if (subSection) {
       if (subSections[0] === "") newSubSections = [subSection];
       else newSubSections = [...subSections, subSection];
 
+      const chapter = JSON.parse(localStorage.getItem("Chapter Manager: " + chapterTitle))
+      
+      // Update the 
+      // newSections = chapter.sections.map((sect:Section){
+      //   sect.title !== sectionTitle ? chapter.section: })
+
+        newSections = chapter.sections.map(function(s:Section) {
+          if(s.title !== sectionTitle){
+            alert("no match")
+            return s
+          } else {
+            alert("match")
+            s.subSections = [...s.subSections, subSection]
+            return s
+          }
+        });
+        alert(JSON.stringify(newSections))
+
       localStorage.setItem(
-        "Fresh Section Manager: " + sectionTitle,
-        JSON.stringify({
-          title: sectionTitle,
-          description: description,
-          subSections: newSubSections,
-        }),
-      );
+        "Chapter Manager: " + chapterTitle,
+        JSON.stringify(
+          {
+            title: chapter.title,
+            description: chapter.description,
+            sections: newSections
+          }
+        )
+      )
+
+      // localStorage.setItem(
+      //   "Chapter Manager:  " + chapterTitle,
+      //   JSON.stringify(
+      //     {
+      //       chapterTitle: chapterTitle,
+      //       title: sectionTitle,
+      //       description: description,
+      //       subSections: newSubSections,
+      //   }
+      //   ),
+      // );
     }
 
-    window.location.href = `/${sectionTitle}`;
+    window.location.href = `/${chapterTitle}`
 
     setIsAddingSubSection(false);
   };

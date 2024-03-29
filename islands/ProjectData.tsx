@@ -1,14 +1,17 @@
 import { useEffect, useState } from "preact/hooks";
-import { SectionData } from "./Sections.tsx"
-
+import { Section } from "../util/SectionData.ts";
+import { AddSubSection } from "./SectionData.tsx";
 export default function ProjectData({ title }: { title: string }) {
   const [description, setDescription] = useState("");
-  const [sections, setSections] = useState<SectionData[]>([{
+  const [sections, setSections] = useState<Section[]>([{
     title: "",
     description: "",
     subSections: [],
+    chapterTitle: title,
   }]);
+
   const [isAddingSection, setIsAddingSection] = useState(false);
+  const [isAddingSubSection, setIsAddingSubSection] = useState(false);
 
   useEffect(() => {
     const stored = JSON.parse(
@@ -30,7 +33,7 @@ export default function ProjectData({ title }: { title: string }) {
     window.location.href = "/";
   };
 
-  const deleteSection = (section: SectionData) => {
+  const deleteSection = (section: Section) => {
     const tempSections = sections.filter((t) => t.title !== section.title);
     localStorage.setItem(
       "Chapter Manager: " + title,
@@ -71,9 +74,30 @@ export default function ProjectData({ title }: { title: string }) {
           sections.map((section) => (
             <div class="border w-full p-5 rounded-md flex items-center justify-between flex-col md:flex-row">
               <p class="text-left w-full md:w-3/5">
-                <h2>{section.title}</h2>
-                </p>
+                <h1 class="font-bold">{section.title}</h1>
+                <p>{section.description}</p>
+                {section.subSections &&
+                  section.subSections.map((subSection) => <li>{subSection}
+                  </li>)}
+              </p>
+
               <div class="flex items-center justify-center md:justify-end w-full md:w-2/5 gap-x-2 md:gap-x-5 mt-2 md:mt-0">
+                <AddSubSection
+                  chapterTitle={title}
+                  sectionTitle={section.title}
+                  description={description}
+                  subSections={section.subSections}
+                  isAddingSubSection={isAddingSubSection}
+                  setIsAddingSubSection={setIsAddingSubSection}
+                />
+
+                <button
+                  onClick={() => setIsAddingSubSection(true)}
+                  class="text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors focus:outline-none outline-none"
+                  // "text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors flex mt-5 focus:outline-none"
+                >
+                  + Add SubSection
+                </button>
                 <button
                   onClick={() => deleteSection(section)}
                   class="border border-red-500 hover:bg-red-500 rounded-md py-1 px-5 text-red-500 hover:text-gray-100 transition-colors focus:outline-none outline-none"
@@ -106,7 +130,7 @@ export default function ProjectData({ title }: { title: string }) {
 interface AddSectionProps {
   projectTitle: string;
   description: string;
-  sections: SectionData[];
+  sections: Section[];
   isAddingSection: boolean;
   setIsAddingSection: (isAddingSection: boolean) => void;
 }
@@ -115,16 +139,17 @@ function AddSection(
   { projectTitle, description, sections, isAddingSection, setIsAddingSection }:
     AddSectionProps,
 ) {
-  const [section, setSection] = useState<SectionData>(
+  const [section, setSection] = useState<Section>(
     {
       title: "",
       description: "",
-      subSections: [],
+      subSections: [""],
+      chapterTitle: projectTitle,
     },
   );
 
   const addSection = () => {
-    let newSections: SectionData[] = [];
+    let newSections: Section[] = [];
 
     if (section) {
       if (!section) newSections = [section];
@@ -149,15 +174,14 @@ function AddSection(
     <div class={isAddingSection ? "block w-full mt-5" : "hidden"}>
       <input
         type="text"
-        placeholder="Section Wonder"
-        // onChange={(e) => setSection((e.target as HTMLInputElement).value)}
-        onChange={
-          (e) => setSection({
-          "title": (e.target as HTMLInputElement).value,
-          "description": "Example Description",
-          "subSections":[]
-        })}
-
+        placeholder="Section Title"
+        onChange={(e) =>
+          setSection({
+            "title": (e.target as HTMLInputElement).value,
+            "description": "Example Introduction",
+            "subSections": ["Example SubSection 1", "Example SubSection 2"],
+            "chapterTitle": projectTitle,
+          })}
         class="w-full border-2 rounded-md mt-2 p-5 text-left border-blue-500 focus:border-blue-600 outline-none"
       />
       <div class="w-full flex items-center justify-between">
