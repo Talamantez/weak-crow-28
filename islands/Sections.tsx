@@ -24,12 +24,8 @@ export default function Sections() {
       }
     }
     setSections(tempSections);
-  }, [sections]);
+  }, []);
 
-  useEffect(() => {
-    console.log('sections')
-    console.dir(sections)
-  },[sections]);
   return (
     <>
       <div class="grid grid-cols-1 gap-y-5 md:(grid-cols-2 gap-x-20 gap-y-10) w-full">

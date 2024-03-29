@@ -16,13 +16,13 @@ export default function AddSection() {
     <>
       <input
         type="text"
-        placeholder="Chapter Title"
+        placeholder="Section Title"
         onChange={(e) => setTitle((e.target as HTMLInputElement).value)}
         class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-center border-blue-500 focus:border-blue-600 outline-none"
       />
       <textarea
         type="text"
-        placeholder="Chapter Description"
+        placeholder="Section Description"
         onChange={(e) => setDescription((e.target as HTMLInputElement).value)}
         rows={10}
         class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-left border-blue-500 focus:border-blue-600 outline-none"
