@@ -1,16 +1,17 @@
 import { useEffect, useState } from "preact/hooks";
+import { SectionData } from "./Sections.tsx";
 
 interface ProjectData {
   title: string;
   description: string;
-  tasks: string[];
+  sections: SectionData[];
 }
 
 export default function Projects() {
   const [projects, setProjects] = useState<ProjectData[]>([{
     title: "",
     description: "",
-    tasks: [],
+    sections: [],
   }]);
 
   useEffect(() => {
@@ -41,9 +42,9 @@ export default function Projects() {
                     <h1 class="font-bold">{project.title}</h1>
                     <p class="text-gray-500">{project.description}</p>
                     <p class="text-gray-500 mt-2">
-                      {project.tasks.length}{" "}
+                      
                       <span>
-                        {project.tasks.length === 1 ? <>Section</> : <>Sections</>}
+                        {project.sections && project.sections.length && <>{project.sections.length}{''}Sections</>}
                       </span>
                     </p>
                   </div>

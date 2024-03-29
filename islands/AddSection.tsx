@@ -7,26 +7,20 @@ export default function AddSection() {
   const addSection = () => {
     localStorage.setItem(
       "Fresh Section Manager: " + title,
-      JSON.stringify({ title: title, description: description, tasks: [] }),
+      JSON.stringify({ title: title, description: description, tasks: [""] }),
     );
     window.location.href = "/";
   };
 
   return (
     <>
-      <input
+      <textarea
         type="text"
         placeholder="Section Title"
         onChange={(e) => setTitle((e.target as HTMLInputElement).value)}
         class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-center border-blue-500 focus:border-blue-600 outline-none"
       />
-      <textarea
-        type="text"
-        placeholder="Section Description"
-        onChange={(e) => setDescription((e.target as HTMLInputElement).value)}
-        rows={10}
-        class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-left border-blue-500 focus:border-blue-600 outline-none"
-      />
+
       <div class="w-4/5 flex items-center justify-between">
         <a
           href="/"
