@@ -64,7 +64,7 @@ export default function ProjectData({ title }: { title: string }) {
             onClick={() => deleteProject()}
             class="bg-red-500 hover:bg-red-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
           >
-            Delete
+            Delete Chapter
           </button>
         </div>
       </div>
@@ -77,7 +77,7 @@ export default function ProjectData({ title }: { title: string }) {
                 <h1 class="font-bold">{section.title}</h1>
                 <p>{section.description}</p>
                 {section.subSections &&
-                  section.subSections.map((subSection) => <li>{subSection}
+                  section.subSections.map((subSection) => <li class="mt-10">{subSection}
                   </li>)}
               </p>
 
@@ -85,22 +85,25 @@ export default function ProjectData({ title }: { title: string }) {
                 <AddSubSection
                   chapterTitle={title}
                   sectionTitle={section.title}
-                  description={description}
                   subSections={section.subSections}
                   isAddingSubSection={isAddingSubSection}
                   setIsAddingSubSection={setIsAddingSubSection}
                 />
-                    <button
-                      onClick={() => setIsAddingSubSection(true)}
-                      class="text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors focus:outline-none outline-none"
-                    >
-                      + Add SubSection
-                    </button>
+                { !isAddingSubSection &&
+                  
+                
+                <button
+                  onClick={() => setIsAddingSubSection(true)}
+                  class="text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors focus:outline-none outline-none"
+                >
+                  + Add SubSection
+                </button>
+}
                 <button
                   onClick={() => deleteSection(section)}
                   class="border border-red-500 hover:bg-red-500 rounded-md py-1 px-5 text-red-500 hover:text-gray-100 transition-colors focus:outline-none outline-none"
                 >
-                  Delete
+                  Delete Section
                 </button>
               </div>
             </div>
@@ -137,6 +140,8 @@ function AddSection(
   { projectTitle, description, sections, isAddingSection, setIsAddingSection }:
     AddSectionProps,
 ) {
+  const [intro, setIntro] = useState("");
+  const [title, setTitle] = useState("")
   const [section, setSection] = useState<Section>(
     {
       title: "",
@@ -176,11 +181,24 @@ function AddSection(
         onChange={(e) =>
           setSection({
             "title": (e.target as HTMLInputElement).value,
-            "description": "Example Introduction",
-            "subSections": ["Example SubSection 1", "Example SubSection 2"],
+            "description":intro,
+            "subSections": [],
             "chapterTitle": projectTitle,
           })}
         class="w-full border-2 rounded-md mt-2 p-5 text-left border-blue-500 focus:border-blue-600 outline-none"
+      />
+      <textarea
+        type="text"
+        placeholder="Section Intro"
+        onChange={(e) => 
+          setSection({
+            "title": title,
+            "description": (e.target as HTMLInputElement).value,
+            "subSections": [],
+            "chapterTitle": projectTitle,
+          })}
+        rows={10}
+        class="w-full border-2 rounded-md mt-2 px-2 py-1 text-left border-blue-500 focus:border-blue-600 outline-none"
       />
       <div class="w-full flex items-center justify-between">
         <button

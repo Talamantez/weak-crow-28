@@ -101,14 +101,13 @@ export default function SectionData({ title, chapterTitle }: { title: string, ch
 interface AddSubSectionProps {
   chapterTitle: string;
   sectionTitle: string;
-  description: string;
   subSections: string[];
   isAddingSubSection: boolean;
   setIsAddingSubSection: (isAddingSubSection: boolean) => void;
 }
 
 export function AddSubSection(
-  { chapterTitle, sectionTitle, description, subSections, isAddingSubSection, setIsAddingSubSection }:
+  { chapterTitle, sectionTitle, subSections, isAddingSubSection, setIsAddingSubSection }:
     AddSubSectionProps,
 ) {
 
@@ -136,7 +135,6 @@ export function AddSubSection(
             return s
           }
         });
-        alert(JSON.stringify(newSections))
 
       localStorage.setItem(
         "Chapter Manager: " + chapterTitle,
@@ -171,7 +169,7 @@ export function AddSubSection(
     <div class={isAddingSubSection ? "block w-full mt-5" : "hidden"}>
       <input
         type="text"
-        placeholder="SubSection Name"
+        placeholder="SubSection Content"
         onChange={(e) => setSubSection((e.target as HTMLInputElement).value)}
         class="w-full border-2 rounded-md mt-2 p-5 text-left border-blue-500 focus:border-blue-600 outline-none"
       />
