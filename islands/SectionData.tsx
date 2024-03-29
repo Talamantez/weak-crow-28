@@ -130,10 +130,8 @@ export function AddSubSection(
 
         newSections = chapter.sections.map(function(s:Section) {
           if(s.title !== sectionTitle){
-            alert("no match")
             return s
           } else {
-            alert("match")
             s.subSections = [...s.subSections, subSection]
             return s
           }

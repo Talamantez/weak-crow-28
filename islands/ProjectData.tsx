@@ -90,14 +90,12 @@ export default function ProjectData({ title }: { title: string }) {
                   isAddingSubSection={isAddingSubSection}
                   setIsAddingSubSection={setIsAddingSubSection}
                 />
-
-                <button
-                  onClick={() => setIsAddingSubSection(true)}
-                  class="text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors focus:outline-none outline-none"
-                  // "text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors flex mt-5 focus:outline-none"
-                >
-                  + Add SubSection
-                </button>
+                    <button
+                      onClick={() => setIsAddingSubSection(true)}
+                      class="text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors focus:outline-none outline-none"
+                    >
+                      + Add SubSection
+                    </button>
                 <button
                   onClick={() => deleteSection(section)}
                   class="border border-red-500 hover:bg-red-500 rounded-md py-1 px-5 text-red-500 hover:text-gray-100 transition-colors focus:outline-none outline-none"
