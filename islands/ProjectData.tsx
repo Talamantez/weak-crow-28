@@ -137,10 +137,10 @@ interface AddSectionProps {
 }
 
 function AddSection(
-  { projectTitle, description, sections, isAddingSection, setIsAddingSection }:
+  { projectTitle, sections, isAddingSection, setIsAddingSection }:
     AddSectionProps,
 ) {
-  const [intro, setIntro] = useState("");
+  const [description, setDescription] = useState("");
   const [title, setTitle] = useState("")
   const [section, setSection] = useState<Section>(
     {
@@ -150,6 +150,18 @@ function AddSection(
       chapterTitle: projectTitle,
     },
   );
+
+
+  useEffect(() => {
+
+    setSection({
+      title: title,
+      description: description,
+      subSections: section.subSections,
+      chapterTitle: section.chapterTitle
+    })
+
+  }, [description, title]);
 
   const addSection = () => {
     let newSections: Section[] = [];
@@ -178,25 +190,19 @@ function AddSection(
       <input
         type="text"
         placeholder="Section Title"
-        onChange={(e) =>
-          setSection({
-            "title": (e.target as HTMLInputElement).value,
-            "description":intro,
-            "subSections": [],
-            "chapterTitle": projectTitle,
-          })}
+        onChange={(e) => {
+          setTitle((e.target as HTMLInputElement).value)
+        }}
         class="w-full border-2 rounded-md mt-2 p-5 text-left border-blue-500 focus:border-blue-600 outline-none"
       />
       <textarea
         type="text"
-        placeholder="Section Intro"
-        onChange={(e) => 
-          setSection({
-            "title": title,
-            "description": (e.target as HTMLInputElement).value,
-            "subSections": [],
-            "chapterTitle": projectTitle,
-          })}
+        placeholder="Section Description"
+        onChange={
+          (e) => {
+            setDescription((e.target as HTMLInputElement).value)
+          }
+        }
         rows={10}
         class="w-full border-2 rounded-md mt-2 px-2 py-1 text-left border-blue-500 focus:border-blue-600 outline-none"
       />
