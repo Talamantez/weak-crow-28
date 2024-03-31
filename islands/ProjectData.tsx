@@ -146,7 +146,7 @@ function AddSection(
     {
       title: "",
       description: "",
-      subSections: [""],
+      subSections: [],
       chapterTitle: projectTitle,
     },
   );
