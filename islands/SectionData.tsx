@@ -82,7 +82,6 @@ export default function SectionData({ title, chapterTitle }: { title: string, ch
       <AddSubSection
         chapterTitle={chapterTitle}
         sectionTitle={title}
-        description={description}
         subSections={subSections}
         isAddingSubSection={isAddingSubSection}
         setIsAddingSubSection={setIsAddingSubSection}
@@ -99,6 +98,7 @@ export default function SectionData({ title, chapterTitle }: { title: string, ch
 }
 
 interface AddSubSectionProps {
+  isActive: boolean;
   chapterTitle: string;
   sectionTitle: string;
   subSections: string[];
@@ -106,8 +106,8 @@ interface AddSubSectionProps {
   setIsAddingSubSection: (isAddingSubSection: boolean) => void;
 }
 
-export function AddSubSection(
-  { chapterTitle, sectionTitle, subSections, isAddingSubSection, setIsAddingSubSection }:
+function AddSubSection(
+  { isActive, chapterTitle, sectionTitle, subSections, isAddingSubSection, setIsAddingSubSection }:
     AddSubSectionProps,
 ) {
 
@@ -122,10 +122,6 @@ export function AddSubSection(
       else newSubSections = [...subSections, subSection];
 
       const chapter = JSON.parse(localStorage.getItem("Chapter Manager: " + chapterTitle))
-      
-      // Update the 
-      // newSections = chapter.sections.map((sect:Section){
-      //   sect.title !== sectionTitle ? chapter.section: })
 
         newSections = chapter.sections.map(function(s:Section) {
           if(s.title !== sectionTitle){
@@ -146,18 +142,6 @@ export function AddSubSection(
           }
         )
       )
-
-      // localStorage.setItem(
-      //   "Chapter Manager:  " + chapterTitle,
-      //   JSON.stringify(
-      //     {
-      //       chapterTitle: chapterTitle,
-      //       title: sectionTitle,
-      //       description: description,
-      //       subSections: newSubSections,
-      //   }
-      //   ),
-      // );
     }
 
     window.location.href = `/${chapterTitle}`
@@ -166,7 +150,7 @@ export function AddSubSection(
   };
 
   return (
-    <div class={isAddingSubSection ? "block w-full mt-5" : "hidden"}>
+    <div class={isActive && isAddingSubSection ? "block w-full mt-5" : "hidden"}>
       <input
         type="text"
         placeholder="SubSection Content"

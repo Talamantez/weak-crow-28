@@ -1,6 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
-import { AddSubSection } from "./SectionData.tsx";
+
 export default function ProjectData({ title }: { title: string }) {
   const [description, setDescription] = useState("");
   const [sections, setSections] = useState<Section[]>([{
@@ -9,10 +9,10 @@ export default function ProjectData({ title }: { title: string }) {
     subSections: [],
     chapterTitle: title,
   }]);
-
+  const [activeSection, setActiveSection] = useState("")
   const [isAddingSection, setIsAddingSection] = useState(false);
   const [isAddingSubSection, setIsAddingSubSection] = useState(false);
-
+  
   useEffect(() => {
     const stored = JSON.parse(
       localStorage.getItem(`Chapter Manager: ${title}`)!,
@@ -83,6 +83,7 @@ export default function ProjectData({ title }: { title: string }) {
 
               <div class="flex items-center justify-center md:justify-end w-full md:w-2/5 gap-x-2 md:gap-x-5 mt-2 md:mt-0">
                 <AddSubSection
+                  isActive={section.title === activeSection}
                   chapterTitle={title}
                   sectionTitle={section.title}
                   subSections={section.subSections}
@@ -90,10 +91,12 @@ export default function ProjectData({ title }: { title: string }) {
                   setIsAddingSubSection={setIsAddingSubSection}
                 />
                 { !isAddingSubSection &&
-                  
-                
                 <button
-                  onClick={() => setIsAddingSubSection(true)}
+                  onClick={
+                    ()=>{
+                      setActiveSection(section.title); setIsAddingSubSection(true);
+                    }
+                  }
                   class="text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors focus:outline-none outline-none"
                 >
                   + Add SubSection
@@ -215,6 +218,84 @@ function AddSection(
         </button>
         <button
           onClick={() => addSection()}
+          class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
+interface AddSubSectionProps {
+  isActive: boolean;
+  chapterTitle: string;
+  sectionTitle: string;
+  subSections: string[];
+  isAddingSubSection: boolean;
+  setIsAddingSubSection: (isAddingSubSection: boolean) => void;
+}
+
+function AddSubSection(
+  { isActive, chapterTitle, sectionTitle, subSections, isAddingSubSection, setIsAddingSubSection }:
+    AddSubSectionProps,
+) {
+
+  const [subSection, setSubSection] = useState("");
+
+  const addSubSection = () => {
+    let newSubSections: string[] = [];
+    let newSections: Section[] = [];
+
+    if (subSection) {
+      if (subSections[0] === "") newSubSections = [subSection];
+      else newSubSections = [...subSections, subSection];
+
+      const chapter = JSON.parse(localStorage.getItem("Chapter Manager: " + chapterTitle))
+
+        newSections = chapter.sections.map(function(s:Section) {
+          if(s.title !== sectionTitle){
+            return s
+          } else {
+            s.subSections = [...s.subSections, subSection]
+            return s
+          }
+        });
+
+      localStorage.setItem(
+        "Chapter Manager: " + chapterTitle,
+        JSON.stringify(
+          {
+            title: chapter.title,
+            description: chapter.description,
+            sections: newSections
+          }
+        )
+      )
+    }
+
+    window.location.href = `/${chapterTitle}`
+
+    setIsAddingSubSection(false);
+  };
+
+  return (
+    <div class={isActive && isAddingSubSection ? "block w-full mt-5" : "hidden"}>
+      <input
+        type="text"
+        placeholder="SubSection Content"
+        onChange={(e) => setSubSection((e.target as HTMLInputElement).value)}
+        class="w-full border-2 rounded-md mt-2 p-5 text-left border-blue-500 focus:border-blue-600 outline-none"
+      />
+      <div class="w-full flex items-center justify-between">
+        <button
+          onClick={() => setIsAddingSubSection(false)}
+          class="bg-red-500 hover:bg-red-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => addSubSection()}
           class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
         >
           Add
