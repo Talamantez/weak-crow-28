@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
+import ClickToEditBlock from "../components/ClickToEditBlock.tsx";
 
 export default function ProjectData({ title }: { title: string }) {
   const [description, setDescription] = useState("");
@@ -109,8 +110,10 @@ export default function ProjectData({ title }: { title: string }) {
           >
             ⬅️ Back
           </a>
-          <h1 class="font-bold text-2xl text-left w-full">{title}</h1>
+          <ClickToEditBlock text={title} />
+          {/* <h1 class="font-bold text-2xl text-left w-full">{title}</h1> */}
           <p class="text-left w-full">{description}</p>
+
         </div>
         <div class="w-full md:w-1/5 flex items-center justify-start md:justify-end">
           <button
@@ -392,7 +395,7 @@ function AddSubSection(
 
   return (
     <div
-      class={isActive && isAddingSubSection ? "block w-full mt-5 ml-5" : "hidden"}
+      class={isActive && isAddingSubSection ? "block w-full mt-5 ml-10" : "hidden"}
     >
       <input
         type="text"
