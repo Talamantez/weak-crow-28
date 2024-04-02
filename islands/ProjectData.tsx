@@ -1,6 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
-import ClickToEditBlock from "../components/ClickToEditBlock.tsx";
+import ClickToEditHeading from "../components/ClickToEditHeading.tsx";
+import ClickToEdit from "../components/ClickToEdit.tsx";
 
 export default function ProjectData({ title }: { title: string }) {
   const [description, setDescription] = useState("");
@@ -99,7 +100,7 @@ export default function ProjectData({ title }: { title: string }) {
       return section;
     });
   };
-
+  
   return (
     <>
       <div class="w-full flex items-center justify-between flex-col md:flex-row">
@@ -110,9 +111,9 @@ export default function ProjectData({ title }: { title: string }) {
           >
             ⬅️ Back
           </a>
-          <ClickToEditBlock text={title} />
+          <ClickToEditHeading text={title} />
           {/* <h1 class="font-bold text-2xl text-left w-full">{title}</h1> */}
-          <p class="text-left w-full">{description}</p>
+          <ClickToEdit text={description} />
 
         </div>
         <div class="w-full md:w-1/5 flex items-center justify-start md:justify-end">
@@ -278,6 +279,11 @@ function AddSection(
   const addSection = () => {
     let newSections: Section[] = [];
 
+    const chapter = JSON.parse(
+      localStorage.getItem("Chapter Manager: " + projectTitle),
+    );
+
+
     if (section) {
       if (!section) newSections = [section];
       else newSections = [...sections, section];
@@ -286,7 +292,7 @@ function AddSection(
         "Chapter Manager: " + projectTitle,
         JSON.stringify({
           title: projectTitle,
-          description: description,
+          description: chapter.description,
           sections: newSections,
         }),
       );

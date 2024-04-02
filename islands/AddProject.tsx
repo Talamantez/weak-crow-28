@@ -19,6 +19,7 @@ export default function AddProject() {
         placeholder="Chapter Title"
         onChange={(e) => setTitle((e.target as HTMLInputElement).value)}
         class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-center border-blue-500 focus:border-blue-600 outline-none"
+        autoFocus
       />
       <textarea
         type="text"

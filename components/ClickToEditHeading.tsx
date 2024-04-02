@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 
-export default function ClickToEditBlock({ text }) {
+interface ClickToEditBoldProps {
+  text: string;
+}
+
+export default function ClickToEditBold({ text }: ClickToEditBoldProps) {
   const [isFocused, setIsFocused] = useState(false);
   const [inputText, setInputText] = useState(text);
   const inputRef = useRef(null);
@@ -13,12 +17,12 @@ export default function ClickToEditBlock({ text }) {
     setIsFocused(false);
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputText(e.target.value);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
+  const handleKeyDown = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.keyCode === 27) {
       setIsFocused(false);
     }
   };
