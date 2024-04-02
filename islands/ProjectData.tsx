@@ -46,6 +46,10 @@ export default function ProjectData({ title }: { title: string }) {
     location.reload();
   };
 
+
+  const findSection = (sections: Section[], sectionTitle: string) => {
+    return sections.find(section => section.title === sectionTitle);
+  };
   const deleteSubSection = (sectionTitle: string, subSection: string) => {
 
     const section = findSection(sections, sectionTitle);
@@ -66,10 +70,6 @@ export default function ProjectData({ title }: { title: string }) {
       }),
     );
     location.reload();
-  };
-
-  const findSection = (sections: Section[], sectionTitle: string) => {
-    return sections.find(section => section.title === sectionTitle);
   };
   
   const removeSubSection = (section:Section, subSection: string) => {
@@ -123,8 +123,8 @@ export default function ProjectData({ title }: { title: string }) {
                 <p>{section.description}</p>
                 {section.subSections &&
                   section.subSections.map((subSection) => (
-                    <div class="flex border mt-2.5 mb-2.5">
-                      <p class="flex grow">{subSection}</p>
+                    <div class="flex border mt-2.5 mb-2.5 justify-between">
+                      <p>{subSection}</p>
                       <button
                         onClick={() => deleteSubSection(section.title, subSection)}
                         class="bg-red-500 hover:bg-red-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none"
