@@ -46,20 +46,22 @@ export default function ProjectData({ title }: { title: string }) {
     location.reload();
   };
 
-
   const findSection = (sections: Section[], sectionTitle: string) => {
-    return sections.find(section => section.title === sectionTitle);
+    return sections.find((section) => section.title === sectionTitle);
   };
   const deleteSubSection = (sectionTitle: string, subSection: string) => {
-
     const section = findSection(sections, sectionTitle);
 
-    if(!section) return console.log(`Section ${sectionTitle} not found`)
+    if (!section) return console.log(`Section ${sectionTitle} not found`);
 
     const updatedSection = removeSubSection(section, subSection);
 
-    if(!updatedSection) return console.log(`removeSubSection failed.`)
-    const updatedSections = updateSections(sections, sectionTitle, updatedSection)
+    if (!updatedSection) return console.log(`removeSubSection failed.`);
+    const updatedSections = updateSections(
+      sections,
+      sectionTitle,
+      updatedSection,
+    );
 
     localStorage.setItem(
       "Chapter Manager: " + title,
@@ -71,19 +73,25 @@ export default function ProjectData({ title }: { title: string }) {
     );
     location.reload();
   };
-  
-  const removeSubSection = (section:Section, subSection: string) => {
+
+  const removeSubSection = (section: Section, subSection: string) => {
     if (!section) {
-      console.log('Section not found');
+      console.log("Section not found");
       return;
     }
-  
-    const updatedSubSections = section.subSections.filter(s => s !== subSection);
+
+    const updatedSubSections = section.subSections.filter((s) =>
+      s !== subSection
+    );
     return { ...section, subSections: updatedSubSections };
   };
-  
-  const updateSections = (sections: Section[], sectionTitle: string, updatedSection: Section) => {
-    return sections.map(section => {
+
+  const updateSections = (
+    sections: Section[],
+    sectionTitle: string,
+    updatedSection: Section,
+  ) => {
+    return sections.map((section) => {
       if (section.title === sectionTitle) {
         return updatedSection;
       }
@@ -123,15 +131,62 @@ export default function ProjectData({ title }: { title: string }) {
                 <p>{section.description}</p>
                 {section.subSections &&
                   section.subSections.map((subSection) => (
-                    <div class="flex border mt-2.5 mb-2.5 justify-between">
-                      <p>{subSection}</p>
-                      <button
-                        onClick={() => deleteSubSection(section.title, subSection)}
-                        class="bg-red-500 hover:bg-red-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none"
-                      >
-                        Delete
-                      </button>
-                      <hr />
+                    <div class="flex mt-5 border rounded-md p-5">
+                      <div class="w-full">
+                        <p>{subSection}</p>
+                      </div>
+                      <div class="ml-5">
+                        <button
+                          onClick={() =>
+                            deleteSubSection(section.title, subSection)}
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: 0,
+                            display: "inline-block",
+                            position: "relative",
+                          }}
+                        >
+                          <span
+                            style={{
+                              display: "inline-block",
+                              width: "24px",
+                              height: "24px",
+                              position: "relative",
+                              border: "2px solid red",
+                              borderRadius: "50%",
+                            }}
+                          >
+                            <span
+                              style={{
+                                position: "absolute",
+                                top: "50%",
+                                left: "50%",
+                                width: "60%",
+                                height: "2px",
+                                backgroundColor: "red",
+                                transform:
+                                  "translate(-50%, -50%) rotate(45deg)",
+                              }}
+                            >
+                            </span>
+                            <span
+                              style={{
+                                position: "absolute",
+                                top: "50%",
+                                left: "50%",
+                                width: "60%",
+                                height: "2px",
+                                backgroundColor: "red",
+                                transform:
+                                  "translate(-50%, -50%) rotate(-45deg)",
+                              }}
+                            >
+                            </span>
+                          </span>
+                        </button>
+                      </div>
                     </div>
                   ))}
               </p>
@@ -175,7 +230,6 @@ export default function ProjectData({ title }: { title: string }) {
         isAddingSection={isAddingSection}
         setIsAddingSection={setIsAddingSection}
       />
-
       <button
         onClick={() => setIsAddingSection(true)}
         class="text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors flex items-center justify-center mt-5 focus:outline-none"
@@ -338,7 +392,7 @@ function AddSubSection(
 
   return (
     <div
-      class={isActive && isAddingSubSection ? "block w-full mt-5" : "hidden"}
+      class={isActive && isAddingSubSection ? "block w-full mt-5 ml-5" : "hidden"}
     >
       <input
         type="text"
