@@ -13,18 +13,6 @@ export default function Sections() {
     subSections: [],
   }]);
 
-  useEffect(() => {
-    let tempSections = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.includes("Fresh Section Manager")) {
-        const stored = JSON.parse(localStorage.getItem(key)!);
-        tempSections.push(stored);
-      }
-    }
-    setSections(tempSections);
-  }, []);
-
   return (
     <>
       <div class="grid grid-cols-1 gap-y-5 md:(grid-cols-2 gap-x-20 gap-y-10) w-full">

@@ -9,10 +9,10 @@ export default function ProjectData({ title }: { title: string }) {
     subSections: [],
     chapterTitle: title,
   }]);
-  const [activeSection, setActiveSection] = useState("")
+  const [activeSection, setActiveSection] = useState("");
   const [isAddingSection, setIsAddingSection] = useState(false);
   const [isAddingSubSection, setIsAddingSubSection] = useState(false);
-  
+
   useEffect(() => {
     const stored = JSON.parse(
       localStorage.getItem(`Chapter Manager: ${title}`)!,
@@ -46,6 +46,51 @@ export default function ProjectData({ title }: { title: string }) {
     location.reload();
   };
 
+  const deleteSubSection = (sectionTitle: string, subSection: string) => {
+
+    const section = findSection(sections, sectionTitle);
+
+    if(!section) return console.log(`Section ${sectionTitle} not found`)
+
+    const updatedSection = removeSubSection(section, subSection);
+
+    if(!updatedSection) return console.log(`removeSubSection failed.`)
+    const updatedSections = updateSections(sections, sectionTitle, updatedSection)
+
+    localStorage.setItem(
+      "Chapter Manager: " + title,
+      JSON.stringify({
+        title: title,
+        description: description,
+        sections: updatedSections,
+      }),
+    );
+    location.reload();
+  };
+
+  const findSection = (sections: Section[], sectionTitle: string) => {
+    return sections.find(section => section.title === sectionTitle);
+  };
+  
+  const removeSubSection = (section:Section, subSection: string) => {
+    if (!section) {
+      console.log('Section not found');
+      return;
+    }
+  
+    const updatedSubSections = section.subSections.filter(s => s !== subSection);
+    return { ...section, subSections: updatedSubSections };
+  };
+  
+  const updateSections = (sections: Section[], sectionTitle: string, updatedSection: Section) => {
+    return sections.map(section => {
+      if (section.title === sectionTitle) {
+        return updatedSection;
+      }
+      return section;
+    });
+  };
+
   return (
     <>
       <div class="w-full flex items-center justify-between flex-col md:flex-row">
@@ -77,8 +122,18 @@ export default function ProjectData({ title }: { title: string }) {
                 <h1 class="font-bold">{section.title}</h1>
                 <p>{section.description}</p>
                 {section.subSections &&
-                  section.subSections.map((subSection) => <li class="mt-10">{subSection}
-                  </li>)}
+                  section.subSections.map((subSection) => (
+                    <div class="flex border mt-2.5 mb-2.5">
+                      <p class="flex grow">{subSection}</p>
+                      <button
+                        onClick={() => deleteSubSection(section.title, subSection)}
+                        class="bg-red-500 hover:bg-red-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none"
+                      >
+                        Delete
+                      </button>
+                      <hr />
+                    </div>
+                  ))}
               </p>
 
               <div class="flex items-center justify-center md:justify-end w-full md:w-2/5 gap-x-2 md:gap-x-5 mt-2 md:mt-0">
@@ -90,18 +145,18 @@ export default function ProjectData({ title }: { title: string }) {
                   isAddingSubSection={isAddingSubSection}
                   setIsAddingSubSection={setIsAddingSubSection}
                 />
-                { !isAddingSubSection &&
-                <button
-                  onClick={
-                    ()=>{
-                      setActiveSection(section.title); setIsAddingSubSection(true);
-                    }
-                  }
-                  class="text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors focus:outline-none outline-none"
-                >
-                  + Add SubSection
-                </button>
-}
+                {!isAddingSubSection &&
+                  (
+                    <button
+                      onClick={() => {
+                        setActiveSection(section.title);
+                        setIsAddingSubSection(true);
+                      }}
+                      class="text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors focus:outline-none outline-none"
+                    >
+                      + Add SubSection
+                    </button>
+                  )}
                 <button
                   onClick={() => deleteSection(section)}
                   class="border border-red-500 hover:bg-red-500 rounded-md py-1 px-5 text-red-500 hover:text-gray-100 transition-colors focus:outline-none outline-none"
@@ -144,7 +199,7 @@ function AddSection(
     AddSectionProps,
 ) {
   const [description, setDescription] = useState("");
-  const [title, setTitle] = useState("")
+  const [title, setTitle] = useState("");
   const [section, setSection] = useState<Section>(
     {
       title: "",
@@ -154,16 +209,13 @@ function AddSection(
     },
   );
 
-
   useEffect(() => {
-
     setSection({
       title: title,
       description: description,
       subSections: section.subSections,
-      chapterTitle: section.chapterTitle
-    })
-
+      chapterTitle: section.chapterTitle,
+    });
   }, [description, title]);
 
   const addSection = () => {
@@ -194,18 +246,16 @@ function AddSection(
         type="text"
         placeholder="Section Title"
         onChange={(e) => {
-          setTitle((e.target as HTMLInputElement).value)
+          setTitle((e.target as HTMLInputElement).value);
         }}
         class="w-full border-2 rounded-md mt-2 p-5 text-left border-blue-500 focus:border-blue-600 outline-none"
       />
       <textarea
         type="text"
         placeholder="Section Description"
-        onChange={
-          (e) => {
-            setDescription((e.target as HTMLInputElement).value)
-          }
-        }
+        onChange={(e) => {
+          setDescription((e.target as HTMLInputElement).value);
+        }}
         rows={10}
         class="w-full border-2 rounded-md mt-2 px-2 py-1 text-left border-blue-500 focus:border-blue-600 outline-none"
       />
@@ -237,10 +287,15 @@ interface AddSubSectionProps {
 }
 
 function AddSubSection(
-  { isActive, chapterTitle, sectionTitle, subSections, isAddingSubSection, setIsAddingSubSection }:
-    AddSubSectionProps,
+  {
+    isActive,
+    chapterTitle,
+    sectionTitle,
+    subSections,
+    isAddingSubSection,
+    setIsAddingSubSection,
+  }: AddSubSectionProps,
 ) {
-
   const [subSection, setSubSection] = useState("");
 
   const addSubSection = () => {
@@ -251,16 +306,18 @@ function AddSubSection(
       if (subSections[0] === "") newSubSections = [subSection];
       else newSubSections = [...subSections, subSection];
 
-      const chapter = JSON.parse(localStorage.getItem("Chapter Manager: " + chapterTitle))
+      const chapter = JSON.parse(
+        localStorage.getItem("Chapter Manager: " + chapterTitle),
+      );
 
-        newSections = chapter.sections.map(function(s:Section) {
-          if(s.title !== sectionTitle){
-            return s
-          } else {
-            s.subSections = [...s.subSections, subSection]
-            return s
-          }
-        });
+      newSections = chapter.sections.map(function (s: Section) {
+        if (s.title !== sectionTitle) {
+          return s;
+        } else {
+          s.subSections = [...s.subSections, subSection];
+          return s;
+        }
+      });
 
       localStorage.setItem(
         "Chapter Manager: " + chapterTitle,
@@ -268,19 +325,21 @@ function AddSubSection(
           {
             title: chapter.title,
             description: chapter.description,
-            sections: newSections
-          }
-        )
-      )
+            sections: newSections,
+          },
+        ),
+      );
     }
 
-    window.location.href = `/${chapterTitle}`
+    window.location.href = `/${chapterTitle}`;
 
     setIsAddingSubSection(false);
   };
 
   return (
-    <div class={isActive && isAddingSubSection ? "block w-full mt-5" : "hidden"}>
+    <div
+      class={isActive && isAddingSubSection ? "block w-full mt-5" : "hidden"}
+    >
       <input
         type="text"
         placeholder="SubSection Content"
