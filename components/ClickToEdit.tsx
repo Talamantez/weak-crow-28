@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "preact/hooks";
 
 interface ClickToEditProps {
   text: string;
+  onTextChange: (text: string) => void;
 }
 
 export default function ClickToEdit({ text }: ClickToEditProps) {
@@ -61,4 +62,12 @@ export default function ClickToEdit({ text }: ClickToEditProps) {
         )}
     </>
   );
+}
+interface ClickToEditProps {
+  onTextChange: (text: string) => void;
+}
+
+function handleTextChange(event: React.ChangeEvent<HTMLInputElement>) {
+  const props: ClickToEditProps = event.target;
+  props.onTextChange(event.target.value);
 }
