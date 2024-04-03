@@ -56,7 +56,7 @@ export default function ClickToEdit({ text }: ClickToEditProps) {
             onFocus={handleFocus}
             className="text-left w-full"
           >
-            {inputText || text}
+            {inputText || "Click to edit"}
           </div>
         )}
     </>

@@ -4,7 +4,7 @@ interface ClickToEditBoldProps {
   text: string;
 }
 
-export default function ClickToEditBold({ text }: ClickToEditBoldProps) {
+export default function ClickToEditHeading({ text }: ClickToEditBoldProps) {
   const [isFocused, setIsFocused] = useState(false);
   const [inputText, setInputText] = useState(text);
   const inputRef = useRef(null);

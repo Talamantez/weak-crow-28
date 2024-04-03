@@ -113,7 +113,8 @@ export default function ProjectData({ title }: { title: string }) {
           </a>
           <ClickToEditHeading text={title} />
           {/* <h1 class="font-bold text-2xl text-left w-full">{title}</h1> */}
-          <ClickToEdit text={description} />
+
+         {description !== "" && <ClickToEdit text={description} />}
 
         </div>
         <div class="w-full md:w-1/5 flex items-center justify-start md:justify-end">
@@ -131,13 +132,14 @@ export default function ProjectData({ title }: { title: string }) {
           sections.map((section) => (
             <div class="border w-full p-5 rounded-md flex items-center justify-between flex-col md:flex-row">
               <p class="text-left w-full md:w-3/5">
-                <h1 class="font-bold">{section.title}</h1>
-                <p>{section.description}</p>
+                {section.title && <h1 class="font-bold"><ClickToEdit text={section.title} /></h1>}
+                {/* <h1 class="font-bold">{section.title}</h1> */}
+                {section.description && <p><ClickToEdit text={section.description} /></p>}
                 {section.subSections &&
                   section.subSections.map((subSection) => (
                     <div class="flex mt-5 border rounded-md p-5">
                       <div class="w-full">
-                        <p>{subSection}</p>
+                        {subSection && <p><ClickToEdit text={subSection} /></p>}
                       </div>
                       <div class="ml-5">
                         <button
@@ -257,6 +259,10 @@ function AddSection(
     AddSectionProps,
 ) {
   const [description, setDescription] = useState("");
+
+
+  // TODO: decouple this chapterDescription from 'description', which is for sections
+  const [chapterDescription, setChapterDescription] = useState("")
   const [title, setTitle] = useState("");
   const [section, setSection] = useState<Section>(
     {
