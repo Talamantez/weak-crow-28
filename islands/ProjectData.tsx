@@ -100,7 +100,21 @@ export default function ProjectData({ title }: { title: string }) {
       return section;
     });
   };
-  
+
+  function updateChapterDescription(
+    newText: string,
+    description: string,
+  ): void {
+    const stored = JSON.parse(
+      localStorage.getItem(`Chapter Manager: ${title}`)!,
+    );
+    localStorage.setItem(
+      `Chapter Manager: ${title}`,
+      JSON.stringify({ ...stored, description: newText }),
+    );
+    window.location.href = `/${title}`;
+  }
+
   return (
     <>
       <div class="w-full flex items-center justify-between flex-col md:flex-row">
@@ -111,9 +125,17 @@ export default function ProjectData({ title }: { title: string }) {
           >
             ⬅️ Back
           </a>
-          <ClickToEditHeading text={title} onTextChange={(newText) => updateChapterTitle(newText, title)}/>
-         {description !== "" && <ClickToEdit text={description} />}
-
+          <ClickToEditHeading
+            text={title}
+            onTextChange={(newText) => updateChapterTitle(newText, title)}
+          />
+          {description !== "" && (
+            <ClickToEdit
+              text={description}
+              onTextChange={(newText) =>
+                updateChapterDescription(newText, description)}
+            />
+          )}
         </div>
         <div class="w-full md:w-1/5 flex items-center justify-start md:justify-end">
           <button
@@ -130,13 +152,29 @@ export default function ProjectData({ title }: { title: string }) {
           sections.map((section) => (
             <div class="border w-full p-5 rounded-md flex items-center justify-between flex-col md:flex-row">
               <p class="text-left w-full md:w-3/5">
-                {section.title && <h1 class="font-bold"><ClickToEdit text={section.title} onTextChange={(newText) => updateSectionTitle(newText, section.title)}/></h1>}
-                {section.description && <p><ClickToEdit text={section.description} /></p>}
+                {section.title && (
+                  <h1 class="font-bold">
+                    <ClickToEdit
+                      text={section.title}
+                      onTextChange={(newText) =>
+                        updateSectionTitle(newText, section.title)}
+                    />
+                  </h1>
+                )}
+                {section.description && (
+                  <p>
+                    <ClickToEdit text={section.description} />
+                  </p>
+                )}
                 {section.subSections &&
                   section.subSections.map((subSection) => (
                     <div class="flex mt-5 border rounded-md p-5">
                       <div class="w-full">
-                        {subSection && <p><ClickToEdit text={subSection} /></p>}
+                        {subSection && (
+                          <p>
+                            <ClickToEdit text={subSection} />
+                          </p>
+                        )}
                       </div>
                       <div class="ml-5">
                         <button
@@ -257,9 +295,8 @@ function AddSection(
 ) {
   const [description, setDescription] = useState("");
 
-
   // TODO: decouple this chapterDescription from 'description', which is for sections
-  const [chapterDescription, setChapterDescription] = useState("")
+  const [chapterDescription, setChapterDescription] = useState("");
   const [title, setTitle] = useState("");
   const [section, setSection] = useState<Section>(
     {
@@ -285,7 +322,6 @@ function AddSection(
     const chapter = JSON.parse(
       localStorage.getItem("Chapter Manager: " + projectTitle),
     );
-
 
     if (section) {
       if (!section) newSections = [section];
@@ -404,7 +440,9 @@ function AddSubSection(
 
   return (
     <div
-      class={isActive && isAddingSubSection ? "block w-full mt-5 ml-10" : "hidden"}
+      class={isActive && isAddingSubSection
+        ? "block w-full mt-5 ml-10"
+        : "hidden"}
     >
       <input
         type="text"
@@ -430,19 +468,16 @@ function AddSubSection(
   );
 }
 
-function updateSectionTitle(newText, sectionTitle) {
-  const stored = JSON.parse(localStorage.getItem(`Chapter Manager: ${sectionTitle}`)!);
-  localStorage.removeItem(`Chapter Manager: ${sectionTitle}`);
-  localStorage.setItem(`Chapter Manager: ${newText}`, JSON.stringify(stored));
-  localStorage.removeItem(`Chapter Manager: ${sectionTitle}`);
-  location.reload();
-}
-
-function updateChapterTitle(newText, chapterTitle) {
-  const stored = JSON.parse(localStorage.getItem(`Chapter Manager: ${chapterTitle}`)!);
+function updateChapterTitle(newText:string, chapterTitle:string) {
+  const stored = JSON.parse(
+    localStorage.getItem(`Chapter Manager: ${chapterTitle}`)!,
+  );
   localStorage.removeItem(`Chapter Manager: ${chapterTitle}`);
-  const updatedStored = { ...stored, title: newText }
-  localStorage.setItem(`Chapter Manager: ${newText}`, JSON.stringify(updatedStored));
+  const updatedStored = { ...stored, title: newText };
+  localStorage.setItem(
+    `Chapter Manager: ${newText}`,
+    JSON.stringify(updatedStored),
+  );
   localStorage.removeItem(`Chapter Manager: ${chapterTitle}`);
   window.location.href = `/${newText}`;
 }

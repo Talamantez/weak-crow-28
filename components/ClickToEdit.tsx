@@ -5,8 +5,9 @@ interface ClickToEditProps {
   onTextChange: (text: string) => void;
 }
 
-export default function ClickToEdit({ text }: ClickToEditProps) {
-  
+export default function ClickToEdit(
+  { text, onTextChange }: ClickToEditProps,
+) {
   const [isFocused, setIsFocused] = useState(false);
   const [inputText, setInputText] = useState(text);
   const inputRef = useRef(null);
@@ -24,10 +25,15 @@ export default function ClickToEdit({ text }: ClickToEditProps) {
   };
 
   const handleKeyDown = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" || e.keyCode === 27) {
+    if (e.key === "Enter") {
+      handleTextChange(e);
       setIsFocused(false);
     }
   };
+
+  function handleTextChange(e: React.ChangeEvent<HTMLInputElement>) {
+    onTextChange(e.target.value);
+  }
 
   useEffect(() => {
     if (isFocused && inputRef.current) {
@@ -46,7 +52,6 @@ export default function ClickToEdit({ text }: ClickToEditProps) {
             onChange={handleChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
-            placeholder={inputText || text}
             autoFocus
             className="text-left self-start p-1"
           />
@@ -57,17 +62,9 @@ export default function ClickToEdit({ text }: ClickToEditProps) {
             onFocus={handleFocus}
             className="text-left w-full"
           >
-            {inputText || "Click to edit"}
+            {inputText}
           </div>
         )}
     </>
   );
-}
-interface ClickToEditProps {
-  onTextChange: (text: string) => void;
-}
-
-function handleTextChange(event: React.ChangeEvent<HTMLInputElement>) {
-  const props: ClickToEditProps = event.target;
-  props.onTextChange(event.target.value);
 }
