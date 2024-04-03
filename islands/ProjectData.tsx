@@ -444,5 +444,5 @@ function updateChapterTitle(newText, chapterTitle) {
   const updatedStored = { ...stored, title: newText }
   localStorage.setItem(`Chapter Manager: ${newText}`, JSON.stringify(updatedStored));
   localStorage.removeItem(`Chapter Manager: ${chapterTitle}`);
-  location.reload();
+  window.location.href = `/${newText}`;
 }
