@@ -111,11 +111,34 @@ export default function ProjectData({ title }: { title: string }) {
     );
     localStorage.setItem(
       `Chapter Manager: ${chapterTitle}`,
-      JSON.stringify({ ...stored, sections: stored.sections.map((s) => s.title === title ? { ...s, title: newText } : s) }),
+      JSON.stringify({
+        ...stored,
+        sections: stored.sections.map((s) =>
+          s.title === title ? { ...s, title: newText } : s
+        ),
+      }),
     );
     window.location.href = `/${chapterTitle}`;
   }
-
+  function updateSectionDescription(
+    newText: string,
+    title: string,
+    chapterTitle: string,
+  ): void {
+    const stored = JSON.parse(
+      localStorage.getItem(`Chapter Manager: ${chapterTitle}`)!,
+    );
+    localStorage.setItem(
+      `Chapter Manager: ${chapterTitle}`,
+      JSON.stringify({
+        ...stored,
+        sections: stored.sections.map((s) =>
+          s.title === title ? { ...s, description: newText } : s
+        ),
+      }),
+    );
+    window.location.href = `/${chapterTitle}`;
+  }
   function updateChapterDescription(
     newText: string,
     description: string,
@@ -172,13 +195,17 @@ export default function ProjectData({ title }: { title: string }) {
                     <ClickToEdit
                       text={section.title}
                       onTextChange={(newText) =>
-                        updateSectionTitle(newText, section.title,title)}
+                        updateSectionTitle(newText, section.title, title)}
                     />
                   </h1>
                 )}
                 {section.description && (
                   <p>
-                    <ClickToEdit text={section.description} />
+                    <ClickToEdit
+                      text={section.description}
+                      onTextChange={(newText) =>
+                        updateSectionDescription(newText, section.title, title)}
+                    />
                   </p>
                 )}
                 {section.subSections &&
@@ -483,7 +510,7 @@ function AddSubSection(
   );
 }
 
-function updateChapterTitle(newText:string, chapterTitle:string) {
+function updateChapterTitle(newText: string, chapterTitle: string) {
   const stored = JSON.parse(
     localStorage.getItem(`Chapter Manager: ${chapterTitle}`)!,
   );
