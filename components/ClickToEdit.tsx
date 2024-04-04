@@ -1,3 +1,4 @@
+import { RefactorActionInfo } from "https://deno.land/x/ts_morph@21.0.1/common/typescript.js";
 import { useEffect, useRef, useState } from "preact/hooks";
 
 interface ClickToEditProps {
@@ -16,7 +17,8 @@ export default function ClickToEdit(
     setIsFocused(true);
   };
 
-  const handleBlur = () => {
+  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleTextChange(e);
     setIsFocused(false);
   };
 
@@ -26,7 +28,6 @@ export default function ClickToEdit(
 
   const handleKeyDown = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleTextChange(e);
       setIsFocused(false);
     }
   };
