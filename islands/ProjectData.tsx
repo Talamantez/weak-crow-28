@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
 import ClickToEditHeading from "../components/ClickToEditHeading.tsx";
 import ClickToEdit from "../components/ClickToEdit.tsx";
+import ClickToEditTextArea from "../components/ClickToEditTextArea.tsx";
 
 export default function ProjectData({ title }: { title: string }) {
   const [description, setDescription] = useState("");
@@ -14,6 +15,32 @@ export default function ProjectData({ title }: { title: string }) {
   const [activeSection, setActiveSection] = useState("");
   const [isAddingSection, setIsAddingSection] = useState(false);
   const [isAddingSubSection, setIsAddingSubSection] = useState(false);
+  // Step 1: Function to save scroll position
+
+  function saveScrollPosition() {
+    localStorage.setItem("scrollX", globalThis.scrollX.toString());
+    localStorage.setItem("scrollY", globalThis.scrollY.toString());
+  }
+
+  // Step 2: Save scroll position on scroll
+  globalThis.addEventListener("scroll", saveScrollPosition);
+
+  // Step 3: Set scroll position on component mount
+  useEffect(() => {
+    const scrollX = localStorage.getItem("scrollX");
+    const scrollY = localStorage.getItem("scrollY");
+
+    if (scrollX !== null && scrollY !== null) {
+      // Delay the scroll until after the page has fully loaded
+      setTimeout(() => {
+        globalThis.scrollTo(parseInt(scrollX), parseInt(scrollY));
+      }, 0);
+    }
+    return () => {
+      globalThis.scrollTo(0, 0);
+      globalThis.removeEventListener("scroll", saveScrollPosition);
+    };
+  }, []);
 
   useEffect(() => {
     const stored = JSON.parse(
@@ -118,7 +145,7 @@ export default function ProjectData({ title }: { title: string }) {
         ),
       }),
     );
-    window.location.href = `/${chapterTitle}`;
+    window.location.reload()
   }
   function updateSectionDescription(
     newText: string,
@@ -137,11 +164,10 @@ export default function ProjectData({ title }: { title: string }) {
         ),
       }),
     );
-    window.location.href = `/${chapterTitle}`;
+    window.location.reload()
   }
   function updateChapterDescription(
     newText: string,
-    description: string,
   ): void {
     const stored = JSON.parse(
       localStorage.getItem(`Chapter Manager: ${title}`)!,
@@ -150,7 +176,7 @@ export default function ProjectData({ title }: { title: string }) {
       `Chapter Manager: ${title}`,
       JSON.stringify({ ...stored, description: newText }),
     );
-    window.location.href = `/${title}`;
+    window.location.reload();
   }
 
   return (
@@ -168,10 +194,10 @@ export default function ProjectData({ title }: { title: string }) {
             onTextChange={(newText) => updateChapterTitle(newText, title)}
           />
           {description !== "" && (
-            <ClickToEdit
+            <ClickToEditTextArea
               text={description}
               onTextChange={(newText) =>
-                updateChapterDescription(newText, description)}
+                updateChapterDescription(newText)}
             />
           )}
         </div>
@@ -201,7 +227,7 @@ export default function ProjectData({ title }: { title: string }) {
                 )}
                 {section.description && (
                   <p>
-                    <ClickToEdit
+                    <ClickToEditTextArea
                       text={section.description}
                       onTextChange={(newText) =>
                         updateSectionDescription(newText, section.title, title)}
@@ -214,8 +240,17 @@ export default function ProjectData({ title }: { title: string }) {
                       <div class="w-full">
                         {subSection && (
                           <p>
-                            <ClickToEdit text={subSection} onTextChange={(newText) => 
-                            updateSubSection(newText, subSection, section.title, title)}/>
+                            <ClickToEditTextArea
+                              text={subSection}
+                              cols={70}
+                              onTextChange={(newText) =>
+                                updateSubSection(
+                                  newText,
+                                  subSection,
+                                  section.title,
+                                  title,
+                                )}
+                            />
                           </p>
                         )}
                       </div>
@@ -292,7 +327,7 @@ export default function ProjectData({ title }: { title: string }) {
                         setIsAddingSubSection(true);
                       }}
                       class="text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors focus:outline-none outline-none"
-                  >
+                    >
                       + Add SubSection
                     </button>
                   )}
@@ -380,7 +415,8 @@ function AddSection(
       );
     }
 
-    window.location.href = `/${projectTitle}`;
+    // window.location.href = `/${projectTitle}`;
+    location.reload();
 
     setIsAddingSection(false);
   };
@@ -476,7 +512,7 @@ function AddSubSection(
       );
     }
 
-    window.location.href = `/${chapterTitle}`;
+    location.reload();
 
     setIsAddingSubSection(false);
   };
@@ -522,7 +558,7 @@ function updateChapterTitle(newText: string, chapterTitle: string) {
     JSON.stringify(updatedStored),
   );
   localStorage.removeItem(`Chapter Manager: ${chapterTitle}`);
-  window.location.href = `/${newText}`;
+  window.history.pushState({}, "", `/${newText}`);
 }
 
 function updateSubSection(
@@ -550,5 +586,5 @@ function updateSubSection(
       sections: updatedSections,
     }),
   );
-  window.location.href = `/${chapterTitle}`;
+  window.location.reload();
 }
