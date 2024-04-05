@@ -214,7 +214,8 @@ export default function ProjectData({ title }: { title: string }) {
                       <div class="w-full">
                         {subSection && (
                           <p>
-                            <ClickToEdit text={subSection} />
+                            <ClickToEdit text={subSection} onTextChange={(newText) => 
+                            updateSubSection(newText, subSection, section.title, title)}/>
                           </p>
                         )}
                       </div>
@@ -291,7 +292,7 @@ export default function ProjectData({ title }: { title: string }) {
                         setIsAddingSubSection(true);
                       }}
                       class="text-gray-500 border border-gray-500 hover:(text-blue-500 border-blue-500) rounded-md py-1 px-2 transition-colors focus:outline-none outline-none"
-                    >
+                  >
                       + Add SubSection
                     </button>
                   )}
@@ -522,4 +523,32 @@ function updateChapterTitle(newText: string, chapterTitle: string) {
   );
   localStorage.removeItem(`Chapter Manager: ${chapterTitle}`);
   window.location.href = `/${newText}`;
+}
+
+function updateSubSection(
+  newText: string,
+  subSection: string,
+  sectionTitle: string,
+  chapterTitle: string,
+) {
+  const stored = JSON.parse(
+    localStorage.getItem(`Chapter Manager: ${chapterTitle}`)!,
+  );
+  const updatedSections = stored.sections.map((s) => {
+    if (s.title === sectionTitle) {
+      const updatedSubSections = s.subSections.map((ss) =>
+        ss === subSection ? newText : ss
+      );
+      return { ...s, subSections: updatedSubSections };
+    }
+    return s;
+  });
+  localStorage.setItem(
+    `Chapter Manager: ${chapterTitle}`,
+    JSON.stringify({
+      ...stored,
+      sections: updatedSections,
+    }),
+  );
+  window.location.href = `/${chapterTitle}`;
 }

@@ -1,4 +1,3 @@
-import { RefactorActionInfo } from "https://deno.land/x/ts_morph@21.0.1/common/typescript.js";
 import { useEffect, useRef, useState } from "preact/hooks";
 
 interface ClickToEditProps {
