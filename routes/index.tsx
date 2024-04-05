@@ -1,7 +1,30 @@
-import * as base58 from "$std/encoding/base58.ts";
+import { Head } from "$fresh/runtime.ts";
+import Projects from "../islands/Projects.tsx";
+import Hero from "../components/Hero.tsx";
+import Footer from "../components/Footer.tsx";
+import Header from "../components/Header.tsx";
 
-export const handler = (req: Request ): Response => {
-  const listId = base58.encode(crypto.getRandomValues(new Uint8Array(8)));
-  const url = new URL(req.url);
-  return Response.redirect(`${url.origin}/${listId}`, 302);
-};
+export default function Home() {
+  return (
+    <>
+      <Head>
+        <title>Resource Roadmap Editor</title>
+      </Head>
+      <main class="flex flex-col items-center justify-start my-10 p-4 mx-auto max-w-screen-lg">
+      <Header active="Home" />
+        <Hero />
+        <div class="w-full flex justify-between mb-10 mt-10">
+          <h1 class="font-bold text-2xl w-3/5 text-left">Chapters</h1>
+          <a
+            href="/new-project"
+            class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-2 text-gray-100 transition-colors w-2/5 md:w-1/5 flex items-center justify-center"
+          >
+            + Add Chapter
+          </a>
+        </div>
+        <Projects />
+        <Footer />
+      </main>
+    </>
+  );
+}

@@ -1,3 +1,6 @@
 .env
 # Fresh build directory
 _fresh/
+fresh.gen.ts
+deno.lock
+.vscode

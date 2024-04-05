@@ -2,24 +2,34 @@
 // This file SHOULD be checked into source version control.
 // This file is automatically updated during development when running `dev.ts`.
 
-import * as $_listId_ from "./routes/[listId].tsx";
+import * as $_project_ from "./routes/[project].tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $_middleware from "./routes/_middleware.ts";
 import * as $index from "./routes/index.tsx";
+import * as $new_project from "./routes/new-project.tsx";
+import * as $AddProject from "./islands/AddProject.tsx";
 import * as $File from "./islands/File.tsx";
-import * as $TodoListView from "./islands/TodoListView.tsx";
+import * as $ProjectData from "./islands/ProjectData.tsx";
+import * as $Projects from "./islands/Projects.tsx";
+import * as $Sections from "./islands/Sections.tsx";
 import * as $missing_types from "./islands/missing-types.ts";
 import * as $renderImages from "./islands/renderImages.tsx";
 import { type Manifest } from "$fresh/server.ts";
 
 const manifest = {
   routes: {
-    "./routes/[listId].tsx": $_listId_,
+    "./routes/[project].tsx": $_project_,
     "./routes/_app.tsx": $_app,
+    "./routes/_middleware.ts": $_middleware,
     "./routes/index.tsx": $index,
+    "./routes/new-project.tsx": $new_project,
   },
   islands: {
+    "./islands/AddProject.tsx": $AddProject,
     "./islands/File.tsx": $File,
-    "./islands/TodoListView.tsx": $TodoListView,
+    "./islands/ProjectData.tsx": $ProjectData,
+    "./islands/Projects.tsx": $Projects,
+    "./islands/Sections.tsx": $Sections,
     "./islands/missing-types.ts": $missing_types,
     "./islands/renderImages.tsx": $renderImages,
   },
