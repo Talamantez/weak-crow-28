@@ -44,18 +44,36 @@ export default function ProjectData({ title }: { title: string }) {
   }, []);
 
   useEffect(() => {
-    const stored = JSON.parse(
-      safeLocalStorageGetItem(`Chapter Manager: ${title}`)!,
-    );
-    setDescription(stored.description);
-    setSections(stored.sections);
+    const storedString = safeLocalStorageGetItem(`Chapter Manager: ${title}`);
+    
+    if (storedString) {
+      const stored = JSON.parse(storedString);
+      
+      if (stored && typeof stored === 'object') {
+        setDescription(stored.description);
+        setSections(stored.sections);
+      } else {
+        console.error('Stored data is not an object');
+      }
+    } else {
+      console.error('No stored data found');
+    }
   }, []);
 
   useEffect(() => {
-    const stored = JSON.parse(
-      safeLocalStorageGetItem(`Chapter Manager: ${title}`)!,
-    );
-    setSections(stored.sections);
+    const storedString = safeLocalStorageGetItem(`Chapter Manager: ${title}`);
+    
+    if (storedString) {
+      const stored = JSON.parse(storedString);
+      
+      if (stored && typeof stored === 'object') {
+        setSections(stored.sections);
+      } else {
+        console.error('Stored data is not an object');
+      }
+    } else {
+      console.error('No stored data found');
+    }
   }, [isAddingSection]);
 
   const deleteProject = () => {
@@ -141,7 +159,7 @@ export default function ProjectData({ title }: { title: string }) {
       `Chapter Manager: ${chapterTitle}`,
       JSON.stringify({
         ...stored,
-        sections: stored.sections.map((s) =>
+        sections: stored.sections.map((s: Section) =>
           s.title === title ? { ...s, title: newText } : s
         ),
       }),
@@ -160,7 +178,7 @@ export default function ProjectData({ title }: { title: string }) {
       `Chapter Manager: ${chapterTitle}`,
       JSON.stringify({
         ...stored,
-        sections: stored.sections.map((s) =>
+        sections: stored.sections.map((s: Section) =>
           s.title === title ? { ...s, description: newText } : s
         ),
       }),
@@ -374,8 +392,6 @@ function AddSection(
 ) {
   const [description, setDescription] = useState("");
 
-  // TODO: decouple this chapterDescription from 'description', which is for sections
-  const [chapterDescription, setChapterDescription] = useState("");
   const [title, setTitle] = useState("");
   const [section, setSection] = useState<Section>(
     {
@@ -398,9 +414,9 @@ function AddSection(
   const addSection = () => {
     let newSections: Section[] = [];
 
-    const chapter = JSON.parse(
-      safeLocalStorageGetItem("Chapter Manager: " + projectTitle),
-    );
+    const storedString = safeLocalStorageGetItem(`Chapter Manager: ${projectTitle}`);
+
+    const chapter = JSON.parse(storedString as string);
 
     if (section) {
       if (!section) newSections = [section];
@@ -488,9 +504,9 @@ function AddSubSection(
       if (subSections[0] === "") newSubSections = [subSection];
       else newSubSections = [...subSections, subSection];
 
-      const chapter = JSON.parse(
-        safeLocalStorageGetItem("Chapter Manager: " + chapterTitle),
-      );
+      const storedString = safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`);
+      if (!storedString) return console.error("No stored data found");
+      const chapter = JSON.parse(storedString as string);
 
       newSections = chapter.sections.map(function (s: Section) {
         if (s.title !== sectionTitle) {
@@ -571,7 +587,7 @@ function updateSubSection(
   const stored = JSON.parse(
     safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
   );
-  const updatedSections = stored.sections.map((s) => {
+  const updatedSections = stored.sections.map((s: Section) => {
     if (s.title === sectionTitle) {
       const updatedSubSections = s.subSections.map((ss) =>
         ss === subSection ? newText : ss
