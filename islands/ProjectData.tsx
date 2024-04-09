@@ -3,6 +3,7 @@ import { Section } from "../util/SectionData.ts";
 import ClickToEditHeading from "../components/ClickToEditHeading.tsx";
 import ClickToEdit from "../components/ClickToEdit.tsx";
 import ClickToEditTextArea from "../components/ClickToEditTextArea.tsx";
+import { safeLocalStorageGetItem, safeLocalStorageSetItem, safeLocalStorageRemoveItem } from "./SafeLocalStorage.ts";
 
 export default function ProjectData({ title }: { title: string }) {
   const [description, setDescription] = useState("");
@@ -18,8 +19,8 @@ export default function ProjectData({ title }: { title: string }) {
   // Step 1: Function to save scroll position
 
   function saveScrollPosition() {
-    localStorage.setItem("scrollX", globalThis.scrollX.toString());
-    localStorage.setItem("scrollY", globalThis.scrollY.toString());
+    safeLocalStorageSetItem("scrollX", globalThis.scrollX.toString());
+    safeLocalStorageSetItem("scrollY", globalThis.scrollY.toString());
   }
 
   // Step 2: Save scroll position on scroll
@@ -27,8 +28,8 @@ export default function ProjectData({ title }: { title: string }) {
 
   // Step 3: Set scroll position on component mount
   useEffect(() => {
-    const scrollX = localStorage.getItem("scrollX");
-    const scrollY = localStorage.getItem("scrollY");
+    const scrollX = safeLocalStorageGetItem("scrollX");
+    const scrollY = safeLocalStorageGetItem("scrollY");
 
     if (scrollX !== null && scrollY !== null) {
       // Delay the scroll until after the page has fully loaded
@@ -44,7 +45,7 @@ export default function ProjectData({ title }: { title: string }) {
 
   useEffect(() => {
     const stored = JSON.parse(
-      localStorage.getItem(`Chapter Manager: ${title}`)!,
+      safeLocalStorageGetItem(`Chapter Manager: ${title}`)!,
     );
     setDescription(stored.description);
     setSections(stored.sections);
@@ -52,19 +53,19 @@ export default function ProjectData({ title }: { title: string }) {
 
   useEffect(() => {
     const stored = JSON.parse(
-      localStorage.getItem(`Chapter Manager: ${title}`)!,
+      safeLocalStorageGetItem(`Chapter Manager: ${title}`)!,
     );
     setSections(stored.sections);
   }, [isAddingSection]);
 
   const deleteProject = () => {
-    localStorage.removeItem(`Chapter Manager: ${title}`);
+    safeLocalStorageRemoveItem(`Chapter Manager: ${title}`);
     window.location.href = "/";
   };
 
   const deleteSection = (section: Section) => {
     const tempSections = sections.filter((t) => t.title !== section.title);
-    localStorage.setItem(
+    safeLocalStorageSetItem(
       "Chapter Manager: " + title,
       JSON.stringify({
         title: title,
@@ -92,7 +93,7 @@ export default function ProjectData({ title }: { title: string }) {
       updatedSection,
     );
 
-    localStorage.setItem(
+    safeLocalStorageSetItem(
       "Chapter Manager: " + title,
       JSON.stringify({
         title: title,
@@ -134,9 +135,9 @@ export default function ProjectData({ title }: { title: string }) {
     chapterTitle: string,
   ): void {
     const stored = JSON.parse(
-      localStorage.getItem(`Chapter Manager: ${chapterTitle}`)!,
+      safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
     );
-    localStorage.setItem(
+    safeLocalStorageSetItem(
       `Chapter Manager: ${chapterTitle}`,
       JSON.stringify({
         ...stored,
@@ -153,9 +154,9 @@ export default function ProjectData({ title }: { title: string }) {
     chapterTitle: string,
   ): void {
     const stored = JSON.parse(
-      localStorage.getItem(`Chapter Manager: ${chapterTitle}`)!,
+      safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
     );
-    localStorage.setItem(
+    safeLocalStorageSetItem(
       `Chapter Manager: ${chapterTitle}`,
       JSON.stringify({
         ...stored,
@@ -170,9 +171,9 @@ export default function ProjectData({ title }: { title: string }) {
     newText: string,
   ): void {
     const stored = JSON.parse(
-      localStorage.getItem(`Chapter Manager: ${title}`)!,
+      safeLocalStorageGetItem(`Chapter Manager: ${title}`)!,
     );
-    localStorage.setItem(
+    safeLocalStorageSetItem(
       `Chapter Manager: ${title}`,
       JSON.stringify({ ...stored, description: newText }),
     );
@@ -398,14 +399,14 @@ function AddSection(
     let newSections: Section[] = [];
 
     const chapter = JSON.parse(
-      localStorage.getItem("Chapter Manager: " + projectTitle),
+      safeLocalStorageGetItem("Chapter Manager: " + projectTitle),
     );
 
     if (section) {
       if (!section) newSections = [section];
       else newSections = [...sections, section];
 
-      localStorage.setItem(
+      safeLocalStorageSetItem(
         "Chapter Manager: " + projectTitle,
         JSON.stringify({
           title: projectTitle,
@@ -488,7 +489,7 @@ function AddSubSection(
       else newSubSections = [...subSections, subSection];
 
       const chapter = JSON.parse(
-        localStorage.getItem("Chapter Manager: " + chapterTitle),
+        safeLocalStorageGetItem("Chapter Manager: " + chapterTitle),
       );
 
       newSections = chapter.sections.map(function (s: Section) {
@@ -500,7 +501,7 @@ function AddSubSection(
         }
       });
 
-      localStorage.setItem(
+      safeLocalStorageSetItem(
         "Chapter Manager: " + chapterTitle,
         JSON.stringify(
           {
@@ -549,15 +550,15 @@ function AddSubSection(
 
 function updateChapterTitle(newText: string, chapterTitle: string) {
   const stored = JSON.parse(
-    localStorage.getItem(`Chapter Manager: ${chapterTitle}`)!,
+    safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
   );
-  localStorage.removeItem(`Chapter Manager: ${chapterTitle}`);
+  safeLocalStorageRemoveItem(`Chapter Manager: ${chapterTitle}`);
   const updatedStored = { ...stored, title: newText };
-  localStorage.setItem(
+  safeLocalStorageSetItem(
     `Chapter Manager: ${newText}`,
     JSON.stringify(updatedStored),
   );
-  localStorage.removeItem(`Chapter Manager: ${chapterTitle}`);
+  safeLocalStorageRemoveItem(`Chapter Manager: ${chapterTitle}`);
   window.history.pushState({}, "", `/${newText}`);
 }
 
@@ -568,7 +569,7 @@ function updateSubSection(
   chapterTitle: string,
 ) {
   const stored = JSON.parse(
-    localStorage.getItem(`Chapter Manager: ${chapterTitle}`)!,
+    safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
   );
   const updatedSections = stored.sections.map((s) => {
     if (s.title === sectionTitle) {
@@ -579,7 +580,7 @@ function updateSubSection(
     }
     return s;
   });
-  localStorage.setItem(
+  safeLocalStorageSetItem(
     `Chapter Manager: ${chapterTitle}`,
     JSON.stringify({
       ...stored,

@@ -3,8 +3,28 @@ import Projects from "../islands/Projects.tsx";
 import Hero from "../components/Hero.tsx";
 import Footer from "../components/Footer.tsx";
 import Header from "../components/Header.tsx";
+import { safeLocalStorageSetItem } from "../islands/SafeLocalStorage.ts";
+import { Button } from "../components/Button.tsx";
 
 export default function Home() {
+    const fetchChapters = async () => {
+      alert("Fetching chapters");
+      try {
+        const response = await fetch("/static/chapters.json");
+        const chapters = await response.json();
+        // safeLocalStorageSetItem("chapters", JSON.stringify(chapters));
+        Object.entries(chapters).forEach(([title, description]) => {
+          safeLocalStorageSetItem(
+            "Chapter Manager: " + title,
+            JSON.stringify({ title: title, description: description, sections: [] }),
+          );
+        });
+      } catch (error) {
+        console.error("Error fetching chapters:", error);
+      }
+    };
+
+
   return (
     <>
       <Head>
@@ -21,6 +41,7 @@ export default function Home() {
           >
             + Add Chapter
           </a>
+          <Button onClick={()=>console.log('clicked')}>Generate Data</Button>
         </div>
         <Projects />
         <Footer />
