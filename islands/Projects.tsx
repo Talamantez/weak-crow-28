@@ -1,10 +1,27 @@
 import { useEffect, useState } from "preact/hooks";
 import {Section} from "../util/SectionData.ts";
+import {safeLocalStorageSetItem} from "./SafeLocalStorage.ts";
+import chapters from "../static/chapters.json" with { type: "json" };
 
 interface ProjectData {
   title: string;
   description: string;
   sections: Section[];
+}
+
+const generateChaptersFromJSON = () => {
+  Object.entries(chapters).forEach(([index, content]) => {
+    const {title, description} = content;
+    safeLocalStorageSetItem(
+      "Chapter Manager: " + title,
+      JSON.stringify({
+        title: title,
+        description: description,
+        sections: [],
+      }),
+    );
+  });
+  window.location.reload();
 }
 
 export default function Projects() {
@@ -28,6 +45,7 @@ export default function Projects() {
 
   return (
     <>
+    <button onClick={generateChaptersFromJSON}>Generate Chapters</button>
       <div class="grid grid-cols-1 gap-y-5 md:(grid-cols-2 gap-x-20 gap-y-10) w-full">
         {projects.length > 0 && projects[0].title.length > 0 &&
           (

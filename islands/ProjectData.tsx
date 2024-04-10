@@ -618,3 +618,4 @@ function updateSubSection(
   );
   window.location.reload();
 }
+
