@@ -5,6 +5,10 @@ export default function AddProject() {
   const [description, setDescription] = useState("");
 
   const addProject = () => {
+    if (title === "" || description === "") {
+      alert("Please fill in all fields.");
+      return;
+    }
     localStorage.setItem(
       "Chapter Manager: " + title,
       JSON.stringify({ title: title, description: description, sections: [] }),

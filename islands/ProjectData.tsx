@@ -3,7 +3,11 @@ import { Section } from "../util/SectionData.ts";
 import ClickToEditHeading from "../components/ClickToEditHeading.tsx";
 import ClickToEdit from "../components/ClickToEdit.tsx";
 import ClickToEditTextArea from "../components/ClickToEditTextArea.tsx";
-import { safeLocalStorageGetItem, safeLocalStorageSetItem, safeLocalStorageRemoveItem } from "./SafeLocalStorage.ts";
+import {
+  safeLocalStorageGetItem,
+  safeLocalStorageRemoveItem,
+  safeLocalStorageSetItem,
+} from "./SafeLocalStorage.ts";
 
 export default function ProjectData({ title }: { title: string }) {
   const [description, setDescription] = useState("");
@@ -45,34 +49,34 @@ export default function ProjectData({ title }: { title: string }) {
 
   useEffect(() => {
     const storedString = safeLocalStorageGetItem(`Chapter Manager: ${title}`);
-    
+
     if (storedString) {
       const stored = JSON.parse(storedString);
-      
-      if (stored && typeof stored === 'object') {
+
+      if (stored && typeof stored === "object") {
         setDescription(stored.description);
         setSections(stored.sections);
       } else {
-        console.error('Stored data is not an object');
+        console.error("Stored data is not an object");
       }
     } else {
-      console.error('No stored data found');
+      console.error("No stored data found");
     }
   }, []);
 
   useEffect(() => {
     const storedString = safeLocalStorageGetItem(`Chapter Manager: ${title}`);
-    
+
     if (storedString) {
       const stored = JSON.parse(storedString);
-      
-      if (stored && typeof stored === 'object') {
+
+      if (stored && typeof stored === "object") {
         setSections(stored.sections);
       } else {
-        console.error('Stored data is not an object');
+        console.error("Stored data is not an object");
       }
     } else {
-      console.error('No stored data found');
+      console.error("No stored data found");
     }
   }, [isAddingSection]);
 
@@ -152,6 +156,8 @@ export default function ProjectData({ title }: { title: string }) {
     title: string,
     chapterTitle: string,
   ): void {
+    if (newText.trim() === "") return window.location.reload();
+
     const stored = JSON.parse(
       safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
     );
@@ -164,7 +170,7 @@ export default function ProjectData({ title }: { title: string }) {
         ),
       }),
     );
-    window.location.reload()
+    window.location.reload();
   }
   function updateSectionDescription(
     newText: string,
@@ -183,11 +189,13 @@ export default function ProjectData({ title }: { title: string }) {
         ),
       }),
     );
-    window.location.reload()
+    window.location.reload();
   }
   function updateChapterDescription(
     newText: string,
   ): void {
+    if (newText.trim() === "") return window.location.reload();
+
     const stored = JSON.parse(
       safeLocalStorageGetItem(`Chapter Manager: ${title}`)!,
     );
@@ -215,8 +223,7 @@ export default function ProjectData({ title }: { title: string }) {
           {description !== "" && (
             <ClickToEditTextArea
               text={description}
-              onTextChange={(newText) =>
-                updateChapterDescription(newText)}
+              onTextChange={(newText) => updateChapterDescription(newText)}
             />
           )}
         </div>
@@ -403,18 +410,21 @@ function AddSection(
   );
 
   useEffect(() => {
+    if (title.trim() === "") return;
     setSection({
       title: title,
       description: description,
       subSections: section.subSections,
       chapterTitle: section.chapterTitle,
     });
-  }, [description, title]);
+  }, [title, description]);
 
   const addSection = () => {
     let newSections: Section[] = [];
 
-    const storedString = safeLocalStorageGetItem(`Chapter Manager: ${projectTitle}`);
+    const storedString = safeLocalStorageGetItem(
+      `Chapter Manager: ${projectTitle}`,
+    );
 
     const chapter = JSON.parse(storedString as string);
 
@@ -431,8 +441,6 @@ function AddSection(
         }),
       );
     }
-
-    // window.location.href = `/${projectTitle}`;
     location.reload();
 
     setIsAddingSection(false);
@@ -504,7 +512,9 @@ function AddSubSection(
       if (subSections[0] === "") newSubSections = [subSection];
       else newSubSections = [...subSections, subSection];
 
-      const storedString = safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`);
+      const storedString = safeLocalStorageGetItem(
+        `Chapter Manager: ${chapterTitle}`,
+      );
       if (!storedString) return console.error("No stored data found");
       const chapter = JSON.parse(storedString as string);
 
@@ -565,6 +575,8 @@ function AddSubSection(
 }
 
 function updateChapterTitle(newText: string, chapterTitle: string) {
+  if (newText.trim() === "") return window.location.reload();
+
   const stored = JSON.parse(
     safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
   );
@@ -584,6 +596,7 @@ function updateSubSection(
   sectionTitle: string,
   chapterTitle: string,
 ) {
+  if (newText.trim() === "") return window.location.reload();
   const stored = JSON.parse(
     safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
   );

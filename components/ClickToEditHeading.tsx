@@ -62,7 +62,7 @@ export default function ClickToEditHeading(
             onFocus={handleFocus}
             className="font-bold text-2xl text-left w-full"
           >
-            {inputText || "Click to edit"}
+            {inputText}
           </div>
         )}
     </>
