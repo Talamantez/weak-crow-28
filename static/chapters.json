@@ -29,67 +29,67 @@
     "sections": [
       {
         "title": "An overview",
-        "description": "WHAT IS MENTAL ILLNESS?\n\nWHAT CAUSES MENTAL ILLNESS?\n\nWHERE CAN I LEARN MORE?",
+        "description": "What is mental illness?\n\nWhat causes mental illness?\n\nWhere can I learn more?",
         "subSections": [],
         "chapterTitle": "2. AN OVERVIEW OF MENTAL HEALTH CONDITIONS"
       },
       {
         "title": "Anxiety Disorders",
-        "description": "COMMON SYMPTOMS\n\nTYPES OF ANXIETY DISORDERS",
+        "description": "Common symptoms\n\nTypes of anxiety disorders",
         "subSections": [],
         "chapterTitle": "2. AN OVERVIEW OF MENTAL HEALTH CONDITIONS"
       },
       {
         "title": "Bipolar Disorder",
-        "description": "COMMON SYMPTOMS\n\nEARLY WARNING SIGNS OF BIPOLAR DISORDER IN CHILDREN AND TEENS",
+        "description": "Common symptoms\n\nEarly warning signs of bipolar disorder in children and teens",
         "subSections": [],
         "chapterTitle": "2. AN OVERVIEW OF MENTAL HEALTH CONDITIONS"
       },
       {
         "title": "Borderline Personality Disorder",
-        "description": "COMMON SYMPTOMS",
+        "description": "Common symptoms",
         "subSections": [],
         "chapterTitle": "2. AN OVERVIEW OF MENTAL HEALTH CONDITIONS"
       },
       {
         "title": "Post-Traumatic Stress Disorder",
-        "description": "COMMON SYMPTOMS",
+        "description": "Common symptoms",
         "subSections": [],
         "chapterTitle": "2. AN OVERVIEW OF MENTAL HEALTH CONDITIONS"
       },
       {
         "title": "Depression",
-        "description": "COMMON SYMPTOMS\n\nTYPES OF DEPRESSIVE DISORDERS",
+        "description": "Common symptoms\n\nTypes of depressive disorders",
         "subSections": [],
         "chapterTitle": "2. AN OVERVIEW OF MENTAL HEALTH CONDITIONS"
       },
       {
         "title": "Schizoaffective Disorder",
-        "description": "COMMON SYMPTOMS",
+        "description": "Common symptoms",
         "subSections": [],
         "chapterTitle": "2. AN OVERVIEW OF MENTAL HEALTH CONDITIONS"
       },
       {
         "title": "Schizophrenia",
-        "description": "COMMON SYMPTOMS",
+        "description": "Common symptoms",
         "subSections": [],
         "chapterTitle": "2. AN OVERVIEW OF MENTAL HEALTH CONDITIONS"
       },
       {
-        "title": "Psychosis",
-        "description": "WHAT IS PSYCHOSIS?\n\nIDENTIFYING PSYCHOSIS\n\nTYPES OF PSYCHOSIS\n\nCAUSES OF PSYCHOSIS",
+        "title": "Psychosis", 
+        "description": "What is psychosis?\n\nIdentifying psychosis\n\nTypes of psychosis\n\nCauses of psychosis",
         "subSections": [],
         "chapterTitle": "2. AN OVERVIEW OF MENTAL HEALTH CONDITIONS"
       },
       {
         "title": "Dissociative Disorders",
-        "description": "SYMPTOMS",
+        "description": "Symptoms",
         "subSections": [],
         "chapterTitle": "2. AN OVERVIEW OF MENTAL HEALTH CONDITIONS"
       },
       {
         "title": "Eating Disorders",
-        "description": "SYMPTOMS",
+        "description": "Symptoms",
         "subSections": [],
         "chapterTitle": "2. AN OVERVIEW OF MENTAL HEALTH CONDITIONS"
       },
@@ -113,25 +113,25 @@
       },
       {
         "title": "The elements of recovery",
-        "description": "1. ACCEPTANCE\n\n2. HOPE\n\n3. MEDICATION\n\n4. TREATMENT\n\n5. HOUSING\n\n6. FAMILY SUPPORT\n\n7. PEER SUPPORT AND RELATIONSHIPS\n\n8. RESILIENCY\n\n9. MEANINGFUL ACTIVITY AND/OR WORK\n\n10. COMMUNITY INVOLVEMENT\n\n11. EDUCATION AND KNOWLEDGE\n\n12. EMPOWERMENT\n\n13. SELF-ADVOCACY\n\n14. ACCESSES TO RESOURCES\n\n15. COPING SKILLS\n\n16. SPIRITUALITY",
+        "description": "1. Acceptance\n\n2. Hope\n\n3. Medication\n\n4. Treatment\n\n5. Housing\n\n6. Family support\n\n7. Peer support and relationships\n\n8. Resiliency\n\n9. Meaningful activity and/or work\n\n10. Community involvement\n\n11. Education and knowledge\n\n12. Empowerment\n\n13. Self-advocacy\n\n14. Accesses to resources\n\n15. Coping skills\n\n16. Spirituality",
         "subSections": [],
-        "chapterTitle": "3. TREATMENT AND RECOVERY"
+        "chapterTitle": "3. TREATMENT AND RECOVERY"        
       },
       {
         "title": "What does support from family members look like?",
-        "description": "REMEMBER: YOU'RE IN THE PROCESS OF LEARNING\n\nSUPPORT IS NOT CONTROL\n\nTIPS ON BEING SUPPORTIVE",
+        "description": "Remember: You're in the process of learning\n\nSupport is not control\n\nTips on being supportive",
         "subSections": [],
         "chapterTitle": "3. TREATMENT AND RECOVERY"
       },
       {
         "title": "Mental health resources for veterans and service members",
-        "description": "VETERANS AND ACTIVE DUTY\n\nActive Duty: Who Should I tell?\n\nWill Asking For Mental Health Treatment Affect My Career?\n\nThe Dangers of Not Disclosing\n\nMilitary Policy and Your Privacy\n\nVETERANS: MAKING A STRONG TRANSITION TO CIVILIAN LIFE",
+        "description": "Veterans and active duty\n\nActive duty: Who should I tell?\n\nWill asking for mental health treatment affect my career?\n\nThe dangers of not disclosing\n\nMilitary policy and your privacy\n\nVeterans: Making a strong transition to civilian life",
         "subSections": [],
         "chapterTitle": "3. TREATMENT AND RECOVERY"
       },
       {
         "title": "Dual diagnosis",
-        "description": "HOW COMMON IS A DUAL DIAGNOSIS?\n\nSymptoms\n\nTREATMENT\n\nDETOXIFICATION\n\nINPATIENT REHABILITATION\n\nMEDICATIONS AND PSYCHOTHERAPY",
+        "description": "How common is a dual diagnosis?\n\nSymptoms\n\nTreatment\n\nDetoxification\n\nInpatient rehabilitation\n\nMedications and psychotherapy",
         "subSections": [],
         "chapterTitle": "3. TREATMENT AND RECOVERY"
       },
@@ -143,25 +143,25 @@
       },
       {
         "title": "Psychotherapy",
-        "description": "TYPES OF PSYCHOTHERAPY\n\nCognitive Behavioral Therapy\n\nDialectical Behavioral Therapy (DBT)\n\nEye Movement Desensitization and Reprocessing Therapy (EMDR)\n\nEXPOSURE THERAPY\n\nINTERPERSONAL THERAPY\n\nMENTALIZATION-BASED THERAPY\n\nPSYCHODYNAMIC PSYCHOTHERAPY\n\nTHERAPY PETS",
+        "description": "Types of psychotherapy\n\nCognitive behavioral therapy\n\nDialectical behavioral therapy (DBT)\n\nEye movement desensitization and reprocessing therapy (EMDR)\n\nExposure therapy\n\nInterpersonal therapy\n\nMentalization-based therapy\n\nPsychodynamic psychotherapy\n\nTherapy pets",
         "subSections": [],
         "chapterTitle": "3. TREATMENT AND RECOVERY"
       },
       {
         "title": "Psychosocial treatments",
-        "description": "TYPES OF PSYCHOSOCIAL TREATMENTS\n\nPsychotherapy\n\nPsychoeducation\n\nSelf-help and Support Groups\n\nPsychosocial Rehabilitation\n\nAssertive Community Treatment (ACT)\n\nSupported Employment\n\nVocational Rehabilitation (VR)\n\nIndividual Placement and Support (IPS) Supported Employment\n\nClubhouses",
+        "description": "Types of psychosocial treatments\n\nPsychotherapy\n\nPsychoeducation\n\nSelf-help and support groups\n\nPsychosocial rehabilitation\n\nAssertive community treatment (ACT)\n\nSupported employment\n\nVocational rehabilitation (VR)\n\nIndividual placement and support (IPS) supported employment\n\nClubhouses",
         "subSections": [],
         "chapterTitle": "3. TREATMENT AND RECOVERY"
       },
       {
         "title": "Medication",
-        "description": "TYPES OF MEDICATION\n\nAntipsychotics\n\nAntidepressants\n\nCHILDREN AND MEDICATION\n\nSENIORS\n\nPREGNANCY",
+        "description": "Types of medication\n\nAntipsychotics\n\nAntidepressants\n\nChildren and medication\n\nSeniors\n\nPregnancy",
         "subSections": [],
         "chapterTitle": "3. TREATMENT AND RECOVERY"
       },
       {
         "title": "Medication FAQs",
-        "description": "DOES EVERYONE WHO LIVES WITH MENTAL ILLNESS HAVE TO BE ON MEDICATION?\n\nARE MEDICATIONS ADDICTIVE?\n\nWHO CAN PRESCRIBE MEDICATION?\n\nDO I HAVE TO BE ON MEDICATION FOREVER?\n\nCAN MEDICATION \"CURE\" MENTAL ILLNESS?\n\nWHERE CAN I LEARN MORE ABOUT SPECIFIC MEDICATIONS?\n\nWHERE CAN I KEEP UPDATED ON THE LATEST (NON-PHARMA FUNDED) PHARMACOLOGICAL RESEARCH?",
+        "description": "Does everyone who lives with mental illness have to be on medication?\n\nAre medications addictive?\n\nWho can prescribe medication?\n\nDo I have to be on medication forever?\n\nCan medication \"cure\" mental illness?\n\nWhere can I learn more about specific medications?\n\nWhere can I keep updated on the latest (non-pharma funded) pharmacological research?",
         "subSections": [],
         "chapterTitle": "3. TREATMENT AND RECOVERY"
       },
@@ -173,25 +173,25 @@
       },
       {
         "title": "Complementary health approaches",
-        "description": "NATURAL PRODUCTS\n\nOMEGA-3 FATTY ACIDS\n\nFOLATE\n\nMEDICAL FOODS\n\nMIND & BODY TREATMENTS\n\nEQUINE THERAPY\n\nMAKE SURE TO CHECK WITH YOUR DOCTOR",
+        "description": "Natural products\n\nOmega-3 fatty acids\n\nFolate\n\nMedical foods\n\nMind & body treatments\n\nEquine therapy\n\nMake sure to check with your doctor",
         "subSections": [],
         "chapterTitle": "3. TREATMENT AND RECOVERY"
       },
       {
         "title": "Developing a relationship with your provider",
-        "description": "ISSUES TO CONSIDER WHEN CHOOSING A PROVIDER\n\nTIPS FOR DEVELOPING AN EFFECTIVE PARTNERSHIP\n\nMARGINALIZATION IN THE MENTAL HEALTH SYSTEM\n\nBLACK, INDIGENOUS AND PEOPLE OF COLOR (BIPOC) COMMUNITIES\n\nLESBIAN, GAY, BISEXUAL, TRANSGENDER AND QUEER (LGBTQ+) COMMUNITIES\n\nQUEER AND TRANS PEOPLE OF COLOR (QTPOC) COMMUNITIES\n\nFINDING A LGBTQ+-FRIENDLY PROVIDER\n\nFOR PROVIDERS WORKING WITH MARGINALIZED COMMUNITIES",
+        "description": "Issues to consider when choosing a provider\n\nTips for developing an effective partnership\n\nMarginalization in the mental health system\n\nBlack, Indigenous and People of Color (BIPOC) communities\n\nLesbian, gay, bisexual, transgender and queer (LGBTQ+) communities\n\nQueer and trans People of Color (QTPOC) communities\n\nFinding a LGBTQ+-friendly provider\n\nFor providers working with marginalized communities",
         "subSections": [],
         "chapterTitle": "3. TREATMENT AND RECOVERY"
       },
       {
         "title": "Working with your providers",
-        "description": "TIPS FOR EVERYONE!",
+        "description": "Tips for everyone!",
         "subSections": [],
         "chapterTitle": "3. TREATMENT AND RECOVERY"
       },
       {
-        "title": "Working with a loved one's providers",
-        "description": "TIPS FOR EVERYONE!",
+        "title": "Working with a loved one's providers", 
+        "description": "Tips for everyone!",
         "subSections": [],
         "chapterTitle": "3. TREATMENT AND RECOVERY"
       }
@@ -203,7 +203,7 @@
     "sections": [
       {
         "title": "What is a crisis?",
-        "description": "PRECURSOR TO A CRISIS\n\nIMPORTANT REMINDERS",
+        "description": "Precursor to a crisis\n\nImportant reminders",
         "subSections": [],
         "chapterTitle": "4. WHAT TO DO IN A CRISIS"
       },
@@ -215,14 +215,14 @@
       },
       {
         "title": "Navigating police interactions",
-        "description": "WHAT TO SAY IF YOU NEED TO CALL THE POLICE DURING A MENTAL HEALTH CRISIS",
+        "description": "What to say if you need to call the police during a mental health crisis",
         "subSections": [],
         "chapterTitle": "4. WHAT TO DO IN A CRISIS"
       }
     ]
   },
   {
-    "title": "5. THE CRIMINAL JUSTICE SYSTEM",
+    "title": "5. THE CRIMINAL JUSTICE SYSTEM", 
     "description": "",
     "sections": [
       {
@@ -233,19 +233,19 @@
       },
       {
         "title": "What to do after an arrest",
-        "description": "ADD YOUR LOCATION-SPECIFIC RESOURCES\n\nSTEP 1: GATHER INFORMATION",
+        "description": "Add your location-specific resources\n\nStep 1: Gather information",
         "subSections": [],
         "chapterTitle": "5. THE CRIMINAL JUSTICE SYSTEM"
       },
       {
         "title": "Mental health courts",
-        "description": "ADD YOUR LOCATION-SPECIFIC RESOURCES",
+        "description": "Add your location-specific resources",
         "subSections": [],
         "chapterTitle": "5. THE CRIMINAL JUSTICE SYSTEM"
       },
       {
         "title": "Missing persons",
-        "description": "ADD YOUR LOCATION-SPECIFIC RESOURCES",
+        "description": "Add your location-specific resources",
         "subSections": [],
         "chapterTitle": "5. THE CRIMINAL JUSTICE SYSTEM"
       }
@@ -257,13 +257,13 @@
     "sections": [
       {
         "title": "Supported employment",
-        "description": "SUPPORTED EMPLOYMENT PROGRAMS\n\nADD YOUR LOCATION-SPECIFIC RESOURCES",
+        "description": "Supported employment programs\n\nAdd your location-specific resources",
         "subSections": [],
         "chapterTitle": "6. EMPLOYMENT"
       },
       {
         "title": "Self-advocacy in the workplace",
-        "description": "ARE THERE LEGAL PROTECTIONS FOR PEOPLE WITH MENTAL ILLNESS IN THE WORKPLACE?\n\nIF I CURRENTLY RECEIVE TREATMENT AND USUALLY FEEL WELL, AM I STILL PROTECTED BY THE LAW?\n\nWHAT IS AN ACCOMODATION?\n\nWHAT PROTECTIONS DOES THE LAW PROVIDE?\n\nDO I HAVE TO TELL MY EMPLOYER ABOUT MY MENTAL ILLNESS BY A CERTAIN TIME IN ORDER TO BE PROTECTED UNDER THE LAW?\n\nDO I HAVE TO REQUEST AN ACCOMMODATION IN WRITING?\n\nHOW CAN I PREPARE FOR TALKING TO MY EMPLOYER ABOUT AN ACCOMMODATION?",
+        "description": "Are there legal protections for people with mental illness in the workplace?\n\nIf I currently receive treatment and usually feel well, am I still protected by the law?\n\nWhat is an accommodation?\n\nWhat protections does the law provide?\n\nDo I have to tell my employer about my mental illness by a certain time in order to be protected under the law?\n\nDo I have to request an accommodation in writing?\n\nHow can I prepare for talking to my employer about an accommodation?",
         "subSections": [],
         "chapterTitle": "6. EMPLOYMENT"
       }
@@ -275,19 +275,19 @@
     "sections": [
       {
         "title": "Housing",
-        "description": "TYPES OF HOUSING AND DEFINITIONS\n\nADD YOUR LOCATION-SPECIFIC RESOURCES",
+        "description": "Types of housing and definitions\n\nAdd your location-specific resources",
         "subSections": [],
         "chapterTitle": "7. HOUSING"
       }
     ]
   },
   {
-    "title": "8. GUARDIANSHIP AND ALTERNATIVES",
+    "title": "8. GUARDIANSHIP AND ALTERNATIVES", 
     "description": "",
     "sections": [
       {
         "title": "Guardianship (AKA Conservatorship) and Alternatives",
-        "description": "WHAT IS A REPRESENTATIVE PAYEESHIP?\n\nWHAT IS A POWER OF ATTORNEY?\n\nWHAT IS A LIVING WILL?\n\nWHAT IS A GUARDIAN AD LITEM AND WHAT DO THEY DO?\n\nWHAT ARE THE RESPONSIBILITIES OF THE GUARDIAN?",
+        "description": "What is a representative payeeship?\n\nWhat is a power of attorney?\n\nWhat is a living will?\n\nWhat is a guardian ad litem and what do they do?\n\nWhat are the responsibilities of the guardian?",
         "subSections": [],
         "chapterTitle": "8. GUARDIANSHIP AND ALTERNATIVES"
       }
@@ -311,7 +311,7 @@
     "sections": [
       {
         "title": "Building a care kit",
-        "description": "ADD YOUR LOCATION-SPECIFIC RESOURCES\n\nWhere can people visit to find more support and tips on preventing a crisis?",
+        "description": "Add your location-specific resources\n\nWhere can people visit to find more support and tips on preventing a crisis?",
         "subSections": [],
         "chapterTitle": "10. TOOLKIT"
       }
@@ -323,13 +323,13 @@
     "sections": [
       {
         "title": "Putting your experience to work for change",
-        "description": "LEGISLATIVE ADVOCACY\n\nADD YOUR LOCATION-SPECIFIC RESOURCES\n\nWhat level of advocacy does your affiliate focus on?\n\nWhere can people find state-level issues and information on policy makers?\n\nContact of Legislators:\n\nThe President of the United States\nAddress: \n\nPhone number:\n\nWebsite:\n\nU.S. House of Representatives Switchboard\nAddress: \n\nPhone number:\n\nWebsite:\n\nState Governor\n\nState:\n\nAddress: \n\nPhone number:\n\nWebsite:\n\nCity Mayor's Office\n\nCity:\n\nAddress: \n\nPhone number:\n\nWebsite:\n\nCity Council\n\nCity:\n\nAddress: \n\nPhone number:\n\nWebsite:\n\nCounty Council\n\nCounty:\n\nAddress: \n\nPhone number:\n\nWebsite:\n\nLegislative Hotline\n\nState/County/City:\n\nAddress: \n\nPhone number:\n\nWebsite:",
+        "description": "Legislative advocacy\n\nAdd your location-specific resources\n\nWhat level of advocacy does your affiliate focus on?\n\nWhere can people find state-level issues and information on policy makers?\n\nContact of Legislators:\n\nThe President of the United States\nAddress: \n\nPhone number:\n\nWebsite:\n\nU.S. House of Representatives Switchboard\nAddress: \n\nPhone number:\n\nWebsite:\n\nState Governor\n\nState:\n\nAddress: \n\nPhone number:\n\nWebsite:\n\nCity Mayor's Office\n\nCity:\n\nAddress: \n\nPhone number:\n\nWebsite:\n\nCity Council\n\nCity:\n\nAddress: \n\nPhone number:\n\nWebsite:\n\nCounty Council\n\nCounty:\n\nAddress: \n\nPhone number:\n\nWebsite:\n\nLegislative Hotline\n\nState/County/City:\n\nAddress: \n\nPhone number:\n\nWebsite:",
         "subSections": [],
         "chapterTitle": "11. ADVOCACY"
       },
       {
         "title": "Fighting stigma & discrimination",
-        "description": "FIGHTING STIGMA\n\nTIPS TO FIGHT STIGMA IN YOUR DAILY LIFE\n\nEVERYDAY ADVOCACY\n\nADD YOUR LOCATION-SPECIFIC RESOURCES\n\nIn your state/county/city, how can people register to vote?",
+        "description": "Fighting stigma\n\nTips to fight stigma in your daily life\n\nEveryday advocacy\n\nAdd your location-specific resources\n\nIn your state/county/city, how can people register to vote?",
         "subSections": [],
         "chapterTitle": "11. ADVOCACY"
       }
@@ -341,7 +341,7 @@
     "sections": [
       {
         "title": "The Americans with Disabilities Act",
-        "description": "ADD YOUR LOCATION-SPECIFIC RESOURCES\n\nIn your state/county/city, how can people file a charge of employment discrimination based on disability?",
+        "description": "Add your location-specific resources\n\nIn your state/county/city, how can people file a charge of employment discrimination based on disability?",
         "subSections": [],
         "chapterTitle": "12. APPENDICES"
       },

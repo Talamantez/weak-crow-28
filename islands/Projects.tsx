@@ -1,7 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
-import {Section} from "../util/SectionData.ts";
-import {safeLocalStorageSetItem} from "./SafeLocalStorage.ts";
+import { Section } from "../util/SectionData.ts";
+import { safeLocalStorageSetItem } from "./SafeLocalStorage.ts";
 import chapters from "../static/chapters.json" with { type: "json" };
+import { Button } from "../components/Button.tsx";
 
 interface ProjectData {
   title: string;
@@ -9,20 +10,30 @@ interface ProjectData {
   sections: Section[];
 }
 
+const clearAllChapters = () => {
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key?.includes("Chapter Manager")) {
+      localStorage.removeItem(key);
+    }
+  }
+  window.location.reload();
+};
+
 const generateChaptersFromJSON = () => {
   Object.entries(chapters).forEach(([index, content]) => {
-    const {title, description} = content;
+    const { title, description, sections } = content;
     safeLocalStorageSetItem(
       "Chapter Manager: " + title,
       JSON.stringify({
         title: title,
         description: description,
-        sections: [],
+        sections: sections,
       }),
     );
   });
   window.location.reload();
-}
+};
 
 export default function Projects() {
   const [projects, setProjects] = useState<ProjectData[]>([{
@@ -45,7 +56,8 @@ export default function Projects() {
 
   return (
     <>
-    <button onClick={generateChaptersFromJSON}>Generate Chapters</button>
+      <Button onClick={generateChaptersFromJSON}>Generate Chapters</Button>
+      <Button onClick={clearAllChapters}>Clear All Chapters</Button>
       <div class="grid grid-cols-1 gap-y-5 md:(grid-cols-2 gap-x-20 gap-y-10) w-full">
         {projects.length > 0 && projects[0].title.length > 0 &&
           (
@@ -60,9 +72,10 @@ export default function Projects() {
                     <h1 class="font-bold">{project.title}</h1>
                     <p class="text-gray-500">{project.description}</p>
                     <p class="text-gray-500 mt-2">
-                      
                       <span>
-                        {(project.sections && project.sections.length) ? <>{project.sections.length}{' '}Sections</>:<>0 Sections</>}
+                        {(project.sections && project.sections.length)
+                          ? <>{project.sections.length} Sections</>
+                          : <>0 Sections</>}
                       </span>
                     </p>
                   </div>
