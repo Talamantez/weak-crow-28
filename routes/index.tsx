@@ -3,31 +3,8 @@ import Projects from "../islands/Projects.tsx";
 import Hero from "../components/Hero.tsx";
 import Footer from "../components/Footer.tsx";
 import Header from "../components/Header.tsx";
-import { safeLocalStorageSetItem } from "../islands/SafeLocalStorage.ts";
-import { useEffect } from "preact/hooks";
-import chapters from "../static/chapters.json" with { type: "json" };
 
 export default function Home() {
-  useEffect(() => {
-    const fetchChapters = () => {
-      try {
-        Object.entries(chapters).forEach(([title, description]) => {
-          safeLocalStorageSetItem(
-            "Chapter Manager: " + title,
-            JSON.stringify({
-              title: title,
-              description: description,
-              sections: [],
-            }),
-          );
-        });
-      } catch (error) {
-        console.error("Error fetching chapters:", error);
-      }
-      fetchChapters();
-    };
-  }, []);
-
   return (
     <>
       <Head>

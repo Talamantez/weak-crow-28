@@ -46,7 +46,7 @@ export default function Projects() {
     const tempProjects = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key?.includes("Chapter Manager")) {
+      if (key?.includes("Chapter")) {
         const stored = JSON.parse(localStorage.getItem(key)!);
         tempProjects.push(stored);
       }
@@ -56,8 +56,10 @@ export default function Projects() {
 
   return (
     <>
-      <Button onClick={generateChaptersFromJSON}>Generate Chapters</Button>
-      <Button onClick={clearAllChapters}>Clear All Chapters</Button>
+      <div class="flex">
+        <Button onClick={generateChaptersFromJSON}>Generate Chapters</Button>
+        <Button onClick={clearAllChapters}>Clear All Chapters</Button>
+      </div>
       <div class="grid grid-cols-1 gap-y-5 md:(grid-cols-2 gap-x-20 gap-y-10) w-full">
         {projects.length > 0 && projects[0].title.length > 0 &&
           (
