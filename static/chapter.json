@@ -11,6 +11,36 @@
         "An algorithm is a step-by-step procedure for solving a problem or accomplishing a task. It outlines the logical flow and sequence of instructions that need to be executed. Pseudocode is a way of describing an algorithm using a combination of natural language and programming-like syntax. It helps programmers plan and communicate the logic of an algorithm before writing the actual code."
       ],
       "chapterTitle": "1 Fundamentals of Programming"
+    },
+    {
+      "title": "Introduction to Programming",
+      "description": "This section covers the basics of programming concepts and terminology.",
+      "subSections": [
+        "Programming is the process of creating instructions that tell a computer how to perform a specific task. It involves writing code using a programming language, which is then executed by the computer to achieve the desired outcome. Programming allows us to automate tasks, solve complex problems, and build interactive applications.",
+        "There are numerous programming languages available, each with its own syntax and features. Some popular programming languages include Python, Java, C++, JavaScript, and Ruby. Each language has its strengths and is suited for different types of projects. For example, Python is often used for data analysis and machine learning, while JavaScript is commonly used for web development.",
+        "An algorithm is a step-by-step procedure for solving a problem or accomplishing a task. It outlines the logical flow and sequence of instructions that need to be executed. Pseudocode is a way of describing an algorithm using a combination of natural language and programming-like syntax. It helps programmers plan and communicate the logic of an algorithm before writing the actual code."
+      ],
+      "chapterTitle": "1 Fundamentals of Programming"
+    },
+    {
+      "title": "Introduction to Programming",
+      "description": "This section covers the basics of programming concepts and terminology.",
+      "subSections": [
+        "Programming is the process of creating instructions that tell a computer how to perform a specific task. It involves writing code using a programming language, which is then executed by the computer to achieve the desired outcome. Programming allows us to automate tasks, solve complex problems, and build interactive applications.",
+        "There are numerous programming languages available, each with its own syntax and features. Some popular programming languages include Python, Java, C++, JavaScript, and Ruby. Each language has its strengths and is suited for different types of projects. For example, Python is often used for data analysis and machine learning, while JavaScript is commonly used for web development.",
+        "An algorithm is a step-by-step procedure for solving a problem or accomplishing a task. It outlines the logical flow and sequence of instructions that need to be executed. Pseudocode is a way of describing an algorithm using a combination of natural language and programming-like syntax. It helps programmers plan and communicate the logic of an algorithm before writing the actual code."
+      ],
+      "chapterTitle": "1 Fundamentals of Programming"
+    },
+    {
+      "title": "Introduction to Programming",
+      "description": "This section covers the basics of programming concepts and terminology.",
+      "subSections": [
+        "Programming is the process of creating instructions that tell a computer how to perform a specific task. It involves writing code using a programming language, which is then executed by the computer to achieve the desired outcome. Programming allows us to automate tasks, solve complex problems, and build interactive applications.",
+        "There are numerous programming languages available, each with its own syntax and features. Some popular programming languages include Python, Java, C++, JavaScript, and Ruby. Each language has its strengths and is suited for different types of projects. For example, Python is often used for data analysis and machine learning, while JavaScript is commonly used for web development.",
+        "An algorithm is a step-by-step procedure for solving a problem or accomplishing a task. It outlines the logical flow and sequence of instructions that need to be executed. Pseudocode is a way of describing an algorithm using a combination of natural language and programming-like syntax. It helps programmers plan and communicate the logic of an algorithm before writing the actual code."
+      ],
+      "chapterTitle": "1 Fundamentals of Programming"
     }
   ]
 }

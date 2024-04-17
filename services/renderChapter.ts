@@ -1,19 +1,5 @@
-import {
-  PDFDocument,
-  rgb,
-  StandardFonts,
-} from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
+import { PDFDocument, rgb, StandardFonts } from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
 
-/*
- * Using font.widthOfTextAtSize transform text adding \n to break lines
- * if width of text is bigger than the width passed as parameter
- * and return the text with the line breaks
- * @param text: string
- * @param width: number
- * @param font: font
- * @param fontSize: number
- * @returns string
- */
 const wrapText = (text, width, font, fontSize) => {
   const words = text.split(" ");
   let line = "";
@@ -37,36 +23,45 @@ async function generatePDF() {
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
   // Read the 'chapters.json' file
-  const jsonContent = await Deno.readTextFile("static/chapter.json");
+  const jsonContent = await Deno.readTextFile("static/introduction.json");
 
   // Parse the JSON content
   const chapter = JSON.parse(jsonContent);
 
-  // for (const chapter of chapters) {
-  const page = pdfDoc.addPage();
-  const { width, height } = page.getSize();
+  let page = pdfDoc.addPage();
+  let { width, height } = page.getSize();
+
+  let y = height - 70;
 
   // Draw chapter title
   page.drawText(chapter.title, {
     x: 50,
-    y: height - 70,
+    y,
     font,
     size: 24,
     color: rgb(0, 0, 0),
   });
+  y -= font.heightAtSize(24) + 10;
 
   // Draw chapter description
   page.drawText(chapter.description, {
     x: 50,
-    y: height - 100,
+    y,
     font,
     size: 12,
     color: rgb(0, 0, 0),
   });
-
-  let y = height - 140;
+  y -= font.heightAtSize(12) + 10;
 
   for (const section of chapter.sections) {
+    // Check if there's enough space on the current page
+    if (y < 100) {
+      // Add a new page if there's not enough space
+      page = pdfDoc.addPage();
+      ({ width, height } = page.getSize());
+      y = height - 70;
+    }
+
     // Draw section title
     page.drawText(section.title, {
       x: 50,
@@ -75,38 +70,46 @@ async function generatePDF() {
       size: 18,
       color: rgb(0, 0, 0),
     });
-    y -= 30;
+    y -= font.heightAtSize(18) + 10;
 
     // Draw section description
     page.drawText(section.description, {
-      x: 70,
+      x: 50,
       y,
       font,
       size: 12,
       color: rgb(0, 0, 0),
     });
-    y -= 20;
+    y -= font.heightAtSize(12) + 10;
 
     // Draw subsections
     for (const subSection of section.subSections) {
-      // convert to wrap text
-      const page = pdfDoc.addPage();
-      const { width } = page.getSize();
+      // Convert to wrap text
       const mySubSection = wrapText(subSection, width - 90, font, 12);
+      const lines = mySubSection.split("\n");
+      for (const line of lines) {
+        // Check if there's enough space on the current page
+        if (y < 100) {
+          // Add a new page if there's not enough space
+          page = pdfDoc.addPage();
+          ({ width, height } = page.getSize());
+          y = height - 70;
+        }
 
-      page.drawText(mySubSection, {
-        x: 90,
-        y,
-        font,
-        size: 12,
-        color: rgb(0, 0, 0),
-      });
-      y -= 20;
+        page.drawText(line, {
+          x: 50,
+          y,
+          font,
+          size: 12,
+          color: rgb(0, 0, 0),
+        });
+        y -= font.heightAtSize(12);
+      }
+      y -= 10;
     }
 
     y -= 20; // Add extra spacing between sections
   }
-  // }
 
   // Add header and footer to each page
   const pages = pdfDoc.getPages();
@@ -139,8 +142,6 @@ async function generatePDF() {
   const pdfBytes = await pdfDoc.save();
   await Deno.writeFile("output.pdf", pdfBytes);
 }
-
-generatePDF();
 
 generatePDF().catch((err) => {
   console.error(err);
