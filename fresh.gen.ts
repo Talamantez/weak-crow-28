@@ -6,7 +6,9 @@ import * as $_project_ from "./routes/[project].tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
 import * as $index from "./routes/index.tsx";
+import * as $new_project_copy from "./routes/new-project copy.tsx";
 import * as $new_project from "./routes/new-project.tsx";
+import * as $AddProject_copy from "./islands/AddProject copy.tsx";
 import * as $AddProject from "./islands/AddProject.tsx";
 import * as $File from "./islands/File.tsx";
 import * as $ProjectData from "./islands/ProjectData.tsx";
@@ -23,9 +25,11 @@ const manifest = {
     "./routes/_app.tsx": $_app,
     "./routes/_middleware.ts": $_middleware,
     "./routes/index.tsx": $index,
+    "./routes/new-project copy.tsx": $new_project_copy,
     "./routes/new-project.tsx": $new_project,
   },
   islands: {
+    "./islands/AddProject copy.tsx": $AddProject_copy,
     "./islands/AddProject.tsx": $AddProject,
     "./islands/File.tsx": $File,
     "./islands/ProjectData.tsx": $ProjectData,
