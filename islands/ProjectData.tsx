@@ -8,6 +8,7 @@ import {
   safeLocalStorageRemoveItem,
   safeLocalStorageSetItem,
 } from "./SafeLocalStorage.ts";
+import { doPrintChapter } from "../routes/_middleware.ts";
 
 export default function ProjectData({ title }: { title: string }) {
   const [description, setDescription] = useState("");
@@ -80,7 +81,7 @@ export default function ProjectData({ title }: { title: string }) {
     }
   }, [isAddingSection]);
 
-  const deleteProject = () => {
+  const deleteChapter = () => {
     safeLocalStorageRemoveItem(`Chapter Manager: ${title}`);
     window.location.href = "/";
   };
@@ -206,6 +207,12 @@ export default function ProjectData({ title }: { title: string }) {
     window.location.reload();
   }
 
+  async function printChapter(): Promise<void> {
+    const stored = await safeLocalStorageGetItem(`Chapter Manager: ${title}`);
+    console.log(stored);
+    await doPrintChapter(stored);
+  }
+
   return (
     <>
       <div class="w-full flex items-center justify-between flex-col md:flex-row">
@@ -229,7 +236,14 @@ export default function ProjectData({ title }: { title: string }) {
         </div>
         <div class="w-full md:w-1/5 flex items-center justify-start md:justify-end">
           <button
-            onClick={() => deleteProject()}
+            onClick={() => printChapter()}
+            class="bg-green-500 hover:bg-green-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
+          >
+            Print Chapter
+          </button>
+
+          <button
+            onClick={() => deleteChapter()}
             class="bg-red-500 hover:bg-red-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
           >
             Delete Chapter
@@ -618,4 +632,3 @@ function updateSubSection(
   );
   window.location.reload();
 }
-

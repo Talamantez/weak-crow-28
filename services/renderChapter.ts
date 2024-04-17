@@ -18,15 +18,15 @@ const wrapText = (text, width, font, fontSize) => {
   return result;
 };
 
-async function generatePDF() {
+export default async function renderChapter(data: any) {
   const pdfDoc = await PDFDocument.create();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
+alert(data)
   // Read the 'chapters.json' file
-  const jsonContent = await Deno.readTextFile("static/introduction.json");
+  // const jsonContent = await Deno.readTextFile("static/introduction.json");
 
   // Parse the JSON content
-  const chapter = JSON.parse(jsonContent);
+  const chapter = JSON.parse(data);
 
   let page = pdfDoc.addPage();
   let { width, height } = page.getSize();
@@ -143,7 +143,7 @@ async function generatePDF() {
   await Deno.writeFile("output.pdf", pdfBytes);
 }
 
-generatePDF().catch((err) => {
-  console.error(err);
-  Deno.exit(1);
-});
+// renderPdf().catch((err) => {
+//   console.error(err);
+//   Deno.exit(1);
+// });
