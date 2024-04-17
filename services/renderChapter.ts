@@ -1,4 +1,10 @@
-import { PDFDocument, rgb, StandardFonts } from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
+import {
+  PDFDocument,
+  rgb,
+  StandardFonts,
+} from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
+import * as mod from "https://deno.land/std@0.110.0/node/module.ts";
+
 
 const wrapText = (text, width, font, fontSize) => {
   const words = text.split(" ");
@@ -21,13 +27,13 @@ const wrapText = (text, width, font, fontSize) => {
 export default async function renderChapter(data: any) {
   const pdfDoc = await PDFDocument.create();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-alert(data)
   // Read the 'chapters.json' file
   // const jsonContent = await Deno.readTextFile("static/introduction.json");
 
   // Parse the JSON content
   const chapter = JSON.parse(data);
 
+  console.log(`Rendering chapter: ${chapter.title}`);
   let page = pdfDoc.addPage();
   let { width, height } = page.getSize();
 
@@ -140,8 +146,19 @@ alert(data)
 
   // Serialize the PDF and save it to a file
   const pdfBytes = await pdfDoc.save();
-  await Deno.writeFile("output.pdf", pdfBytes);
+  console.log(pdfBytes);
+  try {
+    // TODO: Figure out why Deno is not found
+    // Try using Request/Response
+    // See https://github.com/Industrial/deno-fresh-blog/commit/82aae92302623fdb6d80d6506ffd24c14f109b61#diff-23cc22e12738a61ec6ba2b9485d9104243189e3bdd368c2a517fe8a1d3b90c96L9
+    // Try to return the PDF as a response and print it in the browser
+    await Deno.writeFile("output.pdf", pdfBytes);
+  } catch (error) {
+    console.log(error);
+  }
 }
+
+
 
 // renderPdf().catch((err) => {
 //   console.error(err);
