@@ -3,8 +3,6 @@ import {
   rgb,
   StandardFonts,
 } from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
-import * as mod from "https://deno.land/std@0.110.0/node/module.ts";
-
 
 const wrapText = (text, width, font, fontSize) => {
   const words = text.split(" ");
