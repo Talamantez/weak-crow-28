@@ -39,25 +39,43 @@ import {
       let y = height - 70;
   
       // Draw chapter title
-      page.drawText(chapter.title, {
-        x: 50,
-        y,
-        font,
-        size: 24,
-        color: rgb(0, 0, 0),
-      });
-      y -= font.heightAtSize(24) + 10;
+      // Convert to wrap text
+      const myTitle = wrapText(chapter.title, width - 90, font, 24)
+      const lines = myTitle.split("\n");
+      for (const line of lines){
+        // Check if there's enough space on the current page
+        if (y < 100) {
+          // Add a new page if there's not enough space
+          page = pdfDoc.addPage();
+          ({ width, height } = page.getSize());
+          y = height - 70;
+        }
+  
+        page.drawText(line, {
+          x: 50,
+          y,
+          font,
+          size: 24,
+          color: rgb(0, 0, 0),
+        });
+        y -= font.heightAtSize(24);
+      }
   
       // Draw chapter description
-      page.drawText(chapter.description, {
-        x: 50,
-        y,
-        font,
-        size: 12,
-        color: rgb(0, 0, 0),
-      });
-      y -= font.heightAtSize(12) + 10;
-  
+      // Convert to wrap text
+      const myDescription = wrapText(chapter.description, width - 90, font, 14)
+      const descriptionLines = myDescription.split("\n");
+      for (const line of descriptionLines){
+        page.drawText(line, {
+          x: 50,
+          y,
+          font,
+          size: 14,
+          color: rgb(0, 0, 0),
+        });
+        y -= font.heightAtSize(14) + 10;
+      }
+
       for (const section of chapter.sections) {
         // Check if there's enough space on the current page
         if (y < 100) {
@@ -68,16 +86,42 @@ import {
         }
   
         // Draw section title
-        page.drawText(section.title, {
-          x: 50,
-          y,
-          font,
-          size: 18,
-          color: rgb(0, 0, 0),
-        });
-        y -= font.heightAtSize(18) + 10;
+        // Convert to wrap text
+        const myTitle = wrapText(section.title, width - 90, font, 16)
+        const lines = myTitle.split("\n");
+        for (const line of lines){
+          // Check if there's enough space on the current page
+          if (y < 100) {
+            // Add a new page if there's not enough space
+            page = pdfDoc.addPage();
+            ({ width, height } = page.getSize());
+            y = height - 70;
+          }
+  
+          page.drawText(line, {
+            x: 50,
+            y,
+            font,
+            size: 16,
+            color: rgb(0, 0, 0),
+          });
+          y -= font.heightAtSize(16) + 10;
+        }
   
         // Draw section description
+        // Convert to wrap text
+        const myDescription = wrapText(section.description, width - 90, font, 12)
+        const descriptionLines = myDescription.split("\n");
+        for (const line of descriptionLines){
+          page.drawText(line, {
+            x: 50,
+            y,
+            font,
+            size: 12,
+            color: rgb(0, 0, 0),
+          });
+          y -= font.heightAtSize(12) + 10;
+        }
         page.drawText(section.description, {
           x: 50,
           y,
