@@ -148,10 +148,6 @@ export default async function renderChapter(data: any) {
   const pdfBytes = await pdfDoc.save();
   console.log(pdfBytes);
   try {
-    // TODO: Figure out why Deno is not found
-    // Try using Request/Response
-    // See https://github.com/Industrial/deno-fresh-blog/commit/82aae92302623fdb6d80d6506ffd24c14f109b61#diff-23cc22e12738a61ec6ba2b9485d9104243189e3bdd368c2a517fe8a1d3b90c96L9
-    // Try to return the PDF as a response and print it in the browser
     await Deno.writeFile("output.pdf", pdfBytes);
   } catch (error) {
     console.log(error);
