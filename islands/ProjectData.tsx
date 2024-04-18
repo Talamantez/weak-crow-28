@@ -8,7 +8,6 @@ import {
   safeLocalStorageRemoveItem,
   safeLocalStorageSetItem,
 } from "./SafeLocalStorage.ts";
-import { doPrintChapter } from "../routes/_middleware.ts";
 
 export default function ProjectData({ title }: { title: string }) {
   const [description, setDescription] = useState("");
@@ -210,7 +209,36 @@ export default function ProjectData({ title }: { title: string }) {
   async function printChapter(): Promise<void> {
     const stored = await safeLocalStorageGetItem(`Chapter Manager: ${title}`);
     console.log(stored);
-    await doPrintChapter(stored);
+    fetch("/api/printChapter", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: stored
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.blob();
+        } else {
+          throw new Error("Request failed.");
+        }
+      })
+      .then(blob => {
+        // Create a temporary URL for the blob
+        const url = URL.createObjectURL(blob);
+    
+        // Create a temporary link element and trigger the download
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "output.pdf";
+        link.click();
+    
+        // Clean up the temporary URL
+        URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
   }
 
   return (
