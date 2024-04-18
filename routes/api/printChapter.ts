@@ -122,14 +122,6 @@ import {
           });
           y -= font.heightAtSize(12) + 10;
         }
-        page.drawText(section.description, {
-          x: 50,
-          y,
-          font,
-          size: 12,
-          color: rgb(0, 0, 0),
-        });
-        y -= font.heightAtSize(12) + 10;
   
         // Draw subsections
         for (const subSection of section.subSections) {
