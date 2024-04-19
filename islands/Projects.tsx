@@ -5,6 +5,7 @@ import chapters from "../static/chapters.json" with { type: "json" };
 import { Button } from "../components/Button.tsx";
 
 interface ProjectData {
+  index: number;
   title: string;
   description: string;
   sections: Section[];
@@ -24,8 +25,9 @@ const generateChaptersFromJSON = () => {
   Object.entries(chapters).forEach(([index, content]) => {
     const { title, description, sections } = content;
     safeLocalStorageSetItem(
-      "Chapter Manager: " + title,
+      `Chapter Manager: ${title}`,
       JSON.stringify({
+        index: index,
         title: title,
         description: description,
         sections: sections,
@@ -37,6 +39,7 @@ const generateChaptersFromJSON = () => {
 
 export default function Projects() {
   const [projects, setProjects] = useState<ProjectData[]>([{
+    index: 0,
     title: "",
     description: "",
     sections: [],
@@ -44,14 +47,16 @@ export default function Projects() {
 
   useEffect(() => {
     const tempProjects = [];
+    let sortedTempProjects = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key?.includes("Chapter")) {
         const stored = JSON.parse(localStorage.getItem(key)!);
         tempProjects.push(stored);
+        sortedTempProjects = tempProjects.sort((a, b) => a.index - b.index);
       }
     }
-    setProjects(tempProjects);
+    setProjects(sortedTempProjects);
   }, []);
 
   return (
