@@ -53,9 +53,9 @@ export default function Projects() {
       if (key?.includes("Chapter")) {
         const stored = JSON.parse(localStorage.getItem(key)!);
         tempProjects.push(stored);
-        sortedTempProjects = tempProjects.sort((a, b) => a.index - b.index);
       }
     }
+    sortedTempProjects = tempProjects.sort((a, b) => a.index - b.index);
     setProjects(sortedTempProjects);
   }, []);
 

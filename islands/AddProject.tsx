@@ -11,7 +11,7 @@ export default function AddProject() {
     }
     localStorage.setItem(
       "Chapter Manager: " + title,
-      JSON.stringify({ title: title, description: description, sections: [] }),
+      JSON.stringify({ index: localStorage.length, title: title, description: description, sections: [] }),
     );
     window.location.href = "/";
   };
