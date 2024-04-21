@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 
-interface ClickToEditHeadingProps {
+interface ClickToEditProps {
   text: string;
   onTextChange: (text: string) => void;
 }
 
-export default function ClickToEditHeading(
-  { text, onTextChange }: ClickToEditHeadingProps,
+export default function ClickToEdit(
+  { text, onTextChange }: ClickToEditProps,
 ) {
   const [isFocused, setIsFocused] = useState(false);
   const [inputText, setInputText] = useState(text);
@@ -16,7 +16,8 @@ export default function ClickToEditHeading(
     setIsFocused(true);
   };
 
-  const handleBlur = () => {
+  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleTextChange(e);
     setIsFocused(false);
   };
 
@@ -26,7 +27,6 @@ export default function ClickToEditHeading(
 
   const handleKeyDown = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleTextChange(e);
       setIsFocused(false);
     }
   };

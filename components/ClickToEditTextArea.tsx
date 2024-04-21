@@ -27,12 +27,6 @@ export default function ClickToEdit(
     setInputText(e.target.value);
   };
 
-  const handleKeyDown = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // if (e.key === "Enter") {
-    //   setIsFocused(false);
-    // }
-  };
-
   function handleTextChange(e: React.ChangeEvent<HTMLInputElement>) {
     onTextChange(e.target.value);
   }
@@ -53,7 +47,6 @@ export default function ClickToEdit(
             value={inputText}
             onChange={handleChange}
             onBlur={handleBlur}
-            onKeyDown={handleKeyDown}
             autoFocus
             rows={rows || 10}
             cols={cols || 80}

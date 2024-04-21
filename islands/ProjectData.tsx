@@ -212,31 +212,31 @@ export default function ProjectData({ title }: { title: string }) {
     fetch("/api/printChapter", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: stored
+      body: stored,
     })
-      .then(response => {
+      .then((response) => {
         if (response.ok) {
           return response.blob();
         } else {
           throw new Error("Request failed.");
         }
       })
-      .then(blob => {
+      .then((blob) => {
         // Create a temporary URL for the blob
         const url = URL.createObjectURL(blob);
-    
+
         // Create a temporary link element and trigger the download
         const link = document.createElement("a");
         link.href = url;
         link.download = "output.pdf";
         link.click();
-    
+
         // Clean up the temporary URL
         URL.revokeObjectURL(url);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error:", error);
       });
   }
