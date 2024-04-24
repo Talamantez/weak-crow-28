@@ -3,21 +3,61 @@ import { useState } from "preact/hooks";
 export default function AddProject() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+
+  const handleSubmit = async (e: Event) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const resp = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const { url } = await resp.json();
+    setImageUrl(url);
+    form.reset();
+  };
+
+  const handleSave = () => {
+    if (imageUrl) {
+      localStorage.setItem("savedImage", imageUrl);
+      alert("Image saved to localStorage!");
+    }
+  };
 
   const addProject = () => {
-    if (title === "" || description === "") {
+    if (title === "" || description === "" || !imageUrl) {
       alert("Please fill in all fields.");
       return;
     }
     localStorage.setItem(
       "Chapter Manager: " + title,
-      JSON.stringify({ index: localStorage.length, title: title, description: description, sections: [] }),
+      JSON.stringify({
+        index: localStorage.length,
+        title: title,
+        description: description,
+        sections: [],
+        imageUrl: imageUrl,
+      }),
     );
     window.location.href = "/";
   };
 
   return (
     <>
+      <div class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-center border-blue-500 focus:border-blue-600 outline-none">
+        <h1>Photo Upload</h1>
+        <form class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-center border-blue-500 focus:border-blue-600 outline-none" onSubmit={handleSubmit}>
+          <input type="file" name="image" accept="image/*" />
+          <button type="submit">Upload</button>
+        </form>
+        {imageUrl && (
+          <div>
+            <img src={imageUrl} alt="Uploaded" />
+            <button onClick={handleSave}>Save</button>
+          </div>
+        )}
+      </div>
       <input
         type="text"
         placeholder="Chapter Title"

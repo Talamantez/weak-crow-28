@@ -9,6 +9,7 @@ interface ProjectData {
   title: string;
   description: string;
   sections: Section[];
+  imageUrl?: string;
 }
 
 const clearAllChapters = () => {
@@ -23,7 +24,23 @@ const clearAllChapters = () => {
 
 const generateChaptersFromJSON = () => {
   Object.entries(chapters).forEach(([index, content]) => {
-    const { title, description, sections } = content;
+    const { title, description, sections, imageUrl } = content as {
+      title: string;
+      description: string;
+      sections:
+        ({
+          title: string;
+          description: string;
+          subSections: string[];
+          chapterTitle: string;
+        } | {
+          title: string;
+          description: string;
+          subSections: string;
+          chapterTitle: string;
+        })[];
+      imageUrl?: string;
+    };
     safeLocalStorageSetItem(
       `Chapter Manager: ${title}`,
       JSON.stringify({
@@ -31,6 +48,7 @@ const generateChaptersFromJSON = () => {
         title: title,
         description: description,
         sections: sections,
+        imageUrl: imageUrl ? imageUrl : "",
       }),
     );
   });
@@ -43,6 +61,7 @@ export default function Projects() {
     title: "",
     description: "",
     sections: [],
+    imageUrl: "",
   }]);
 
   useEffect(() => {
@@ -74,8 +93,11 @@ export default function Projects() {
                   key={project.title}
                   href={`/${project.title}`}
                   class="border rounded-md border-gray-300 hover:border-gray-400 py-3 px-5 transition cursor-pointer flex items-center justify-start"
-                >
+                > 
                   <div class="w-3/5">
+                    
+                    {project.imageUrl && <img src={project.imageUrl} alt="chapter cover image" />}
+
                     <h1 class="font-bold">{project.title}</h1>
                     <p class="text-gray-500">{project.description}</p>
                     <p class="text-gray-500 mt-2">
