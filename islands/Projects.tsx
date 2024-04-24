@@ -24,21 +24,21 @@ const clearAllChapters = () => {
 
 const generateChaptersFromJSON = () => {
   Object.entries(chapters).forEach(([index, content]) => {
-    const { title, description, sections, imageUrl } = content as {
+
+    const { title, description, sections } = content as {
       title: string;
       description: string;
-      sections:
-        ({
-          title: string;
-          description: string;
-          subSections: string[];
-          chapterTitle: string;
-        } | {
-          title: string;
-          description: string;
-          subSections: string;
-          chapterTitle: string;
-        })[];
+      sections: ({
+        title: string;
+        description: string;
+        subSections: string[];
+        chapterTitle: string;
+      } | {
+        title: string;
+        description: string;
+        subSections: string;
+        chapterTitle: string;
+      })[];
       imageUrl?: string;
     };
     safeLocalStorageSetItem(
@@ -48,7 +48,7 @@ const generateChaptersFromJSON = () => {
         title: title,
         description: description,
         sections: sections,
-        imageUrl: imageUrl ? imageUrl : "",
+        imageUrl: "",
       }),
     );
   });
@@ -92,11 +92,18 @@ export default function Projects() {
                 <a
                   key={project.title}
                   href={`/${project.title}`}
-                  class="border rounded-md border-gray-300 hover:border-gray-400 py-3 px-5 transition cursor-pointer flex items-center justify-start"
-                > 
+                  class="border rounded-md border-gray-300 hover:border-gray-400 py-3 px-5 transition cursor-pointer flex items-center justify-start bg-white rounded-lg shadow-md overflow-hidden"
+                >
                   <div class="w-3/5">
-                    
-                    {project.imageUrl && <img src={project.imageUrl} alt="chapter cover image" />}
+                    {project.imageUrl && (
+                      <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <img
+                          src={project.imageUrl}
+                          alt="chapter cover image"
+                          class="w-full h-48 object-cover"
+                        />
+                      </div>
+                    )}
 
                     <h1 class="font-bold">{project.title}</h1>
                     <p class="text-gray-500">{project.description}</p>

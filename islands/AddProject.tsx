@@ -45,19 +45,6 @@ export default function AddProject() {
 
   return (
     <>
-      <div class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-center border-blue-500 focus:border-blue-600 outline-none">
-        <h1>Photo Upload</h1>
-        <form class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-center border-blue-500 focus:border-blue-600 outline-none" onSubmit={handleSubmit}>
-          <input type="file" name="image" accept="image/*" />
-          <button type="submit">Upload</button>
-        </form>
-        {imageUrl && (
-          <div>
-            <img src={imageUrl} alt="Uploaded" />
-            <button onClick={handleSave}>Save</button>
-          </div>
-        )}
-      </div>
       <input
         type="text"
         placeholder="Chapter Title"
@@ -72,6 +59,29 @@ export default function AddProject() {
         rows={10}
         class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-left border-blue-500 focus:border-blue-600 outline-none"
       />
+      <div class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 border-blue-500 focus:border-blue-600 outline-none">
+        <h1>Photo Upload</h1>
+        <form onSubmit={handleSubmit}>
+          <input type="file" name="image" accept="image/*" />
+          <button
+            type="submit"
+            class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
+          >
+            Upload
+          </button>
+        </form>
+        {imageUrl && (
+          <div class="flex">
+            <button
+              onClick={handleSave}
+              class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5 max-h-32"
+            >
+              Accept and Save Image
+            </button>
+            <img class="max-h-56" src={imageUrl} alt="Uploaded" />
+          </div>
+        )}
+      </div>
       <div class="w-4/5 flex items-center justify-between">
         <a
           href="/"
