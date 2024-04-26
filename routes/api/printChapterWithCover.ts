@@ -29,6 +29,7 @@ const wrapText = (text: string, width: number, font: any, fontSize: number) => {
 async function createCoverPage(
   pdfDoc: PDFDocument,
   font: any,
+  title: string,
   imageUrl: string,
 ): Promise<void> {
   const coverPage = pdfDoc.addPage();
@@ -66,14 +67,14 @@ async function createCoverPage(
   }
 
   // Draw the title on the cover page
-  const titleText = "Mental Health Resource Guide";
+  const titleText = title;
   const titleFontSize = 36;
   const titleTextWidth = font.widthOfTextAtSize(titleText, titleFontSize);
   coverPage.drawText(titleText, {
     x: width / 2 - titleTextWidth / 2,
     y: height / 2 - titleFontSize,
     size: titleFontSize,
-    color: rgb(0, 0, 0),
+    color: rgb(1, 1, 1),
   });
 }
 
@@ -88,10 +89,10 @@ export const handler: Handlers = {
     const chapter = requestBody;
 
     // Create the cover page with an image from localStorage
-    //   await createCoverPage(pdfDoc, font, `Chapter Manager: ${chapter.title}-CoverImage`);
     await createCoverPage(
       pdfDoc,
       font,
+      chapter.title,
       chapter.imageUrl,
     );
 
@@ -216,7 +217,7 @@ export const handler: Handlers = {
       const { width, height } = page.getSize();
 
       // Draw header
-      const headerText = "Mental Health Resource Guide";
+      const headerText = "Resource Roadmap";
       const headerTextWidth = font.widthOfTextAtSize(headerText, 12);
       page.drawText(headerText, {
         x: width - headerTextWidth - 50,

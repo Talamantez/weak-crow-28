@@ -82,7 +82,7 @@ async function generatePDF() {
     const { width, height } = page.getSize();
 
     // Draw header
-    const headerText = 'Mental Health Resource Guide';
+    const headerText = 'Resource Roadmap';
     const headerTextWidth = font.widthOfTextAtSize(headerText, 12);
     page.drawText(headerText, {
       x: width - headerTextWidth - 50,
