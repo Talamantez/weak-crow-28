@@ -5,5 +5,8 @@
   "editor.defaultFormatter": "denoland.vscode-deno",
   "[css]": {
     "editor.defaultFormatter": "vscode.css-language-features"
+  },
+  "[plaintext]": {
+    "editor.defaultFormatter": "log-formatter.log-formatter"
   }
 }

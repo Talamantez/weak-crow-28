@@ -51,6 +51,7 @@ const generateIntroduction = () => {
       imageUrl: imageUrl,
     }),
   );
+  window.location.reload();
 }
 
 const generateChaptersFromJSON = () => {
