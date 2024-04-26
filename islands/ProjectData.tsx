@@ -87,11 +87,15 @@ export default function ProjectData({ title }: { title: string }) {
 
   const deleteSection = (section: Section) => {
     const tempSections = sections.filter((t) => t.title !== section.title);
+    const stored = JSON.parse(
+      safeSessionStorageGetItem(`Chapter Manager: ${title}`)!,
+    );
     safeSessionStorageSetItem(
       "Chapter Manager: " + title,
       JSON.stringify({
         title: title,
         description: description,
+        imageUrl: stored.imageUrl,
         sections: tempSections,
       }),
     );
@@ -114,12 +118,15 @@ export default function ProjectData({ title }: { title: string }) {
       sectionTitle,
       updatedSection,
     );
-
+    const stored = JSON.parse(
+      safeSessionStorageGetItem(`Chapter Manager: ${title}`)!,
+    );
     safeSessionStorageSetItem(
       "Chapter Manager: " + title,
       JSON.stringify({
         title: title,
         description: description,
+        imageUrl: stored.imageUrl,
         sections: updatedSections,
       }),
     );
@@ -170,6 +177,7 @@ export default function ProjectData({ title }: { title: string }) {
         ),
       }),
     );
+    alert('Section title updated successfully!')
     window.location.reload();
   }
   function updateSectionDescription(
@@ -464,11 +472,11 @@ function AddSection(
   const addSection = () => {
     let newSections: Section[] = [];
 
-    const storedString = safeSessionStorageGetItem(
+    const stored = safeSessionStorageGetItem(
       `Chapter Manager: ${projectTitle}`,
     );
 
-    const chapter = JSON.parse(storedString as string);
+    const chapter = JSON.parse(stored as string);
 
     if (section) {
       if (!section) newSections = [section];
@@ -479,6 +487,7 @@ function AddSection(
         JSON.stringify({
           title: projectTitle,
           description: chapter.description,
+          imageUrl: chapter.imageUrl,
           sections: newSections,
         }),
       );
@@ -575,6 +584,7 @@ function AddSubSection(
           {
             title: chapter.title,
             description: chapter.description,
+            imageUrl: chapter.imageUrl,
             sections: newSections,
           },
         ),
@@ -622,14 +632,16 @@ function updateChapterTitle(newText: string, chapterTitle: string) {
   const stored = JSON.parse(
     safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
   );
-  safeSessionStorageRemoveItem(`Chapter Manager: ${chapterTitle}`);
+
   const updatedStored = { ...stored, title: newText };
   safeSessionStorageSetItem(
     `Chapter Manager: ${newText}`,
     JSON.stringify(updatedStored),
   );
   safeSessionStorageRemoveItem(`Chapter Manager: ${chapterTitle}`);
+
   window.history.pushState({}, "", `/${newText}`);
+  window.location.reload();
 }
 
 function updateSubSection(
@@ -658,5 +670,6 @@ function updateSubSection(
       sections: updatedSections,
     }),
   );
+  alert('Subsection updated successfully!')
   window.location.reload();
 }
