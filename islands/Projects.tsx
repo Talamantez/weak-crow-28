@@ -25,9 +25,10 @@ const clearAllChapters = () => {
 const generateChaptersFromJSON = () => {
   Object.entries(chapters).forEach(([index, content]) => {
 
-    const { title, description, sections } = content as {
+    const { title, description, imageUrl, sections } = content as {
       title: string;
       description: string;
+      imageUrl: string;
       sections: ({
         title: string;
         description: string;
@@ -39,7 +40,6 @@ const generateChaptersFromJSON = () => {
         subSections: string;
         chapterTitle: string;
       })[];
-      imageUrl?: string;
     };
     safeLocalStorageSetItem(
       `Chapter Manager: ${title}`,
@@ -48,7 +48,7 @@ const generateChaptersFromJSON = () => {
         title: title,
         description: description,
         sections: sections,
-        imageUrl: "",
+        imageUrl: imageUrl,
       }),
     );
   });
