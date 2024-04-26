@@ -209,7 +209,7 @@ export default function ProjectData({ title }: { title: string }) {
   async function printChapter(): Promise<void> {
     const stored = await safeLocalStorageGetItem(`Chapter Manager: ${title}`);
     console.log(stored);
-    fetch("/api/printChapter", {
+    fetch("/api/printChapterWithCover", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
