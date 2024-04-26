@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
 import { safeSessionStorageSetItem } from "./SafeSessionStorage.ts";
 import chapters from "../static/chapters.json" with { type: "json" };
+import introduction from "../static/introduction.json" with { type: "json" };
 import { Button } from "../components/Button.tsx";
 
 interface ProjectData {
@@ -21,6 +22,36 @@ const clearAllChapters = () => {
   }
   window.location.reload();
 };
+
+const generateIntroduction = () => {
+  const { title, description, imageUrl, sections } = introduction as {
+    title: string;
+    description: string;
+    imageUrl: string;
+    sections: ({
+      title: string;
+      description: string;
+      subSections: string[];
+      chapterTitle: string;
+    } | {
+      title: string;
+      description: string;
+      subSections: string;
+      chapterTitle: string;
+    })[];
+  };
+
+  safeSessionStorageSetItem(
+    `Chapter Manager: ${title}`,
+    JSON.stringify({
+      index: 0,
+      title: title,
+      description: description,
+      sections: sections,
+      imageUrl: imageUrl,
+    }),
+  );
+}
 
 const generateChaptersFromJSON = () => {
   Object.entries(chapters).forEach(([index, content]) => {
@@ -81,6 +112,7 @@ export default function Projects() {
   return (
     <>
       <div class="flex">
+        <Button onClick={generateIntroduction}>Generate Introduction</Button>
         <Button onClick={generateChaptersFromJSON}>Generate Chapters</Button>
         <Button onClick={clearAllChapters}>Clear All Chapters</Button>
       </div>
