@@ -5,7 +5,6 @@ import {
 } from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
 import { decode } from "https://deno.land/std@0.152.0/encoding/base64.ts";
 import { Handlers } from "https://deno.land/x/fresh@1.6.8/server.ts";
-import * as base64 from "jsr:@std/encoding/base64";
 
 const wrapText = (text: string, width: number, font: any, fontSize: number) => {
   const words = text.split(" ");
@@ -35,8 +34,9 @@ async function createCoverPage(
   const coverPage = pdfDoc.addPage();
   const { width, height } = coverPage.getSize();
 
+  let myHeight = height;
   // Get the image data from localStorage
-  //   const imageData = sessionStorage.getItem(coverImage);
+  // const imageData = sessionStorage.getItem(coverImage);
 
   const [imageData, base64Data] = imageUrl.split(",");
 
@@ -48,10 +48,10 @@ async function createCoverPage(
     const imageBlob = new Blob([imageBytes], { type: imageType });
     let coverImage = null;
 
-    if(imageType === "image/png") {
-    coverImage = await pdfDoc.embedPng(await imageBlob.arrayBuffer());
-    } else if(imageType === "image/jpeg") {
-    coverImage = await pdfDoc.embedJpg(await imageBlob.arrayBuffer());
+    if (imageType === "image/png") {
+      coverImage = await pdfDoc.embedPng(await imageBlob.arrayBuffer());
+    } else if (imageType === "image/jpeg") {
+      coverImage = await pdfDoc.embedJpg(await imageBlob.arrayBuffer());
     }
 
     if (coverImage) {
@@ -75,12 +75,27 @@ async function createCoverPage(
   const titleText = title;
   const titleFontSize = 36;
   const titleTextWidth = font.widthOfTextAtSize(titleText, titleFontSize);
-  coverPage.drawText(titleText, {
-    x: width / 2 - titleTextWidth / 2,
-    y: height / 2 - titleFontSize,
-    size: titleFontSize,
-    color: rgb(1, 1, 1),
-  });
+  // coverPage.drawText(titleText, {
+  //   x: width / 2 - titleTextWidth / 2,
+  //   y: height / 2 - titleFontSize,
+  //   size: titleFontSize,
+  //   color: rgb(1, 1, 1),
+  // });
+
+  // Draw chapter title
+  // Convert to wrap text
+  const myTitle = wrapText(titleText, width - 80, font, titleFontSize);
+  const lines = myTitle.split("\n");
+  for (const line of lines) {
+    coverPage.drawText(line, {
+      x: width / 10,
+      y: myHeight / 2,
+      font,
+      size: titleFontSize,
+      color: rgb(1, 1, 1),
+    });
+    myHeight -= 100;
+  }
 }
 
 export const handler: Handlers = {
