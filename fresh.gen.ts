@@ -14,7 +14,7 @@ import * as $AddProject from "./islands/AddProject.tsx";
 import * as $File from "./islands/File.tsx";
 import * as $ProjectData from "./islands/ProjectData.tsx";
 import * as $Projects from "./islands/Projects.tsx";
-import * as $SafeLocalStorage from "./islands/SafeLocalStorage.ts";
+import * as $SafeSessionStorage from "./islands/SafeSessionStorage.ts";
 import * as $Sections from "./islands/Sections.tsx";
 import * as $missing_types from "./islands/missing-types.ts";
 import * as $renderImages from "./islands/renderImages.tsx";
@@ -36,7 +36,7 @@ const manifest = {
     "./islands/File.tsx": $File,
     "./islands/ProjectData.tsx": $ProjectData,
     "./islands/Projects.tsx": $Projects,
-    "./islands/SafeLocalStorage.ts": $SafeLocalStorage,
+    "./islands/SafeSessionStorage.ts": $SafeSessionStorage,
     "./islands/Sections.tsx": $Sections,
     "./islands/missing-types.ts": $missing_types,
     "./islands/renderImages.tsx": $renderImages,

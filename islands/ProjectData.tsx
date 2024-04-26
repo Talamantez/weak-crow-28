@@ -4,10 +4,10 @@ import ClickToEditHeading from "../components/ClickToEditHeading.tsx";
 import ClickToEdit from "../components/ClickToEdit.tsx";
 import ClickToEditTextArea from "../components/ClickToEditTextArea.tsx";
 import {
-  safeLocalStorageGetItem,
-  safeLocalStorageRemoveItem,
-  safeLocalStorageSetItem,
-} from "./SafeLocalStorage.ts";
+  safeSessionStorageGetItem,
+  safeSessionStorageRemoveItem,
+  safeSessionStorageSetItem,
+} from "./SafeSessionStorage.ts";
 
 export default function ProjectData({ title }: { title: string }) {
   const [description, setDescription] = useState("");
@@ -23,8 +23,8 @@ export default function ProjectData({ title }: { title: string }) {
   // Step 1: Function to save scroll position
 
   function saveScrollPosition() {
-    safeLocalStorageSetItem("scrollX", globalThis.scrollX.toString());
-    safeLocalStorageSetItem("scrollY", globalThis.scrollY.toString());
+    safeSessionStorageSetItem("scrollX", globalThis.scrollX.toString());
+    safeSessionStorageSetItem("scrollY", globalThis.scrollY.toString());
   }
 
   // Step 2: Save scroll position on scroll
@@ -32,8 +32,8 @@ export default function ProjectData({ title }: { title: string }) {
 
   // Step 3: Set scroll position on component mount
   useEffect(() => {
-    const scrollX = safeLocalStorageGetItem("scrollX");
-    const scrollY = safeLocalStorageGetItem("scrollY");
+    const scrollX = safeSessionStorageGetItem("scrollX");
+    const scrollY = safeSessionStorageGetItem("scrollY");
 
     if (scrollX !== null && scrollY !== null) {
       // Delay the scroll until after the page has fully loaded
@@ -48,7 +48,7 @@ export default function ProjectData({ title }: { title: string }) {
   }, []);
 
   useEffect(() => {
-    const storedString = safeLocalStorageGetItem(`Chapter Manager: ${title}`);
+    const storedString = safeSessionStorageGetItem(`Chapter Manager: ${title}`);
 
     if (storedString) {
       const stored = JSON.parse(storedString);
@@ -65,7 +65,7 @@ export default function ProjectData({ title }: { title: string }) {
   }, []);
 
   useEffect(() => {
-    const storedString = safeLocalStorageGetItem(`Chapter Manager: ${title}`);
+    const storedString = safeSessionStorageGetItem(`Chapter Manager: ${title}`);
 
     if (storedString) {
       const stored = JSON.parse(storedString);
@@ -81,13 +81,13 @@ export default function ProjectData({ title }: { title: string }) {
   }, [isAddingSection]);
 
   const deleteChapter = () => {
-    safeLocalStorageRemoveItem(`Chapter Manager: ${title}`);
+    safeSessionStorageRemoveItem(`Chapter Manager: ${title}`);
     window.location.href = "/";
   };
 
   const deleteSection = (section: Section) => {
     const tempSections = sections.filter((t) => t.title !== section.title);
-    safeLocalStorageSetItem(
+    safeSessionStorageSetItem(
       "Chapter Manager: " + title,
       JSON.stringify({
         title: title,
@@ -115,7 +115,7 @@ export default function ProjectData({ title }: { title: string }) {
       updatedSection,
     );
 
-    safeLocalStorageSetItem(
+    safeSessionStorageSetItem(
       "Chapter Manager: " + title,
       JSON.stringify({
         title: title,
@@ -159,9 +159,9 @@ export default function ProjectData({ title }: { title: string }) {
     if (newText.trim() === "") return window.location.reload();
 
     const stored = JSON.parse(
-      safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
+      safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
     );
-    safeLocalStorageSetItem(
+    safeSessionStorageSetItem(
       `Chapter Manager: ${chapterTitle}`,
       JSON.stringify({
         ...stored,
@@ -178,9 +178,9 @@ export default function ProjectData({ title }: { title: string }) {
     chapterTitle: string,
   ): void {
     const stored = JSON.parse(
-      safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
+      safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
     );
-    safeLocalStorageSetItem(
+    safeSessionStorageSetItem(
       `Chapter Manager: ${chapterTitle}`,
       JSON.stringify({
         ...stored,
@@ -197,9 +197,9 @@ export default function ProjectData({ title }: { title: string }) {
     if (newText.trim() === "") return window.location.reload();
 
     const stored = JSON.parse(
-      safeLocalStorageGetItem(`Chapter Manager: ${title}`)!,
+      safeSessionStorageGetItem(`Chapter Manager: ${title}`)!,
     );
-    safeLocalStorageSetItem(
+    safeSessionStorageSetItem(
       `Chapter Manager: ${title}`,
       JSON.stringify({ ...stored, description: newText }),
     );
@@ -207,7 +207,7 @@ export default function ProjectData({ title }: { title: string }) {
   }
 
   async function printChapter(): Promise<void> {
-    const stored = await safeLocalStorageGetItem(`Chapter Manager: ${title}`);
+    const stored = await safeSessionStorageGetItem(`Chapter Manager: ${title}`);
     console.log(stored);
     fetch("/api/printChapterWithCover", {
       method: "POST",
@@ -464,7 +464,7 @@ function AddSection(
   const addSection = () => {
     let newSections: Section[] = [];
 
-    const storedString = safeLocalStorageGetItem(
+    const storedString = safeSessionStorageGetItem(
       `Chapter Manager: ${projectTitle}`,
     );
 
@@ -474,7 +474,7 @@ function AddSection(
       if (!section) newSections = [section];
       else newSections = [...sections, section];
 
-      safeLocalStorageSetItem(
+      safeSessionStorageSetItem(
         "Chapter Manager: " + projectTitle,
         JSON.stringify({
           title: projectTitle,
@@ -554,7 +554,7 @@ function AddSubSection(
       if (subSections[0] === "") newSubSections = [subSection];
       else newSubSections = [...subSections, subSection];
 
-      const storedString = safeLocalStorageGetItem(
+      const storedString = safeSessionStorageGetItem(
         `Chapter Manager: ${chapterTitle}`,
       );
       if (!storedString) return console.error("No stored data found");
@@ -569,7 +569,7 @@ function AddSubSection(
         }
       });
 
-      safeLocalStorageSetItem(
+      safeSessionStorageSetItem(
         "Chapter Manager: " + chapterTitle,
         JSON.stringify(
           {
@@ -620,15 +620,15 @@ function updateChapterTitle(newText: string, chapterTitle: string) {
   if (newText.trim() === "") return window.location.reload();
 
   const stored = JSON.parse(
-    safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
+    safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
   );
-  safeLocalStorageRemoveItem(`Chapter Manager: ${chapterTitle}`);
+  safeSessionStorageRemoveItem(`Chapter Manager: ${chapterTitle}`);
   const updatedStored = { ...stored, title: newText };
-  safeLocalStorageSetItem(
+  safeSessionStorageSetItem(
     `Chapter Manager: ${newText}`,
     JSON.stringify(updatedStored),
   );
-  safeLocalStorageRemoveItem(`Chapter Manager: ${chapterTitle}`);
+  safeSessionStorageRemoveItem(`Chapter Manager: ${chapterTitle}`);
   window.history.pushState({}, "", `/${newText}`);
 }
 
@@ -640,7 +640,7 @@ function updateSubSection(
 ) {
   if (newText.trim() === "") return window.location.reload();
   const stored = JSON.parse(
-    safeLocalStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
+    safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
   );
   const updatedSections = stored.sections.map((s: Section) => {
     if (s.title === sectionTitle) {
@@ -651,7 +651,7 @@ function updateSubSection(
     }
     return s;
   });
-  safeLocalStorageSetItem(
+  safeSessionStorageSetItem(
     `Chapter Manager: ${chapterTitle}`,
     JSON.stringify({
       ...stored,

@@ -20,8 +20,8 @@ export default function AddProject() {
 
   const handleSave = () => {
     if (imageUrl) {
-      localStorage.setItem("savedImage", imageUrl);
-      alert("Image saved to localStorage!");
+      sessionStorage.setItem("savedImage", imageUrl);
+      alert("Image saved to session storage.");
     }
   };
 
@@ -30,10 +30,10 @@ export default function AddProject() {
       alert("Please fill in all fields.");
       return;
     }
-    localStorage.setItem(
+    sessionStorage.setItem(
       "Chapter Manager: " + title,
       JSON.stringify({
-        index: localStorage.length,
+        index: sessionStorage.length,
         title: title,
         description: description,
         sections: [],

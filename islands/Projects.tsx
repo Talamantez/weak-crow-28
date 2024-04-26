@@ -1,6 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
-import { safeLocalStorageSetItem } from "./SafeLocalStorage.ts";
+import { safeSessionStorageSetItem } from "./SafeSessionStorage.ts";
 import chapters from "../static/chapters.json" with { type: "json" };
 import { Button } from "../components/Button.tsx";
 
@@ -13,10 +13,10 @@ interface ProjectData {
 }
 
 const clearAllChapters = () => {
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
+  for (let i = 0; i < sessionStorage.length; i++) {
+    const key = sessionStorage.key(i);
     if (key?.includes("Chapter Manager")) {
-      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
     }
   }
   window.location.reload();
@@ -41,7 +41,7 @@ const generateChaptersFromJSON = () => {
         chapterTitle: string;
       })[];
     };
-    safeLocalStorageSetItem(
+    safeSessionStorageSetItem(
       `Chapter Manager: ${title}`,
       JSON.stringify({
         index: index,
@@ -67,10 +67,10 @@ export default function Projects() {
   useEffect(() => {
     const tempProjects = [];
     let sortedTempProjects = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
       if (key?.includes("Chapter")) {
-        const stored = JSON.parse(localStorage.getItem(key)!);
+        const stored = JSON.parse(sessionStorage.getItem(key)!);
         tempProjects.push(stored);
       }
     }

@@ -1,25 +1,25 @@
 
 // Wrap localStorage calls in a try-catch block
-  export function safeLocalStorageGetItem(key: string) {
+  export function safeSessionStorageGetItem(key: string) {
     try {
-      return localStorage.getItem(key);
+      return sessionStorage.getItem(key);
     } catch (e) {
       console.error(`Failed to get item from localStorage: ${e}`);
       return null;
     }
   }
   
-  export function safeLocalStorageSetItem(key: string, value: string) {
+  export function safeSessionStorageSetItem(key: string, value: string) {
     try {
-      localStorage.setItem(key, value);
+      sessionStorage.setItem(key, value);
     } catch (e) {
       console.error(`Failed to set item in localStorage: ${e}`);
     }
   }
   
-  export function safeLocalStorageRemoveItem(key: string) {
+  export function safeSessionStorageRemoveItem(key: string) {
     try {
-      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
     } catch (e) {
       console.error(`Failed to remove item from localStorage: ${e}`);
     }

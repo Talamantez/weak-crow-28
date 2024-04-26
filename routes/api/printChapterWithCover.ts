@@ -36,18 +36,23 @@ async function createCoverPage(
   const { width, height } = coverPage.getSize();
 
   // Get the image data from localStorage
-//   const imageData = localStorage.getItem(coverImage);
+  //   const imageData = sessionStorage.getItem(coverImage);
 
-  const base64Data = imageUrl.split(",")[1];
+  const [imageData, base64Data] = imageUrl.split(",");
 
   if (base64Data) {
     const imageBytes = decode(base64Data);
-    // const imageType = localStorage.getItem("coverImageType");
+    // const imageType = sessionStorage.getItem("coverImageType");
     // const imageType = "image/png";
+    const imageType = imageData.split(";")[0].split(":")[1];
+    const imageBlob = new Blob([imageBytes], { type: imageType });
+    let coverImage = null;
 
-    const imageBlob = new Blob([imageBytes], { type: "image/png" });
-
-    const coverImage = await pdfDoc.embedPng(await imageBlob.arrayBuffer());
+    if(imageType === "image/png") {
+    coverImage = await pdfDoc.embedPng(await imageBlob.arrayBuffer());
+    } else if(imageType === "image/jpeg") {
+    coverImage = await pdfDoc.embedJpg(await imageBlob.arrayBuffer());
+    }
 
     if (coverImage) {
       let imageDims = coverImage.size();
