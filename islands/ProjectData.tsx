@@ -177,7 +177,6 @@ export default function ProjectData({ title }: { title: string }) {
         ),
       }),
     );
-    alert('Section title updated successfully!')
     window.location.reload();
   }
   function updateSectionDescription(
@@ -670,6 +669,5 @@ function updateSubSection(
       sections: updatedSections,
     }),
   );
-  alert('Subsection updated successfully!')
   window.location.reload();
 }
