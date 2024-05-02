@@ -158,96 +158,6 @@ export default function ProjectData({ title }: { title: string }) {
     });
   };
 
-  function updateSectionTitle(
-    newText: string,
-    title: string,
-    chapterTitle: string,
-  ): void {
-    if (newText.trim() === "") return window.location.reload();
-
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
-    );
-    safeSessionStorageSetItem(
-      `Chapter Manager: ${chapterTitle}`,
-      JSON.stringify({
-        ...stored,
-        sections: stored.sections.map((s: Section) =>
-          s.title === title ? { ...s, title: newText } : s
-        ),
-      }),
-    );
-    window.location.reload();
-  }
-  function updateSectionDescription(
-    newText: string,
-    title: string,
-    chapterTitle: string,
-  ): void {
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
-    );
-    safeSessionStorageSetItem(
-      `Chapter Manager: ${chapterTitle}`,
-      JSON.stringify({
-        ...stored,
-        sections: stored.sections.map((s: Section) =>
-          s.title === title ? { ...s, description: newText } : s
-        ),
-      }),
-    );
-    window.location.reload();
-  }
-  function updateChapterDescription(
-    newText: string,
-  ): void {
-    if (newText.trim() === "") return window.location.reload();
-
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${title}`)!,
-    );
-    safeSessionStorageSetItem(
-      `Chapter Manager: ${title}`,
-      JSON.stringify({ ...stored, description: newText }),
-    );
-    window.location.reload();
-  }
-
-  async function printChapter(): Promise<void> {
-    const stored = await safeSessionStorageGetItem(`Chapter Manager: ${title}`);
-    console.log(stored);
-    fetch("/api/printChapterWithCover", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: stored,
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.blob();
-        } else {
-          throw new Error("Request failed.");
-        }
-      })
-      .then((blob) => {
-        // Create a temporary URL for the blob
-        const url = URL.createObjectURL(blob);
-
-        // Create a temporary link element and trigger the download
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "output.pdf";
-        link.click();
-
-        // Clean up the temporary URL
-        URL.revokeObjectURL(url);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }
-
   return (
     <>
       <div class="w-full flex items-center justify-between flex-col md:flex-row">
@@ -265,13 +175,13 @@ export default function ProjectData({ title }: { title: string }) {
           {description !== "" && (
             <ClickToEditTextArea
               text={description}
-              onTextChange={(newText) => updateChapterDescription(newText)}
+              onTextChange={(newText) => updateChapterDescription(newText, title)}
             />
           )}
         </div>
         <div class="w-full md:w-1/5 flex items-center justify-start md:justify-end">
           <button
-            onClick={() => printChapter()}
+            onClick={() => printChapter(title)}
             class="bg-green-500 hover:bg-green-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
           >
             Print Chapter
@@ -625,7 +535,7 @@ function AddSubSection(
   );
 }
 
-function updateChapterTitle(newText: string, chapterTitle: string) {
+export function updateChapterTitle(newText: string, chapterTitle: string) {
   if (newText.trim() === "") return window.location.reload();
 
   const stored = JSON.parse(
@@ -643,7 +553,7 @@ function updateChapterTitle(newText: string, chapterTitle: string) {
   window.location.reload();
 }
 
-function updateSubSection(
+export function updateSubSection(
   newText: string,
   subSection: string,
   sectionTitle: string,
@@ -668,6 +578,99 @@ function updateSubSection(
       ...stored,
       sections: updatedSections,
     }),
+  );
+  window.location.reload();
+}
+
+export function updateSectionTitle(
+  newText: string,
+  title: string,
+  chapterTitle: string,
+): void {
+  if (newText.trim() === "") return window.location.reload();
+
+  const stored = JSON.parse(
+    safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
+  );
+  safeSessionStorageSetItem(
+    `Chapter Manager: ${chapterTitle}`,
+    JSON.stringify({
+      ...stored,
+      sections: stored.sections.map((s: Section) =>
+        s.title === title ? { ...s, title: newText } : s
+      ),
+    }),
+  );
+  window.location.reload();
+}
+
+export function updateSectionDescription(
+  newText: string,
+  title: string,
+  chapterTitle: string,
+): void {
+  const stored = JSON.parse(
+    safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
+  );
+  safeSessionStorageSetItem(
+    `Chapter Manager: ${chapterTitle}`,
+    JSON.stringify({
+      ...stored,
+      sections: stored.sections.map((s: Section) =>
+        s.title === title ? { ...s, description: newText } : s
+      ),
+    }),
+  );
+  window.location.reload();
+}
+
+export async function printChapter(title:string): Promise<void> {
+  const stored = await safeSessionStorageGetItem(`Chapter Manager: ${title}`);
+  console.log(stored);
+  fetch("/api/printChapterWithCover", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: stored,
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.blob();
+      } else {
+        throw new Error("Request failed.");
+      }
+    })
+    .then((blob) => {
+      // Create a temporary URL for the blob
+      const url = URL.createObjectURL(blob);
+
+      // Create a temporary link element and trigger the download
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "output.pdf";
+      link.click();
+
+      // Clean up the temporary URL
+      URL.revokeObjectURL(url);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+
+export function updateChapterDescription(
+  newText: string,
+  title: string,
+): void {
+  if (newText.trim() === "") return window.location.reload();
+
+  const stored = JSON.parse(
+    safeSessionStorageGetItem(`Chapter Manager: ${title}`)!,
+  );
+  safeSessionStorageSetItem(
+    `Chapter Manager: ${title}`,
+    JSON.stringify({ ...stored, description: newText }),
   );
   window.location.reload();
 }
