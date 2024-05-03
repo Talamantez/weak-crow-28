@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
 import ClickToEditHeading from "../components/ClickToEditHeading.tsx";
@@ -7,7 +8,13 @@ import {
   safeSessionStorageGetItem,
   safeSessionStorageRemoveItem,
   safeSessionStorageSetItem,
-} from "./SafeSessionStorage.ts";
+} from "../util/SafeSessionStorage.ts";
+import { updateChapterDescription } from "../util/updateChapterDescription.ts";
+import { printChapter } from "../util/printChapter.ts";
+import { updateSectionDescription } from "../util/updateSectionDescription.ts";
+import { updateSectionTitle } from "../util/updateSectionTitle.ts";
+import { updateSubSection } from "../util/updateSubSection.ts";
+import { updateChapterTitle } from "../util/updateChapterTitle.ts";
 
 export default function ProjectData({ title }: { title: string }) {
   const [description, setDescription] = useState("");
@@ -22,7 +29,7 @@ export default function ProjectData({ title }: { title: string }) {
   const [isAddingSubSection, setIsAddingSubSection] = useState(false);
   // Step 1: Function to save scroll position
 
-  function saveScrollPosition() {
+  function saveScrollPosition(): void {
     safeSessionStorageSetItem("scrollX", globalThis.scrollX.toString());
     safeSessionStorageSetItem("scrollY", globalThis.scrollY.toString());
   }
@@ -170,18 +177,20 @@ export default function ProjectData({ title }: { title: string }) {
           </a>
           <ClickToEditHeading
             text={title}
-            onTextChange={(newText) => updateChapterTitle(newText, title)}
+            onTextChange={(newText) =>
+              updateChapterTitle({ newText, chapterTitle: title })}
           />
           {description !== "" && (
             <ClickToEditTextArea
               text={description}
-              onTextChange={(newText) => updateChapterDescription(newText, title)}
+              onTextChange={(newText) =>
+                updateChapterDescription({ newText, title })}
             />
           )}
         </div>
         <div class="w-full md:w-1/5 flex items-center justify-start md:justify-end">
           <button
-            onClick={() => printChapter(title)}
+            onClick={() => printChapter({ title })}
             class="bg-green-500 hover:bg-green-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
           >
             Print Chapter
@@ -206,7 +215,11 @@ export default function ProjectData({ title }: { title: string }) {
                     <ClickToEdit
                       text={section.title}
                       onTextChange={(newText) =>
-                        updateSectionTitle(newText, section.title, title)}
+                        updateSectionTitle({
+                          newText,
+                          title: section.title,
+                          chapterTitle: title,
+                        })}
                     />
                   </h1>
                 )}
@@ -215,7 +228,11 @@ export default function ProjectData({ title }: { title: string }) {
                     <ClickToEditTextArea
                       text={section.description}
                       onTextChange={(newText) =>
-                        updateSectionDescription(newText, section.title, title)}
+                        updateSectionDescription({
+                          newText,
+                          title: section.title,
+                          chapterTitle: title,
+                        })}
                     />
                   </p>
                 )}
@@ -230,10 +247,12 @@ export default function ProjectData({ title }: { title: string }) {
                               cols={70}
                               onTextChange={(newText) =>
                                 updateSubSection(
-                                  newText,
-                                  subSection,
-                                  section.title,
-                                  title,
+                                  {
+                                    newText,
+                                    subSection,
+                                    sectionTitle: section.title,
+                                    chapterTitle: title,
+                                  },
                                 )}
                             />
                           </p>
@@ -533,144 +552,4 @@ function AddSubSection(
       </div>
     </div>
   );
-}
-
-export function updateChapterTitle(newText: string, chapterTitle: string) {
-  if (newText.trim() === "") return window.location.reload();
-
-  const stored = JSON.parse(
-    safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
-  );
-
-  const updatedStored = { ...stored, title: newText };
-  safeSessionStorageSetItem(
-    `Chapter Manager: ${newText}`,
-    JSON.stringify(updatedStored),
-  );
-  safeSessionStorageRemoveItem(`Chapter Manager: ${chapterTitle}`);
-
-  window.history.pushState({}, "", `/${newText}`);
-  window.location.reload();
-}
-
-export function updateSubSection(
-  newText: string,
-  subSection: string,
-  sectionTitle: string,
-  chapterTitle: string,
-) {
-  if (newText.trim() === "") return window.location.reload();
-  const stored = JSON.parse(
-    safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
-  );
-  const updatedSections = stored.sections.map((s: Section) => {
-    if (s.title === sectionTitle) {
-      const updatedSubSections = s.subSections.map((ss) =>
-        ss === subSection ? newText : ss
-      );
-      return { ...s, subSections: updatedSubSections };
-    }
-    return s;
-  });
-  safeSessionStorageSetItem(
-    `Chapter Manager: ${chapterTitle}`,
-    JSON.stringify({
-      ...stored,
-      sections: updatedSections,
-    }),
-  );
-  window.location.reload();
-}
-
-export function updateSectionTitle(
-  newText: string,
-  title: string,
-  chapterTitle: string,
-): void {
-  if (newText.trim() === "") return window.location.reload();
-
-  const stored = JSON.parse(
-    safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
-  );
-  safeSessionStorageSetItem(
-    `Chapter Manager: ${chapterTitle}`,
-    JSON.stringify({
-      ...stored,
-      sections: stored.sections.map((s: Section) =>
-        s.title === title ? { ...s, title: newText } : s
-      ),
-    }),
-  );
-  window.location.reload();
-}
-
-export function updateSectionDescription(
-  newText: string,
-  title: string,
-  chapterTitle: string,
-): void {
-  const stored = JSON.parse(
-    safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
-  );
-  safeSessionStorageSetItem(
-    `Chapter Manager: ${chapterTitle}`,
-    JSON.stringify({
-      ...stored,
-      sections: stored.sections.map((s: Section) =>
-        s.title === title ? { ...s, description: newText } : s
-      ),
-    }),
-  );
-  window.location.reload();
-}
-
-export async function printChapter(title:string): Promise<void> {
-  const stored = await safeSessionStorageGetItem(`Chapter Manager: ${title}`);
-  console.log(stored);
-  fetch("/api/printChapterWithCover", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: stored,
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.blob();
-      } else {
-        throw new Error("Request failed.");
-      }
-    })
-    .then((blob) => {
-      // Create a temporary URL for the blob
-      const url = URL.createObjectURL(blob);
-
-      // Create a temporary link element and trigger the download
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "output.pdf";
-      link.click();
-
-      // Clean up the temporary URL
-      URL.revokeObjectURL(url);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}
-
-export function updateChapterDescription(
-  newText: string,
-  title: string,
-): void {
-  if (newText.trim() === "") return window.location.reload();
-
-  const stored = JSON.parse(
-    safeSessionStorageGetItem(`Chapter Manager: ${title}`)!,
-  );
-  safeSessionStorageSetItem(
-    `Chapter Manager: ${title}`,
-    JSON.stringify({ ...stored, description: newText }),
-  );
-  window.location.reload();
 }

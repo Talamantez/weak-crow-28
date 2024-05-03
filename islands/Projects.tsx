@@ -1,6 +1,7 @@
+
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
-import { safeSessionStorageSetItem } from "./SafeSessionStorage.ts";
+import { safeSessionStorageSetItem } from "../util/SafeSessionStorage.ts";
 import chapters from "../static/chapters.json" with { type: "json" };
 import introduction from "../static/introduction.json" with { type: "json" };
 import { Button } from "../components/Button.tsx";
