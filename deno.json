@@ -3,7 +3,7 @@
     "start": "deno run -A --watch=static/,routes/ dev.ts",
     "build": "deno run -A dev.ts build",
     "preview": "deno run -A main.ts",
-    "test": "deno test -A test.ts"
+    "test": "deno test -A ./util/*.test.ts"
   },
   "compilerOptions": { "jsx": "react-jsx", "jsxImportSource": "preact" },
   "imports": {

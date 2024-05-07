@@ -11,12 +11,11 @@ import * as $api_upload from "./routes/api/upload.ts";
 import * as $index from "./routes/index.tsx";
 import * as $new_project from "./routes/new-project.tsx";
 import * as $AddProject from "./islands/AddProject.tsx";
+import * as $AddSection from "./util/AddSection.tsx";
 import * as $File from "./islands/File.tsx";
 import * as $ProjectData from "./islands/ProjectData.tsx";
 import * as $Projects from "./islands/Projects.tsx";
-import * as $SafeSessionStorage from "./islands/SafeSessionStorage.ts";
 import * as $Sections from "./islands/Sections.tsx";
-import * as $missing_types from "./islands/missing-types.ts";
 import * as $renderImages from "./islands/renderImages.tsx";
 import { type Manifest } from "$fresh/server.ts";
 
@@ -33,12 +32,11 @@ const manifest = {
   },
   islands: {
     "./islands/AddProject.tsx": $AddProject,
+    "./islands/AddSection.tsx": $AddSection,
     "./islands/File.tsx": $File,
     "./islands/ProjectData.tsx": $ProjectData,
     "./islands/Projects.tsx": $Projects,
-    "./islands/SafeSessionStorage.ts": $SafeSessionStorage,
     "./islands/Sections.tsx": $Sections,
-    "./islands/missing-types.ts": $missing_types,
     "./islands/renderImages.tsx": $renderImages,
   },
   baseUrl: import.meta.url,
