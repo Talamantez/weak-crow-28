@@ -1,8 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
 import { safeSessionStorageSetItem } from "../util/safeSessionStorageSetItem.ts";
-import chapters from "../static/chapters.json" with { type: "json" };
-import introduction from "../static/introduction.json" with { type: "json" };
 import { Button } from "../components/Button.tsx";
 
 interface ProjectData {
@@ -23,25 +21,10 @@ const clearAllChapters = () => {
   window.location.reload();
 };
 
-const generateIntroduction = () => {
-  const { title, description, imageUrl, sections } = introduction as {
-    title: string;
-    description: string;
-    imageUrl: string;
-    sections: ({
-      title: string;
-      description: string;
-      subSections: string[];
-      chapterTitle: string;
-    } | {
-      title: string;
-      description: string;
-      subSections: string;
-      chapterTitle: string;
-    })[];
-  };
-
-  safeSessionStorageSetItem(
+const generateIntroduction = async () => {
+  const introduction = await fetch("http://localhost:8080/static/introduction.json").then((res) => res.json());
+  const { title, description, imageUrl, sections } = introduction;
+  await safeSessionStorageSetItem(
     `Chapter Manager: ${title}`,
     JSON.stringify({
       index: 0,
@@ -54,25 +37,11 @@ const generateIntroduction = () => {
   window.location.reload();
 }
 
-const generateChaptersFromJSON = () => {
-  Object.entries(chapters).forEach(([index, content]) => {
+const generateChaptersFromJSON = async () => {
+  const chapters = await fetch("http://localhost:8080/static/chapters.json").then((res) => res.json());
 
-    const { title, description, imageUrl, sections } = content as {
-      title: string;
-      description: string;
-      imageUrl: string;
-      sections: ({
-        title: string;
-        description: string;
-        subSections: string[];
-        chapterTitle: string;
-      } | {
-        title: string;
-        description: string;
-        subSections: string;
-        chapterTitle: string;
-      })[];
-    };
+  await Object.entries(chapters).forEach(([index]) => {
+    const { title, description, imageUrl, sections } = chapters[index];
     safeSessionStorageSetItem(
       `Chapter Manager: ${title}`,
       JSON.stringify({
