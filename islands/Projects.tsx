@@ -22,7 +22,7 @@ const clearAllChapters = () => {
 };
 
 const generateIntroduction = async () => {
-  const introduction = await fetch("http://localhost:8080/static/introduction.json").then((res) => res.json());
+  const introduction = await fetch("./static/introduction.json").then((res) => res.json());
   const { title, description, imageUrl, sections } = introduction;
   await safeSessionStorageSetItem(
     `Chapter Manager: ${title}`,
@@ -38,7 +38,7 @@ const generateIntroduction = async () => {
 }
 
 const generateChaptersFromJSON = async () => {
-  const chapters = await fetch("http://localhost:8080/static/chapters.json").then((res) => res.json());
+  const chapters = await fetch("./static/chapters.json").then((res) => res.json());
 
   await Object.entries(chapters).forEach(([index]) => {
     const { title, description, imageUrl, sections } = chapters[index];
