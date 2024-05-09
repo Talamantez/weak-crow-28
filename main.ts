@@ -23,33 +23,33 @@ import twindConfig from "./twind.config.ts";
 // console.log(`HTTP server running. Access it at: http://localhost:8080/`);
 // Deno.serve({ port }, handler);
 
-import { serveDir } from "https://deno.land/std@0.140.0/http/file_server.ts";
+// import { serveDir } from "https://deno.land/std@0.140.0/http/file_server.ts";
 
-const port = 8080;
-const staticDir = "static";
+// const port = 8080;
+// const staticDir = "static";
 
-const handler = async (request: Request): Promise<Response> => {
-  const pathname = new URL(request.url).pathname;
+// const handler = async (request: Request): Promise<Response> => {
+//   const pathname = new URL(request.url).pathname;
 
-  // Serve static files
-  if (pathname.startsWith("/static/")) {
-    return await serveDir(request, {
-      fsRoot: staticDir,
-      urlRoot: "static",
-      showDirListing: true,
-      enableCors: true,
-    });
-  }
+//   // Serve static files
+//   if (pathname.startsWith("/static/")) {
+//     return await serveDir(request, {
+//       fsRoot: staticDir,
+//       urlRoot: "static",
+//       showDirListing: true,
+//       enableCors: true,
+//     });
+//   }
 
-  // Dynamic request handling
-  const body = `Your user-agent is:\n\n${
-    request.headers.get("user-agent") ?? "Unknown"
-  }`;
-  return new Response(body, { status: 200 });
-};
+//   // Dynamic request handling
+//   const body = `Your user-agent is:\n\n${
+//     request.headers.get("user-agent") ?? "Unknown"
+//   }`;
+//   return new Response(body, { status: 200 });
+// };
 
-console.log(`HTTP server running. Access it at: http://localhost:${port}/`);
-Deno.serve({ port }, handler);
+// console.log(`HTTP server running. Access it at: http://localhost:${port}/`);
+// Deno.serve({ port }, handler);
 
 // import { cache } from "https://deno.land/x/cache/mod.ts";
 

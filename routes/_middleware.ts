@@ -1,5 +1,8 @@
 // routes/_middleware.ts
 import { FreshContext } from "$fresh/server.ts";
+import { serveDir } from "https://deno.land/std@0.140.0/http/file_server.ts";
+
+const staticDir = "static";
 
 export async function handler(
   req: Request,
@@ -22,6 +25,16 @@ export async function handler(
     resp.headers.set("Content-Type", "application/javascript");
   } else if (pathname.endsWith(".js.map")) {
     resp.headers.set("Content-Type", "application/json");
+  }
+
+  // Serve static files
+  if (pathname.startsWith("/static/")) {
+    return await serveDir(req, {
+      fsRoot: staticDir,
+      urlRoot: "static",
+      showDirListing: true,
+      enableCors: true,
+    });
   }
 
   return resp;
