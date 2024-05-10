@@ -2,7 +2,6 @@
 // This file SHOULD be checked into source version control.
 // This file is automatically updated during development when running `dev.ts`.
 
-import * as $_project_ from "./routes/[project].tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
 import * as $api_printChapter from "./routes/api/printChapter.ts";
@@ -12,8 +11,8 @@ import * as $index from "./routes/index.tsx";
 import * as $loader from "./routes/loader.ts";
 import * as $new_project from "./routes/new-project.tsx";
 import * as $AddProject from "./islands/AddProject.tsx";
+import * as $ChapterManager from "./islands/ChapterManager.tsx";
 import * as $File from "./islands/File.tsx";
-import * as $ProjectData from "./islands/ProjectData.tsx";
 import * as $Projects from "./islands/Projects.tsx";
 import * as $Sections from "./islands/Sections.tsx";
 import * as $renderImages from "./islands/renderImages.tsx";
@@ -21,7 +20,6 @@ import { type Manifest } from "$fresh/server.ts";
 
 const manifest = {
   routes: {
-    "./routes/[project].tsx": $_project_,
     "./routes/_app.tsx": $_app,
     "./routes/_middleware.ts": $_middleware,
     "./routes/api/printChapter.ts": $api_printChapter,
@@ -33,8 +31,8 @@ const manifest = {
   },
   islands: {
     "./islands/AddProject.tsx": $AddProject,
+    "./islands/ChapterManager.tsx": $ChapterManager,
     "./islands/File.tsx": $File,
-    "./islands/ProjectData.tsx": $ProjectData,
     "./islands/Projects.tsx": $Projects,
     "./islands/Sections.tsx": $Sections,
     "./islands/renderImages.tsx": $renderImages,
