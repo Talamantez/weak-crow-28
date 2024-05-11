@@ -1,8 +1,8 @@
-import { safeSessionStorageGetItem } from "./SafeSessionStorage.ts";
+import { safeSessionStorageGetItem } from "./safeSessionStorageGetItem.ts";
 
 
 export async function printChapter({ title }: { title: string; }): Promise<void> {
-  const stored = await safeSessionStorageGetItem(`Chapter Manager: ${title}`);
+  const stored = await safeSessionStorageGetItem({ key: `Chapter Manager: ${title}` });
   console.log(stored);
   fetch("/api/printChapterWithCover", {
     method: "POST",

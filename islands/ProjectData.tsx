@@ -6,9 +6,9 @@ import ClickToEdit from "../components/ClickToEdit.tsx";
 import ClickToEditTextArea from "../components/ClickToEditTextArea.tsx";
 import {
   safeSessionStorageGetItem,
-  safeSessionStorageRemoveItem,
-  safeSessionStorageSetItem,
-} from "../util/SafeSessionStorage.ts";
+} from "../util/safeSessionStorageGetItem.ts";
+import { safeSessionStorageRemoveItem } from "../util/safeSessionStorageRemoveItem.ts";
+import { safeSessionStorageSetItem } from "../util/safeSessionStorageSetItem.ts";
 import { updateChapterDescription } from "../util/updateChapterDescription.ts";
 import { printChapter } from "../util/printChapter.ts";
 import { updateSectionDescription } from "../util/updateSectionDescription.ts";
@@ -30,8 +30,8 @@ export default function ProjectData({ title }: { title: string }) {
   // Step 1: Function to save scroll position
 
   function saveScrollPosition(): void {
-    safeSessionStorageSetItem("scrollX", globalThis.scrollX.toString());
-    safeSessionStorageSetItem("scrollY", globalThis.scrollY.toString());
+    safeSessionStorageSetItem({ key: "scrollX", value: globalThis.scrollX.toString() });
+    safeSessionStorageSetItem({ key: "scrollY", value: globalThis.scrollY.toString() });
   }
 
   // Step 2: Save scroll position on scroll
@@ -39,8 +39,8 @@ export default function ProjectData({ title }: { title: string }) {
 
   // Step 3: Set scroll position on component mount
   useEffect(() => {
-    const scrollX = safeSessionStorageGetItem("scrollX");
-    const scrollY = safeSessionStorageGetItem("scrollY");
+    const scrollX = safeSessionStorageGetItem({ key: "scrollX" });
+    const scrollY = safeSessionStorageGetItem({ key: "scrollY" });
 
     if (scrollX !== null && scrollY !== null) {
       // Delay the scroll until after the page has fully loaded
@@ -55,7 +55,7 @@ export default function ProjectData({ title }: { title: string }) {
   }, []);
 
   useEffect(() => {
-    const storedString = safeSessionStorageGetItem(`Chapter Manager: ${title}`);
+    const storedString = safeSessionStorageGetItem({ key: `Chapter Manager: ${title}` });
 
     if (storedString) {
       const stored = JSON.parse(storedString);
@@ -72,7 +72,7 @@ export default function ProjectData({ title }: { title: string }) {
   }, []);
 
   useEffect(() => {
-    const storedString = safeSessionStorageGetItem(`Chapter Manager: ${title}`);
+    const storedString = safeSessionStorageGetItem({ key: `Chapter Manager: ${title}` });
 
     if (storedString) {
       const stored = JSON.parse(storedString);
@@ -88,23 +88,24 @@ export default function ProjectData({ title }: { title: string }) {
   }, [isAddingSection]);
 
   const deleteChapter = () => {
-    safeSessionStorageRemoveItem(`Chapter Manager: ${title}`);
+    safeSessionStorageRemoveItem({ key: `Chapter Manager: ${title}` });
     window.location.href = "/";
   };
 
   const deleteSection = (section: Section) => {
     const tempSections = sections.filter((t) => t.title !== section.title);
     const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${title}`)!,
+      safeSessionStorageGetItem({ key: `Chapter Manager: ${title}` })!,
     );
     safeSessionStorageSetItem(
-      "Chapter Manager: " + title,
-      JSON.stringify({
+    {
+      key: "Chapter Manager: " + title, value: JSON.stringify({
         title: title,
         description: description,
         imageUrl: stored.imageUrl,
         sections: tempSections,
-      }),
+      })
+    },
     );
     location.reload();
   };
@@ -126,16 +127,17 @@ export default function ProjectData({ title }: { title: string }) {
       updatedSection,
     );
     const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${title}`)!,
+      safeSessionStorageGetItem({ key: `Chapter Manager: ${title}` })!,
     );
     safeSessionStorageSetItem(
-      "Chapter Manager: " + title,
-      JSON.stringify({
+    {
+      key: "Chapter Manager: " + title, value: JSON.stringify({
         title: title,
         description: description,
         imageUrl: stored.imageUrl,
         sections: updatedSections,
-      }),
+      })
+    },
     );
     location.reload();
   };
@@ -401,7 +403,7 @@ function AddSection(
     let newSections: Section[] = [];
 
     const stored = safeSessionStorageGetItem(
-      `Chapter Manager: ${projectTitle}`,
+    { key: `Chapter Manager: ${projectTitle}` },
     );
 
     const chapter = JSON.parse(stored as string);
@@ -411,13 +413,14 @@ function AddSection(
       else newSections = [...sections, section];
 
       safeSessionStorageSetItem(
-        "Chapter Manager: " + projectTitle,
-        JSON.stringify({
+      {
+        key: "Chapter Manager: " + projectTitle, value: JSON.stringify({
           title: projectTitle,
           description: chapter.description,
           imageUrl: chapter.imageUrl,
           sections: newSections,
-        }),
+        })
+      },
       );
     }
     location.reload();
@@ -492,7 +495,7 @@ function AddSubSection(
       else newSubSections = [...subSections, subSection];
 
       const storedString = safeSessionStorageGetItem(
-        `Chapter Manager: ${chapterTitle}`,
+      { key: `Chapter Manager: ${chapterTitle}` },
       );
       if (!storedString) return console.error("No stored data found");
       const chapter = JSON.parse(storedString as string);
@@ -507,15 +510,16 @@ function AddSubSection(
       });
 
       safeSessionStorageSetItem(
-        "Chapter Manager: " + chapterTitle,
-        JSON.stringify(
+      {
+        key: "Chapter Manager: " + chapterTitle, value: JSON.stringify(
           {
             title: chapter.title,
             description: chapter.description,
             imageUrl: chapter.imageUrl,
             sections: newSections,
-          },
-        ),
+          }
+        )
+      },
       );
     }
 

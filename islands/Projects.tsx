@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
-import { safeSessionStorageSetItem } from "../util/SafeSessionStorage.ts";
+import { safeSessionStorageSetItem } from "../util/safeSessionStorageSetItem.ts";
 import chapters from "../static/chapters.json" with { type: "json" };
 import introduction from "../static/introduction.json" with { type: "json" };
 import { Button } from "../components/Button.tsx";
@@ -43,14 +43,15 @@ const generateIntroduction = () => {
   };
 
   safeSessionStorageSetItem(
-    `Chapter Manager: ${title}`,
-    JSON.stringify({
+  {
+    key: `Chapter Manager: ${title}`, value: JSON.stringify({
       index: 0,
       title: title,
       description: description,
       sections: sections,
       imageUrl: imageUrl,
-    }),
+    })
+  },
   );
   window.location.reload();
 }
@@ -75,14 +76,15 @@ const generateChaptersFromJSON = () => {
       })[];
     };
     safeSessionStorageSetItem(
-      `Chapter Manager: ${title}`,
-      JSON.stringify({
+    {
+      key: `Chapter Manager: ${title}`, value: JSON.stringify({
         index: index,
         title: title,
         description: description,
         sections: sections,
         imageUrl: imageUrl,
-      }),
+      })
+    },
     );
   });
   window.location.reload();

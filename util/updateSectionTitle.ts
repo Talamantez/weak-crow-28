@@ -1,22 +1,24 @@
 import { Section } from "./SectionData.ts";
-import { safeSessionStorageGetItem, safeSessionStorageSetItem } from "./SafeSessionStorage.ts";
+import { getStoredData } from "./getStoredData.ts";
+import { reloadPage } from "./reloadPage.ts";
+import { updateStoredData } from "./updateStoredData.ts";
 
+export function updateSectionTitle({
+  newText,
+  title,
+  chapterTitle,
+}: {
+  newText: string;
+  title: string;
+  chapterTitle: string;
+}): void {
+  if (newText.trim() === "") return reloadPage();
 
-export function updateSectionTitle(
-  { newText, title, chapterTitle }: { newText: string; title: string; chapterTitle: string; }
-): void {
-  if (newText.trim() === "") return window.location.reload();
-
-  const stored = JSON.parse(
-    safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!
+  const stored = getStoredData({ chapterTitle });
+  const updatedSections = stored.sections.map((s: Section) =>
+    s.title === title ? { ...s, title: newText } : s
   );
-  safeSessionStorageSetItem(
-    `Chapter Manager: ${chapterTitle}`,
-    JSON.stringify({
-      ...stored,
-      sections: stored.sections.map((s: Section) => s.title === title ? { ...s, title: newText } : s
-      ),
-    })
-  );
-  window.location.reload();
+  const updatedData = { ...stored, sections: updatedSections };
+  updateStoredData(updatedData); // Fix: Pass updatedData as a single argument
+  reloadPage();
 }

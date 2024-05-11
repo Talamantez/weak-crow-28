@@ -1,24 +1,22 @@
-import {
-  safeSessionStorageGetItem,
-  safeSessionStorageRemoveItem,
-  safeSessionStorageSetItem
-} from "./SafeSessionStorage.ts";
+import { getStoredData } from "./getStoredData.ts";
+import { reloadPage } from "./reloadPage.ts";
+import { safeSessionStorageRemoveItem } from "./safeSessionStorageRemoveItem.ts";
+import { updateStoredData } from "./updateStoredData.ts";
 
 
-export function updateChapterTitle({ newText, chapterTitle }: { newText: string; chapterTitle: string; }): void {
-  if (newText.trim() === "") return window.location.reload();
+export function updateChapterTitle({
+  newText,
+  chapterTitle,
+}: {
+  newText: string;
+  chapterTitle: string;
+}): void {
+  if (newText.trim() === "") return reloadPage();
 
-  const stored = JSON.parse(
-    safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!
-  );
-
-  const updatedStored = { ...stored, title: newText };
-  safeSessionStorageSetItem(
-    `Chapter Manager: ${newText}`,
-    JSON.stringify(updatedStored)
-  );
-  safeSessionStorageRemoveItem(`Chapter Manager: ${chapterTitle}`);
-
-  window.history.pushState({}, "", `/${newText}`);
-  window.location.reload();
+  const stored = getStoredData({ chapterTitle });
+  const updatedData = { ...stored, title: newText };
+  updateStoredData(updatedData); // Fix: Pass a single argument to the updateStoredData function
+  safeSessionStorageRemoveItem({ key: `Chapter Manager: ${chapterTitle}` });
+  globalThis.history.pushState({}, "", `/${newText}`);
+  reloadPage();
 }
