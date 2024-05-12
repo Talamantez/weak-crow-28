@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
 import ClickToEditHeading from "../components/ClickToEditHeading.tsx";
@@ -9,9 +10,13 @@ import {
 import { safeSessionStorageRemoveItem } from "../util/safeSessionStorageRemoveItem.ts";
 import { safeSessionStorageGetItem } from "../util/safeSessionStorageGetItem.ts";
 import { updateChapterTitle } from "../util/updateChapterTitle.tsx";
+import { updateChapterDescription } from "../util/updateChapterDescription.ts";
+import { updateSectionTitle } from "../util/updateSectionTitle.ts";
 import { updateSubSection } from "../util/updateSubSection.tsx";
 import { AddSubSection } from "../util/AddSubSection.tsx";
 import { AddSection } from "../util/AddSection.tsx";
+import { updateSectionDescription } from "../util/updateSectionDescription.ts";
+import { printChapter } from "../util/printChapter.ts";
 
 export default function ProjectData({ title }: { title: string; }) {
   const [description, setDescription] = useState("");
@@ -25,9 +30,10 @@ export default function ProjectData({ title }: { title: string; }) {
   const [isAddingSection, setIsAddingSection] = useState(false);
   const [isAddingSubSection, setIsAddingSubSection] = useState(false);
   // Step 1: Function to save scroll position
-  function saveScrollPosition() {
-    safeSessionStorageSetItem("scrollX", globalThis.scrollX.toString());
-    safeSessionStorageSetItem("scrollY", globalThis.scrollY.toString());
+
+  function saveScrollPosition(): void {
+    safeSessionStorageSetItem({ key: "scrollX", value: globalThis.scrollX.toString() });
+    safeSessionStorageSetItem({ key: "scrollY", value: globalThis.scrollY.toString() });
   }
 
   // Step 2: Save scroll position on scroll
@@ -35,13 +41,36 @@ export default function ProjectData({ title }: { title: string; }) {
 
   // Step 3: Set scroll position on component mount
   useEffect(() => {
-    const scrollX = safeSessionStorageGetItem("scrollX");
-    const scrollY = safeSessionStorageGetItem("scrollY");
+    const scrollXKey = "scrollX";
+    const scrollYKey = "scrollY";
+
+    const scrollX = safeSessionStorageGetItem({
+      key: scrollXKey,
+      getItem: (key: string) => {
+        return sessionStorage.getItem(key);
+      },
+      logError: (message: string) => {
+        console.error(message);
+      }
+    });
+
+    const scrollY = safeSessionStorageGetItem({
+      key: scrollYKey,
+      getItem: (key: string) => {
+        return sessionStorage.getItem(key);
+      },
+      logError: (message: string) => {
+        console.error(message);
+      }
+    });
+
+    const parsedX = scrollX ? JSON.parse(scrollX as string) : {};
+    const parsedY = scrollY ? JSON.parse(scrollY as string) : {};
 
     if (scrollX !== null && scrollY !== null) {
       // Delay the scroll until after the page has fully loaded
       setTimeout(() => {
-        globalThis.scrollTo(parseInt(scrollX), parseInt(scrollY));
+        globalThis.scrollTo(parseInt(parsedX), parseInt(parsedY));
       }, 0);
     }
     return () => {
@@ -51,14 +80,23 @@ export default function ProjectData({ title }: { title: string; }) {
   }, []);
 
   useEffect(() => {
-    const storedString = safeSessionStorageGetItem(`Chapter Manager: ${title}`);
+    const myKey = "Chapter Manager: " + title;
+    const stored = safeSessionStorageGetItem({
+      key: myKey,
+      getItem: (key: string) => {
+        return sessionStorage.getItem(key);
+      },
+      logError: (message: string) => {
+        console.error(message);
+      }
+    });
 
-    if (storedString) {
-      const stored = JSON.parse(storedString);
+    if (stored) {
+      const parsedStored = stored ? JSON.parse(stored as string) : {};
 
-      if (stored && typeof stored === "object") {
-        setDescription(stored.description);
-        setSections(stored.sections);
+      if (parsedStored && typeof parsedStored === "object") {
+        setDescription(parsedStored.description);
+        setSections(parsedStored.sections);
       } else {
         console.error("Stored data is not an object");
       }
@@ -68,13 +106,22 @@ export default function ProjectData({ title }: { title: string; }) {
   }, []);
 
   useEffect(() => {
-    const storedString = safeSessionStorageGetItem(`Chapter Manager: ${title}`);
+    const myKey = "Chapter Manager: " + title;
 
-    if (storedString) {
-      const stored = JSON.parse(storedString);
+    const stored = safeSessionStorageGetItem({
+      key: myKey,
+      getItem: (key: string) => {
+        return sessionStorage.getItem(key);
+      },
+      logError: (message: string) => {
+        console.error(message);
+      }
+    });
+    if (stored) {
+      const parsedStored = stored ? JSON.parse(stored as string) : {};
 
-      if (stored && typeof stored === "object") {
-        setSections(stored.sections);
+      if (parsedStored && typeof parsedStored === "object") {
+        setSections(parsedStored.sections);
       } else {
         console.error("Stored data is not an object");
       }
@@ -84,24 +131,31 @@ export default function ProjectData({ title }: { title: string; }) {
   }, [isAddingSection]);
 
   const deleteChapter = () => {
-    safeSessionStorageRemoveItem(`Chapter Manager: ${title}`);
+    safeSessionStorageRemoveItem({ key: `Chapter Manager: ${title}` });
     window.location.href = "/";
   };
 
   const deleteSection = (section: Section) => {
+    const myKey = "Chapter Manager: " + title;
     const tempSections = sections.filter((t) => t.title !== section.title);
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${title}`)!
-    );
+    const stored = safeSessionStorageGetItem({
+      key: myKey,
+      getItem: (key: string) => {
+        return sessionStorage.getItem(key);
+      },
+      logError: (message: string) => {
+        console.error(message);
+      }
+    });
+    const parsedStored = stored ? JSON.parse(stored as string) : {};
     safeSessionStorageSetItem(
-      "Chapter Manager: " + title,
-      JSON.stringify({
+    {
+      key: "Chapter Manager: " + title, value: JSON.stringify({
         title: title,
         description: description,
-        imageUrl: stored.imageUrl,
+        imageUrl: parsedStored.imageUrl,
         sections: tempSections,
-      })
-    );
+      })});
     location.reload();
   };
 
@@ -110,7 +164,7 @@ export default function ProjectData({ title }: { title: string; }) {
   };
   const deleteSubSection = (sectionTitle: string, subSection: string) => {
     const section = findSection(sections, sectionTitle);
-
+    const myKey = "Chapter Manager: " + title;
     if (!section) return console.log(`Section ${sectionTitle} not found`);
 
     const updatedSection = removeSubSection(section, subSection);
@@ -121,17 +175,26 @@ export default function ProjectData({ title }: { title: string; }) {
       sectionTitle,
       updatedSection
     );
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${title}`)!
-    );
+    const stored = safeSessionStorageGetItem({
+      key: myKey,
+      getItem: (key: string) => {
+        return sessionStorage.getItem(key);
+      },
+      logError: (message: string) => {
+        console.error(message);
+      }
+    });
+  
+    const parsedStored = stored ? JSON.parse(stored as string) : {};
     safeSessionStorageSetItem(
-      "Chapter Manager: " + title,
-      JSON.stringify({
+    {
+      key: "Chapter Manager: " + title, value: JSON.stringify({
         title: title,
         description: description,
-        imageUrl: stored.imageUrl,
+        imageUrl: parsedStored.imageUrl,
         sections: updatedSections,
       })
+    },
     );
     location.reload();
   };
@@ -160,95 +223,6 @@ export default function ProjectData({ title }: { title: string; }) {
     });
   };
 
-  function updateSectionTitle(
-    newText: string,
-    title: string,
-    chapterTitle: string
-  ): void {
-    if (newText.trim() === "") return window.location.reload();
-
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!
-    );
-    safeSessionStorageSetItem(
-      `Chapter Manager: ${chapterTitle}`,
-      JSON.stringify({
-        ...stored,
-        sections: stored.sections.map((s: Section) => s.title === title ? { ...s, title: newText } : s
-        ),
-      })
-    );
-    window.location.reload();
-  }
-  function updateSectionDescription(
-    newText: string,
-    title: string,
-    chapterTitle: string
-  ): void {
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!
-    );
-    safeSessionStorageSetItem(
-      `Chapter Manager: ${chapterTitle}`,
-      JSON.stringify({
-        ...stored,
-        sections: stored.sections.map((s: Section) => s.title === title ? { ...s, description: newText } : s
-        ),
-      })
-    );
-    window.location.reload();
-  }
-  
-  function updateChapterDescription(
-    newText: string
-  ): void {
-    if (newText.trim() === "") return window.location.reload();
-
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${title}`)!
-    );
-    safeSessionStorageSetItem(
-      `Chapter Manager: ${title}`,
-      JSON.stringify({ ...stored, description: newText })
-    );
-    window.location.reload();
-  }
-
-  async function printChapter(): Promise<void> {
-    const stored = await safeSessionStorageGetItem(`Chapter Manager: ${title}`);
-    console.log(stored);
-    fetch("/api/printChapterWithCover", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: stored,
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.blob();
-        } else {
-          throw new Error("Request failed.");
-        }
-      })
-      .then((blob) => {
-        // Create a temporary URL for the blob
-        const url = URL.createObjectURL(blob);
-
-        // Create a temporary link element and trigger the download
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "output.pdf";
-        link.click();
-
-        // Clean up the temporary URL
-        URL.revokeObjectURL(url);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }
-
   return (
     <>
       <div class="w-full flex items-center justify-between flex-col md:flex-row">
@@ -261,16 +235,20 @@ export default function ProjectData({ title }: { title: string; }) {
           </a>
           <ClickToEditHeading 
             text={title}
-            onTextChange={(newText) => updateChapterTitle(newText, title)} />
+            onTextChange={(newText) =>
+              updateChapterTitle(newText, title)}
+          />
           {description !== "" && (
             <ClickToEditTextArea 
               text={description}
-              onTextChange={(newText) => updateChapterDescription(newText)} />
+              onTextChange={(newText) =>
+                updateChapterDescription({ newText, title })}
+            />
           )}
         </div>
         <div class="w-full md:w-1/5 flex items-center justify-start md:justify-end">
-          <button 
-            onClick={() => printChapter()}
+          <button
+            onClick={() => printChapter({ title })}
             class="bg-green-500 hover:bg-green-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
           >
             Print Chapter
@@ -294,14 +272,26 @@ export default function ProjectData({ title }: { title: string; }) {
                   <h1 class="font-bold">
                     <ClickToEdit 
                       text={section.title}
-                      onTextChange={(newText) => updateSectionTitle(newText, section.title, title)} />
+                      onTextChange={(newText) =>
+                        updateSectionTitle({
+                          newText,
+                          title: section.title,
+                          chapterTitle: title,
+                        })}
+                    />
                   </h1>
                 )}
                 {section.description && (
                   <p>
                     <ClickToEditTextArea 
                       text={section.description}
-                      onTextChange={(newText) => updateSectionDescription(newText, section.title, title)} />
+                      onTextChange={(newText) =>
+                        updateSectionDescription({
+                          newText,
+                          title: section.title,
+                          chapterTitle: title,
+                        })}
+                    />
                   </p>
                 )}
                 {section.subSections &&
@@ -313,12 +303,14 @@ export default function ProjectData({ title }: { title: string; }) {
                             <ClickToEditTextArea 
                               text={subSection}
                               cols={70}
-                              onTextChange={(newText) => updateSubSection(
-                                newText,
-                                subSection,
-                                section.title,
-                                title
-                              )} />
+                              onTextChange={(newText) =>
+                                updateSubSection(
+                                    newText,
+                                    subSection,
+                                    section.title,
+                                    title,
+                                )}
+                            />
                           </p>
                         )}
                       </div>
@@ -421,8 +413,3 @@ export default function ProjectData({ title }: { title: string; }) {
     </>
   );
 }
-
-
-
-
-

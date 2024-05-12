@@ -1,4 +1,4 @@
-export function safeSessionStorageRemoveItem({ key, removeItem, logError }: {
+export function safeSessionStorageRemoveItemMock({ key, removeItem, logError }: {
   key: string;
   removeItem?: (key: string) => void;
   logError?: (message: string) => void;

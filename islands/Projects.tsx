@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
 import { safeSessionStorageSetItem } from "../util/safeSessionStorageSetItem.ts";
 import { Button } from "../components/Button.tsx";
+import { safeSessionStorageGetItem } from "../util/safeSessionStorageGetItem.ts";
 
 interface ProjectData {
   index: number;
@@ -24,16 +25,24 @@ const clearAllChapters = () => {
 const generateIntroduction = async () => {
   const introduction = await fetch("./static/introduction.json").then((res) => res.json());
   const { title, description, imageUrl, sections } = introduction;
-  await safeSessionStorageSetItem(
-    `Chapter Manager: ${title}`,
-    JSON.stringify({
-      index: 0,
-      title: title,
-      description: description,
-      sections: sections,
-      imageUrl: imageUrl,
-    }),
-  );
+  const myKey = `Chapter Manager: ${title}`;
+  const myObject = JSON.stringify({
+    index: 0,
+    title: title,
+    description: description,
+    sections: sections,
+    imageUrl: imageUrl,
+  });
+  await safeSessionStorageSetItem({
+    key: myKey,
+    value: myObject,
+    setItem: (key: string, value: string) => {
+      sessionStorage.setItem(key, value);
+    },
+    logError: (message: string) => {
+      console.error(message);
+    }
+  });
   window.location.reload();
 }
 
@@ -43,14 +52,15 @@ const generateChaptersFromJSON = async () => {
   await Object.entries(chapters).forEach(([index]) => {
     const { title, description, imageUrl, sections } = chapters[index];
     safeSessionStorageSetItem(
-      `Chapter Manager: ${title}`,
-      JSON.stringify({
+    {
+      key: `Chapter Manager: ${title}`, value: JSON.stringify({
         index: index,
         title: title,
         description: description,
         sections: sections,
         imageUrl: imageUrl,
-      }),
+      })
+    },
     );
   });
   window.location.reload();
@@ -71,8 +81,18 @@ export default function Projects() {
     for (let i = 0; i < sessionStorage.length; i++) {
       const key = sessionStorage.key(i);
       if (key?.includes("Chapter")) {
-        const stored = JSON.parse(sessionStorage.getItem(key)!);
-        tempProjects.push(stored);
+
+        const stored = safeSessionStorageGetItem({
+          key: key,
+          getItem: (key: string) => {
+            return sessionStorage.getItem(key);
+          },
+          logError: (message: string) => {
+            console.error(message);
+          }
+        });
+        const parsedStored = stored ? JSON.parse(stored as string) : {};
+        tempProjects.push(parsedStored);
       }
     }
     sortedTempProjects = tempProjects.sort((a, b) => a.index - b.index);
