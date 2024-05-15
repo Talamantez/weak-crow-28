@@ -5,6 +5,7 @@
 import * as $_project_ from "./routes/[project].tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
+import * as $api_printAllChapters from "./routes/api/printAllChapters.ts";
 import * as $api_printChapter from "./routes/api/printChapter.ts";
 import * as $api_printChapterWithCover from "./routes/api/printChapterWithCover.ts";
 import * as $api_upload from "./routes/api/upload.ts";
@@ -24,6 +25,7 @@ const manifest = {
     "./routes/[project].tsx": $_project_,
     "./routes/_app.tsx": $_app,
     "./routes/_middleware.ts": $_middleware,
+    "./routes/api/printAllChapters.ts": $api_printAllChapters,
     "./routes/api/printChapter.ts": $api_printChapter,
     "./routes/api/printChapterWithCover.ts": $api_printChapterWithCover,
     "./routes/api/upload.ts": $api_upload,

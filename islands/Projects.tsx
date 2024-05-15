@@ -1,7 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
+import { safeSessionStorageGetItem } from "../util/safeSessionStorageGetItem.ts";
 import { safeSessionStorageSetItem } from "../util/safeSessionStorageSetItem.ts";
-import { Button } from "../components/Button.tsx";
 
 interface ProjectData {
   index: number;
@@ -9,6 +9,51 @@ interface ProjectData {
   description: string;
   sections: Section[];
   imageUrl?: string;
+}
+
+async function printAllChapters(): Promise<void> {
+  // Retrieve all chapters from session storage
+  const chapters = [];
+  for (let i = 0; i < sessionStorage.length; i++) {
+    const key = sessionStorage.key(i);
+    if (key && key.startsWith("Chapter Manager:")) {
+      const stored = await safeSessionStorageGetItem(key);
+      if (stored) {
+        chapters.push(JSON.parse(stored));
+      }
+    }
+  }
+
+  fetch("/api/printAllChapters", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(chapters),
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.blob();
+      } else {
+        throw new Error("Request failed.");
+      }
+    })
+    .then((blob) => {
+      // Create a temporary URL for the blob
+      const url = URL.createObjectURL(blob);
+
+      // Create a temporary link element and trigger the download
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "output.pdf";
+      link.click();
+
+      // Clean up the temporary URL
+      URL.revokeObjectURL(url);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 }
 
 const clearAllChapters = () => {
@@ -22,7 +67,9 @@ const clearAllChapters = () => {
 };
 
 const generateIntroduction = async () => {
-  const introduction = await fetch("./static/introduction.json").then((res) => res.json());
+  const introduction = await fetch("./static/introduction.json").then((res) =>
+    res.json()
+  );
   const { title, description, imageUrl, sections } = introduction;
   await safeSessionStorageSetItem(
     `Chapter Manager: ${title}`,
@@ -35,10 +82,12 @@ const generateIntroduction = async () => {
     }),
   );
   window.location.reload();
-}
+};
 
 const generateChaptersFromJSON = async () => {
-  const chapters = await fetch("./static/chapters.json").then((res) => res.json());
+  const chapters = await fetch("./static/chapters.json").then((res) =>
+    res.json()
+  );
 
   await Object.entries(chapters).forEach(([index]) => {
     const { title, description, imageUrl, sections } = chapters[index];
@@ -82,9 +131,30 @@ export default function Projects() {
   return (
     <>
       <div class="flex">
-        <Button onClick={generateIntroduction}>Generate Introduction</Button>
-        <Button onClick={generateChaptersFromJSON}>Generate Chapters</Button>
-        <Button onClick={clearAllChapters}>Clear All Chapters</Button>
+        <button
+          onClick={() => printAllChapters()}
+          class="bg-green-500 hover:bg-green-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
+        >
+          Print All Chapters
+        </button>
+        <button
+          onClick={generateIntroduction}
+          class="bg-green-500 hover:bg-green-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
+        >
+          Generate Introduction
+        </button>
+        <button
+          onClick={generateChaptersFromJSON}
+          class="bg-green-500 hover:bg-green-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
+        >
+          Generate Chapters
+        </button>
+        <button
+          onClick={clearAllChapters}
+          class="bg-green-500 hover:bg-green-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
+        >
+          Clear All Chapters
+        </button>
       </div>
       <div class="grid grid-cols-1 gap-y-5 md:(grid-cols-2 gap-x-20 gap-y-10) w-full">
         {projects.length > 0 && projects[0].title.length > 0 &&
