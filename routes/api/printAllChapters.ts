@@ -393,7 +393,9 @@ export const handler: Handlers = {
 
     const documentCoverPage = await createDocumentCoverPage(pdfDoc, font, "Resource Roadmap", chapters);
     pdfDoc.insertPage(0, documentCoverPage);
-
+    // get last page number and remove it
+    const lastPage = pdfDoc.getPages().length;
+    pdfDoc.removePage(lastPage - 1);
     // Serialize the PDF
     const pdfBytes = await pdfDoc.save();
 
