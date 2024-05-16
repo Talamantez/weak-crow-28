@@ -376,8 +376,6 @@ export const handler: Handlers = {
 
     let pageNumber = 1;
 
-    // const documentCoverPage = await createDocumentCoverPage(pdfDoc, font, "Resource Roadmap", chapters);
-    // pdfDoc.insertPage(0, documentCoverPage);
     // pageNumber++;
 
     for (const chapter of chapters) {
@@ -396,8 +394,11 @@ export const handler: Handlers = {
       pageNumber++;
     }
 
+    // Add header and footer to each page (excluding the cover pages and table of contents)
+    await addHeaderAndFooter(pdfDoc, font);
+
     // Create the table of contents page and insert it after the document cover page
-    const tocPage = await pdfDoc.insertPage(1);
+    const tocPage = await pdfDoc.insertPage(0);
     const { width, height } = tocPage.getSize();
 
     let y = height - 70;
@@ -444,9 +445,6 @@ export const handler: Handlers = {
 
     const documentCoverPage = await createDocumentCoverPage(pdfDoc, font, "Resource Roadmap", chapters);
     pdfDoc.insertPage(0, documentCoverPage);
-
-    // Add header and footer to each page (excluding the cover pages and table of contents)
-    await addHeaderAndFooter(pdfDoc, font);
 
     // Serialize the PDF
     const pdfBytes = await pdfDoc.save();
