@@ -97,109 +97,100 @@ async function createCoverPage(
     myHeight -= 100;
   }
 }
-async function createChapterPage(
-  pdfDoc: PDFDocument,
-  font: any,
-  chapter: any,
-): Promise<void> {
-  async function createChapterPage(
-    pdfDoc: PDFDocument,
-    font: any,
-    chapter: any,
-  ): Promise<void> {
-    if (!chapter.title) {
-      console.log("Skipping chapter with undefined title");
-      return;
-    }
 
-  console.log(`Rendering chapter: ${chapter.title}`);
-  let page = pdfDoc.addPage();
-  let { width, height } = page.getSize();
+export const handler: Handlers = {
+  async POST(req) {
+    const requestBody = await req.json();
 
-  let y = height - 70;
+    console.log(requestBody);
+    const pdfDoc = await PDFDocument.create();
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-  // Draw chapter title
-  const myTitle = wrapText(chapter.title, width - 90, font, 24);
-  const lines = myTitle.split("\n");
-  for (const line of lines) {
-    if (y < 100) {
-      page = pdfDoc.addPage();
-      ({ width, height } = page.getSize());
-      y = height - 70;
-    }
+    const chapter = requestBody;
 
-    page.drawText(line, {
-      x: 50,
-      y,
+    // Create the cover page with an image from localStorage
+    await createCoverPage(
+      pdfDoc,
       font,
-      size: 24,
-      color: rgb(0, 0, 0),
-    });
-    y -= font.heightAtSize(24);
-  }
-
-  // Draw chapter description
-  page.drawText(chapter.description, {
-    x: 50,
-    y,
-    font,
-    size: 12,
-    color: rgb(0, 0, 0),
-  });
-  y -= font.heightAtSize(12) + 10;
-
-  for (const section of chapter.sections) {
-    if (y < 100) {
-      page = pdfDoc.addPage();
-      ({ width, height } = page.getSize());
-      y = height - 70;
-    }
-
-    // Draw section title
-    page.drawText(section.title, {
-      x: 50,
-      y,
-      font,
-      size: 18,
-      color: rgb(0, 0, 0),
-    });
-    y -= font.heightAtSize(18) + 10;
-
-    // Draw section description
-    const mySectionDescription = wrapText(
-      section.description,
-      width - 90,
-      font,
-      12,
+      chapter.title,
+      chapter.imageUrl,
     );
-    const sectionLines = mySectionDescription.split("\n");
-    for (const line of sectionLines) {
+
+    console.log(`Rendering chapter: ${chapter.title}`);
+    let page = pdfDoc.addPage();
+    let { width, height } = page.getSize();
+
+    let y = height - 70;
+
+    // Draw chapter title
+    // Convert to wrap text
+    const myTitle = wrapText(chapter.title, width - 90, font, 24);
+    const lines = myTitle.split("\n");
+    for (const line of lines) {
+      // Check if there's enough space on the current page
       if (y < 100) {
+        // Add a new page if there's not enough space
         page = pdfDoc.addPage();
         ({ width, height } = page.getSize());
         y = height - 70;
       }
+
       page.drawText(line, {
         x: 50,
         y,
         font,
-        size: 12,
+        size: 24,
         color: rgb(0, 0, 0),
       });
-      y -= font.heightAtSize(12) + 10;
+      y -= font.heightAtSize(24);
     }
 
-    // Draw subsections
-    for (const subSection of section.subSections) {
-      const mySubSection = wrapText(subSection, width - 90, font, 12);
-      const lines = mySubSection.split("\n");
-      for (const line of lines) {
+    // Draw chapter description
+    page.drawText(chapter.description, {
+      x: 50,
+      y,
+      font,
+      size: 12,
+      color: rgb(0, 0, 0),
+    });
+    y -= font.heightAtSize(12) + 10;
+
+    for (const section of chapter.sections) {
+      // Check if there's enough space on the current page
+      if (y < 100) {
+        // Add a new page if there's not enough space
+        page = pdfDoc.addPage();
+        ({ width, height } = page.getSize());
+        y = height - 70;
+      }
+
+      // Draw section title
+      page.drawText(section.title, {
+        x: 50,
+        y,
+        font,
+        size: 18,
+        color: rgb(0, 0, 0),
+      });
+      y -= font.heightAtSize(18) + 10;
+
+      // Draw section description
+      // Convert to wrap text
+      const mySectionDescription = wrapText(
+        section.description,
+        width - 90,
+        font,
+        12,
+      );
+      const sectionLines = mySectionDescription.split("\n");
+      for (const line of sectionLines) {
+        // Check if there's enough space on the current page
         if (y < 100) {
+          // Add a new page if there's not enough space
           page = pdfDoc.addPage();
           ({ width, height } = page.getSize());
           y = height - 70;
         }
-
         page.drawText(line, {
           x: 50,
           y,
@@ -207,62 +198,64 @@ async function createChapterPage(
           size: 12,
           color: rgb(0, 0, 0),
         });
-        y -= font.heightAtSize(12);
+        y -= font.heightAtSize(12) + 10;
       }
-      y -= 10;
+
+      // Draw subsections
+      for (const subSection of section.subSections) {
+        // Convert to wrap text
+        const mySubSection = wrapText(subSection, width - 90, font, 12);
+        const lines = mySubSection.split("\n");
+        for (const line of lines) {
+          // Check if there's enough space on the current page
+          if (y < 100) {
+            // Add a new page if there's not enough space
+            page = pdfDoc.addPage();
+            ({ width, height } = page.getSize());
+            y = height - 70;
+          }
+
+          page.drawText(line, {
+            x: 50,
+            y,
+            font,
+            size: 12,
+            color: rgb(0, 0, 0),
+          });
+          y -= font.heightAtSize(12);
+        }
+        y -= 10;
+      }
+
+      y -= 20; // Add extra spacing between sections
     }
 
-    y -= 20;
-  }
-}
+    // Add header and footer to each page (excluding the cover page)
+    const pages = pdfDoc.getPages();
+    for (let i = 1; i < pages.length; i++) {
+      const page = pages[i];
+      const { width, height } = page.getSize();
 
-async function addHeaderAndFooter(pdfDoc: PDFDocument, font: any): Promise<void> {
-  const pages = pdfDoc.getPages();
-  for (let i = 1; i < pages.length; i++) {
-    const page = pages[i];
-    const { width, height } = page.getSize();
+      // Draw header
+      const headerText = "Resource Roadmap";
+      const headerTextWidth = font.widthOfTextAtSize(headerText, 12);
+      page.drawText(headerText, {
+        x: width - headerTextWidth - 50,
+        y: height - 30,
+        size: 12,
+        color: rgb(0, 0, 0),
+      });
 
-    // Draw header
-    const headerText = "Resource Roadmap";
-    const headerTextWidth = font.widthOfTextAtSize(headerText, 12);
-    page.drawText(headerText, {
-      x: width - headerTextWidth - 50,
-      y: height - 30,
-      size: 12,
-      color: rgb(0, 0, 0),
-    });
-
-    // Draw footer
-    const footerText = `Page ${i} of ${pages.length - 1}`;
-    const footerTextWidth = font.widthOfTextAtSize(footerText, 12);
-    page.drawText(footerText, {
-      x: (width - footerTextWidth) / 2,
-      y: 30,
-      size: 12,
-      color: rgb(0, 0, 0),
-    });
-  }
-}
-
-export const handler: Handlers = {
-  async POST(req) {
-    const requestBody = await req.json();
-    const chapters = requestBody;
-
-    const pdfDoc = await PDFDocument.create();
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
-    for (const chapter of chapters) {
-      // Create the cover page with an image from localStorage
-      await createCoverPage(pdfDoc, font, chapter.title, chapter.imageUrl);
-
-      // Create the chapter pages
-      await createChapterPage(pdfDoc, font, chapter);
+      // Draw footer
+      const footerText = `Page ${i} of ${pages.length - 1}`;
+      const footerTextWidth = font.widthOfTextAtSize(footerText, 12);
+      page.drawText(footerText, {
+        x: (width - footerTextWidth) / 2,
+        y: 30,
+        size: 12,
+        color: rgb(0, 0, 0),
+      });
     }
-
-    // Add header and footer to each page (excluding the cover pages)
-    await addHeaderAndFooter(pdfDoc, font);
-
     // Serialize the PDF
     const pdfBytes = await pdfDoc.save();
 
