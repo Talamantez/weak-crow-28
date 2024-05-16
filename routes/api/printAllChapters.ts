@@ -70,58 +70,6 @@ async function createDocumentCoverPage(
     return coverPage;
   }
 
-async function createTableOfContents(
-  pdfDoc: PDFDocument,
-  font: any,
-  chapters: any[],
-): Promise<PDFPage> {
-  const tocPage = pdfDoc.addPage();
-  const { width, height } = tocPage.getSize();
-
-  let y = height - 70;
-
-  // Draw the table of contents title
-  const tocTitle = "Table of Contents";
-  const tocTitleWidth = font.widthOfTextAtSize(tocTitle, 24);
-  tocPage.drawText(tocTitle, {
-    x: (width - tocTitleWidth) / 2,
-    y,
-    font,
-    size: 24,
-    color: rgb(0, 0, 0),
-  });
-  y -= font.heightAtSize(24) + 20;
-
-  // Draw the chapter entries
-  for (const chapter of chapters) {
-    if (!chapter.title) continue;
-
-    const chapterTitle = chapter.title;
-    const chapterPage = chapter.pageNumber;
-
-    tocPage.drawText(chapterTitle, {
-      x: 50,
-      y,
-      font,
-      size: 12,
-      color: rgb(0, 0, 0),
-    });
-
-    const pageNumberText = `Page ${chapterPage}`;
-    const pageNumberWidth = font.widthOfTextAtSize(pageNumberText, 12);
-    tocPage.drawText(pageNumberText, {
-      x: width - pageNumberWidth - 50,
-      y,
-      font,
-      size: 12,
-      color: rgb(0, 0, 0),
-    });
-
-    y -= font.heightAtSize(12) + 10;
-  }
-  return tocPage;
-}
-
 const wrapText = (
   text: string | undefined,
   width: number,
@@ -384,7 +332,7 @@ export const handler: Handlers = {
         continue;
       }
 
-      // Create the cover page with an image from localStorage
+      // Create the cover page with an image from sessionStorage
       await createCoverPage(pdfDoc, font, chapter.title, chapter.imageUrl);
       pageNumber++;
 
