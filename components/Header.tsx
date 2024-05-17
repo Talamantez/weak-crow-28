@@ -13,7 +13,7 @@ export default function Header({ active }: Props) {
     <div class="bg-white w-full max-w-screen-lg py-6 px-8 flex flex-col md:flex-row gap-4">
       <div class="flex items-center flex-1">
         <div class="max-w-[200px]">
-          <image src="https://consciousrobot-956159009.imgix.net/logo.png" />
+          <image src="./static/logo.png" alt="logo" />
         </div>
       </div>
       <ul class="flex items-center gap-6">
