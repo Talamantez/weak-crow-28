@@ -2,6 +2,7 @@
 // This file SHOULD be checked into source version control.
 // This file is automatically updated during development when running `dev.ts`.
 
+import * as $Home from "./routes/Home.tsx";
 import * as $_project_ from "./routes/[project].tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
@@ -14,14 +15,19 @@ import * as $loader from "./routes/loader.ts";
 import * as $new_project from "./routes/new-project.tsx";
 import * as $AddProject from "./islands/AddProject.tsx";
 import * as $File from "./islands/File.tsx";
+import * as $Hero from "./islands/Hero.tsx";
 import * as $ProjectData from "./islands/ProjectData.tsx";
 import * as $Projects from "./islands/Projects.tsx";
 import * as $Sections from "./islands/Sections.tsx";
+import * as $generateChaptersFromJSON from "./islands/generateChaptersFromJSON.tsx";
+import * as $generateIntroduction from "./islands/generateIntroduction.tsx";
+import * as $printAllChapters from "./islands/printAllChapters.tsx";
 import * as $renderImages from "./islands/renderImages.tsx";
 import { type Manifest } from "$fresh/server.ts";
 
 const manifest = {
   routes: {
+    "./routes/Home.tsx": $Home,
     "./routes/[project].tsx": $_project_,
     "./routes/_app.tsx": $_app,
     "./routes/_middleware.ts": $_middleware,
@@ -36,9 +42,13 @@ const manifest = {
   islands: {
     "./islands/AddProject.tsx": $AddProject,
     "./islands/File.tsx": $File,
+    "./islands/Hero.tsx": $Hero,
     "./islands/ProjectData.tsx": $ProjectData,
     "./islands/Projects.tsx": $Projects,
     "./islands/Sections.tsx": $Sections,
+    "./islands/generateChaptersFromJSON.tsx": $generateChaptersFromJSON,
+    "./islands/generateIntroduction.tsx": $generateIntroduction,
+    "./islands/printAllChapters.tsx": $printAllChapters,
     "./islands/renderImages.tsx": $renderImages,
   },
   baseUrl: import.meta.url,
