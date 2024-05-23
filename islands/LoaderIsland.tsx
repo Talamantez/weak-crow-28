@@ -5,14 +5,9 @@ import HomeContent from "./HomeContent.tsx";
 export default function LoaderIsland() {
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Simulate loading delay for demonstration purposes
-    console.log("Loading...");
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 5000);
 
-    return () => clearTimeout(timer);
+  useEffect(() => {
+    setLoading(false)
   }, []);
 
   return (
