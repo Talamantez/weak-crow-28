@@ -1,5 +1,4 @@
 import { Head } from "$fresh/runtime.ts";
-import Header from "../components/Header.tsx";
 import Hero from "./Hero.tsx";
 import Footer from "../components/Footer.tsx";
 import Projects from "./Projects.tsx";
@@ -11,7 +10,6 @@ export default function HomeContent() {
         <title>Resource Roadmap Editor</title>
       </Head>
       <main class="flex flex-col items-center justify-start my-10 p-4 mx-auto max-w-screen-lg">
-        <Header active="Home" />
         <Hero />
         <div class="w-full flex justify-between mb-10 mt-10">
           <h1 class="font-bold text-2xl w-3/5 text-left">Chapters</h1>

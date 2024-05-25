@@ -10,7 +10,7 @@ export default function Header({ active }: Props) {
   ];
 
   return (
-    <div class="bg-white w-full max-w-screen-lg py-6 px-8 flex flex-col md:flex-row gap-4">
+    <div class="flex flex-row justify-start my-10 p-4 mx-auto max-w-screen-lg">
       <div class="flex items-center flex-1">
         <div class="max-w-[200px]">
           <image src="./static/logo.png" alt="logo" />
