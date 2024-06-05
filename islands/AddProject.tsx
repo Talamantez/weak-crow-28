@@ -1,12 +1,16 @@
 import { useState } from "preact/hooks";
+import Loader from "../components/Loader.tsx";
 
 export default function AddProject() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const handleImageUpload = async (e: Event) => {
     e.preventDefault();
+    setUploading(true);
     const imageForm = e.target as HTMLFormElement;
 
     try {
@@ -20,17 +24,20 @@ export default function AddProject() {
     } catch (error) {
       alert(error.message)
     }
-
-    form.reset();
+    setUploading(false);
+    imageForm.reset();
   };
 
   const handleSave = () => {
     if (imageUrl) {
+      setSaving(true);
       try {
         sessionStorage.setItem("savedImage", imageUrl);        
       } catch (error) {
+        setSaving(false);
         return alert(error.message)
       }
+      setSaving(false);
       alert("Image saved to session storage.");
     }
   };
@@ -76,6 +83,7 @@ export default function AddProject() {
       />
       <div class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 border-blue-500 focus:border-blue-600 outline-none">
         <h1>Photo Upload</h1>
+        {uploading ? <Loader /> : null}
         <form onSubmit={handleImageUpload}>
           <input type="file" name="image" accept="image/*" />
           <button
