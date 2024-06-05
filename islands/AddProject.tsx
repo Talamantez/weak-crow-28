@@ -5,22 +5,32 @@ export default function AddProject() {
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
 
-  const handleSubmit = async (e: Event) => {
+  const handleImageUpload = async (e: Event) => {
     e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-    const resp = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-    const { url } = await resp.json();
-    setImageUrl(url);
+    const imageForm = e.target as HTMLFormElement;
+
+    try {
+      const imageFormData = new FormData(imageForm);
+      const resp = await fetch("/api/upload", {
+        method: "POST",
+        body: imageFormData,
+      });
+      const { url } = await resp.json();
+      setImageUrl(url);
+    } catch (error) {
+      alert(error.message)
+    }
+
     form.reset();
   };
 
   const handleSave = () => {
     if (imageUrl) {
-      sessionStorage.setItem("savedImage", imageUrl);
+      try {
+        sessionStorage.setItem("savedImage", imageUrl);        
+      } catch (error) {
+        return alert(error.message)
+      }
       alert("Image saved to session storage.");
     }
   };
@@ -30,16 +40,21 @@ export default function AddProject() {
       alert("Please fill in all fields.");
       return;
     }
-    sessionStorage.setItem(
-      "Chapter Manager: " + title,
-      JSON.stringify({
-        index: sessionStorage.length,
-        title: title,
-        description: description,
-        sections: [],
-        imageUrl: imageUrl,
-      }),
-    );
+    try {
+      sessionStorage.setItem(
+        "Chapter Manager: " + title,
+        JSON.stringify({
+          index: sessionStorage.length,
+          title: title,
+          description: description,
+          sections: [],
+          imageUrl: imageUrl,
+        }),
+      );
+    } catch (error) {
+      alert(error.message)
+    }
+
     window.location.href = "/";
   };
 
@@ -61,7 +76,7 @@ export default function AddProject() {
       />
       <div class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 border-blue-500 focus:border-blue-600 outline-none">
         <h1>Photo Upload</h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleImageUpload}>
           <input type="file" name="image" accept="image/*" />
           <button
             type="submit"
