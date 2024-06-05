@@ -22,7 +22,7 @@ export default function AddProject() {
       const { url } = await resp.json();
       setImageUrl(url);
     } catch (error) {
-      alert(error.message)
+      alert(error.message);
     }
     setUploading(false);
     imageForm.reset();
@@ -32,10 +32,10 @@ export default function AddProject() {
     if (imageUrl) {
       setSaving(true);
       try {
-        sessionStorage.setItem("savedImage", imageUrl);        
+        sessionStorage.setItem("savedImage", imageUrl);
       } catch (error) {
         setSaving(false);
-        return alert(error.message)
+        return alert(error.message);
       }
       setSaving(false);
       alert("Image saved to session storage.");
@@ -59,7 +59,7 @@ export default function AddProject() {
         }),
       );
     } catch (error) {
-      alert(error.message)
+      alert(error.message);
     }
 
     window.location.href = "/";
@@ -81,30 +81,33 @@ export default function AddProject() {
         rows={10}
         class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 text-left border-blue-500 focus:border-blue-600 outline-none"
       />
-      <div class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 border-blue-500 focus:border-blue-600 outline-none">
-        <h1>Photo Upload</h1>
-        {uploading ? <Loader /> : null}
-        <form onSubmit={handleImageUpload}>
-          <input type="file" name="image" accept="image/*" />
-          <button
-            type="submit"
-            class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
-          >
-            Upload
-          </button>
-        </form>
-        {imageUrl && (
-          <div class="flex">
-            <button
-              onClick={handleSave}
-              class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5 max-h-32"
-            >
-              Accept and Save Image
-            </button>
-            <img class="max-h-56" src={imageUrl} alt="Uploaded" />
+      {uploading
+        ? <Loader />
+        : (
+          <div class="w-4/5 border-2 rounded-md mt-2 px-2 py-1 border-blue-500 focus:border-blue-600 outline-none">
+            <h1>Photo Upload</h1>
+            <form onSubmit={handleImageUpload}>
+              <input type="file" name="image" accept="image/*" />
+              <button
+                type="submit"
+                class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
+              >
+                Upload
+              </button>
+            </form>
+            {imageUrl && (
+              <div class="flex">
+                <button
+                  onClick={handleSave}
+                  class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5 max-h-32"
+                >
+                  Accept and Save Image
+                </button>
+                <img class="max-h-56" src={imageUrl} alt="Uploaded" />
+              </div>
+            )}
           </div>
         )}
-      </div>
       <div class="w-4/5 flex items-center justify-between">
         <a
           href="/"
