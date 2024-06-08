@@ -1,7 +1,7 @@
 import { Head } from "$fresh/runtime.ts";
 import Hero from "./Hero.tsx";
 import Footer from "../components/Footer.tsx";
-import Projects from "./Projects.tsx";
+import Chapters from "./Chapters.tsx";
 
 export default function HomeContent() {
   return (
@@ -20,7 +20,7 @@ export default function HomeContent() {
             + Add Chapter
           </a>
         </div>
-        <Projects />
+        <Chapters />
         <Footer />
       </main>
     </div>

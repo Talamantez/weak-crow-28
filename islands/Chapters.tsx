@@ -1,7 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
 
-interface ProjectData {
+interface ChapterData {
   index: number;
   title: string;
   description: string;
@@ -19,8 +19,8 @@ const clearAllChapters = () => {
   window.location.reload();
 };
 
-export default function Projects() {
-  const [projects, setProjects] = useState<ProjectData[]>([{
+export default function Chapters() {
+  const [chapters, setChapters] = useState<ChapterData[]>([{
     index: 0,
     title: "",
     description: "",
@@ -29,17 +29,17 @@ export default function Projects() {
   }]);
 
   useEffect(() => {
-    const tempProjects = [];
-    let sortedTempProjects = [];
+    const tempChapters = [];
+    let sortedTempChapters = [];
     for (let i = 0; i < sessionStorage.length; i++) {
       const key = sessionStorage.key(i);
       if (key?.includes("Chapter")) {
         const stored = JSON.parse(sessionStorage.getItem(key)!);
-        tempProjects.push(stored);
+        tempChapters.push(stored);
       }
     }
-    sortedTempProjects = tempProjects.sort((a, b) => a.index - b.index);
-    setProjects(sortedTempProjects);
+    sortedTempChapters = tempChapters.sort((a, b) => a.index - b.index);
+    setChapters(sortedTempChapters);
   }, []);
 
   return (
@@ -55,39 +55,39 @@ export default function Projects() {
       </div>
 
       <div class="grid grid-cols-1 gap-y-5 md:(grid-cols-2 gap-x-20 gap-y-10) w-full">
-        {projects.length > 0 && projects[0].title.length > 0 &&
+        {chapters.length > 0 && chapters[0].title.length > 0 &&
           (
             <>
-              {projects!.map((project) => (
+              {chapters!.map((chapter) => (
                 <a
-                  key={project.title}
-                  href={`/${project.title}`}
+                  key={chapter.title}
+                  href={`/${chapter.title}`}
                   class="border rounded-md border-gray-300 hover:border-gray-400 py-3 px-5 transition cursor-pointer flex items-center justify-start bg-white rounded-lg shadow-md overflow-hidden"
                 >
                   <div class="w-3/5">
-                    {project.imageUrl && (
+                    {chapter.imageUrl && (
                       <div class="bg-white rounded-lg shadow-sm overflow-hidden">
                         <img
-                          src={project.imageUrl}
+                          src={chapter.imageUrl}
                           alt="chapter cover image"
                           class="w-full h-48 object-cover"
                         />
                       </div>
                     )}
 
-                    <h1 class="font-bold">{project.title}</h1>
-                    <p class="text-gray-500">{project.description}</p>
+                    <h1 class="font-bold">{chapter.title}</h1>
+                    <p class="text-gray-500">{chapter.description}</p>
                     <p class="text-gray-500 mt-2">
                       <span>
-                        {(project.sections && project.sections.length)
-                          ? <>{project.sections.length} Sections</>
+                        {(chapter.sections && chapter.sections.length)
+                          ? <>{chapter.sections.length} Sections</>
                           : <>0 Sections</>}
                       </span>
                     </p>
                   </div>
                   <div class="flex items-center justify-end w-2/5">
                     <a
-                      href={`/${project.title}`}
+                      href={`/${chapter.title}`}
                       class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-2 text-gray-100 transition-colors"
                     >
                       View
@@ -98,7 +98,7 @@ export default function Projects() {
             </>
           )}
       </div>
-      {(!projects[0] || !projects[0].title || !projects[0].title.length) && (
+      {(!chapters[0] || !chapters[0].title || !chapters[0].title.length) && (
         <div class="flex w-full m-0">
           <h1 class="my-6 w-full text-left m-0">No chapters yet</h1>
         </div>

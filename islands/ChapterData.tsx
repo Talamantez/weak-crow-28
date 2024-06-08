@@ -14,7 +14,7 @@ import { AddSubSection } from "../util/AddSubSection.tsx";
 import { AddSection } from "../util/AddSection.tsx";
 import Loader from "../components/Loader.tsx";
 
-export default function ProjectData({ title }: { title: string }) {
+export default function ChapterData({ title }: { title: string }) {
   const [loading, setLoading] = useState(true);
   const [description, setDescription] = useState("");
   const [sections, setSections] = useState<Section[]>([{
