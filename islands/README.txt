@@ -1,7 +1,7 @@
 1. Imports and Component Definition:
    - Import necessary dependencies from "preact/hooks".
    - Import custom components: `ClickToEditHeading`, `ClickToEdit`, and `ClickToEditTextArea`.
-   - Define the `ProjectData` component that receives a `title` prop.
+   - Define the `ChapterData` component that receives a `title` prop.
 
 2. State Management:
    - Initialize state variables using the `useState` hook for `description`, `sections`, `activeSection`, `isAddingSection`, and `isAddingSubSection`.
@@ -15,8 +15,8 @@
    - Use `useEffect` to retrieve stored data from `localStorage` and update the component's state.
    - Update `sections` state when `isAddingSection` changes.
 
-5. Delete Project:
-   - Define the `deleteProject` function to remove the project from `localStorage` and redirect to the home page.
+5. Delete Chapter:
+   - Define the `deleteChapter` function to remove the chapter from `localStorage` and redirect to the home page.
 
 6. Delete Section:
    - Define the `deleteSection` function to remove a section from the `sections` array and update `localStorage`.
@@ -34,7 +34,7 @@
 10. JSX Rendering:
     - Render the component's JSX, including the chapter title, description, and sections.
     - Use custom components like `ClickToEditHeading`, `ClickToEditTextArea`, and `ClickToEdit` for inline editing.
-    - Render buttons for deleting the project and sections.
+    - Render buttons for deleting the chapter and sections.
     - Render subsections within each section.
     - Conditionally render the `AddSection` and `AddSubSection` components based on the state.
 

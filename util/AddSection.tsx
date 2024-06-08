@@ -4,7 +4,7 @@ import { safeSessionStorageSetItem } from "./safeSessionStorageSetItem.ts";
 import { safeSessionStorageGetItem } from "./safeSessionStorageGetItem.ts";
 
 export interface AddSectionProps {
-  projectTitle: string;
+  chapterTitle: string;
   description: string;
   sections: Section[];
   isAddingSection: boolean;
@@ -12,7 +12,7 @@ export interface AddSectionProps {
 }
 
 export function AddSection(
-  { projectTitle, sections, isAddingSection, setIsAddingSection }: AddSectionProps
+  { chapterTitle, sections, isAddingSection, setIsAddingSection }: AddSectionProps
 ) {
   const [description, setDescription] = useState("");
 
@@ -22,7 +22,7 @@ export function AddSection(
       title: "",
       description: "",
       subSections: [],
-      chapterTitle: projectTitle,
+      chapterTitle: chapterTitle,
     }
   );
 
@@ -40,7 +40,7 @@ export function AddSection(
     let newSections: Section[] = [];
 
     const stored = safeSessionStorageGetItem(
-      `Chapter Manager: ${projectTitle}`
+      `Chapter Manager: ${chapterTitle}`
     );
 
     const chapter = JSON.parse(stored as string);
@@ -50,9 +50,9 @@ export function AddSection(
       else newSections = [...sections, section];
 
       safeSessionStorageSetItem(
-        "Chapter Manager: " + projectTitle,
+        "Chapter Manager: " + chapterTitle,
         JSON.stringify({
-          title: projectTitle,
+          title: chapterTitle,
           description: chapter.description,
           imageUrl: chapter.imageUrl,
           sections: newSections,

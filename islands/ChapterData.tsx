@@ -434,7 +434,7 @@ export default function ChapterData({ title }: { title: string }) {
           </div>
 
           <AddSection
-            projectTitle={title}
+            chapterTitle={title}
             description={description}
             sections={sections}
             isAddingSection={isAddingSection}
