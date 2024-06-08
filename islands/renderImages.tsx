@@ -6,7 +6,6 @@ const token =
 const bucket = "nami-resource-roadmap";
 
 export const renderImages = (fileUrls) => {
-  console.log(fileUrls)
   return (
     <div>
       {fileUrls && fileUrls.map((fileUrl) => (

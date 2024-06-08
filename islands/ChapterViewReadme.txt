@@ -1,3 +1,6 @@
+ChapterView component implementation (may be out of date):
+
+
 1. Imports and Component Definition:
    - Import necessary dependencies from "preact/hooks".
    - Import custom components: `ClickToEditHeading`, `ClickToEdit`, and `ClickToEditTextArea`.

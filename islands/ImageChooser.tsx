@@ -2,7 +2,7 @@ import { useRef, useState } from "preact/hooks";
 import ImageLayout from "../components/ImageLayout.tsx";
 
 
-export default function FileDrop() {
+export default function ImageChooser() {
   const imageLayout = useRef(ImageLayout);
   let [files, setFiles] = useState("");
 

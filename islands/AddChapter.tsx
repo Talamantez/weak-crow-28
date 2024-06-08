@@ -30,14 +30,12 @@ export default function AddChapter() {
 
   const handleSave = () => {
     if (imageUrl) {
-      setSaving(true);
       try {
         sessionStorage.setItem("savedImage", imageUrl);
       } catch (error) {
         setSaving(false);
         return alert(error.message);
       }
-      setSaving(false);
       alert("Image saved to session storage.");
     }
   };

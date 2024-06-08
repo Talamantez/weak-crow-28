@@ -4,7 +4,8 @@ import {
   StandardFonts,
 } from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
 
-const wrapText = (text, width, font, fontSize) => {
+// deno-lint-ignore no-explicit-any
+const wrapText = (text: string, width: number, font: any, fontSize: number) => {
   const words = text.split(" ");
   let line = "";
   let result = "";
@@ -151,10 +152,3 @@ export default async function renderChapter(data: any) {
     console.log(error);
   }
 }
-
-
-
-// renderPdf().catch((err) => {
-//   console.error(err);
-//   Deno.exit(1);
-// });

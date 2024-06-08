@@ -1,6 +1,6 @@
 import IconDownload from "https://deno.land/x/tabler_icons_tsx@0.0.3/tsx/download.tsx";
 import { printAllChapters } from "./printAllChapters.tsx";
-import { generateChaptersFromJSON } from "./generateChaptersFromJSON.tsx";
+import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
 import Button from "../components/Button.tsx";
 
 export default function Hero() {
