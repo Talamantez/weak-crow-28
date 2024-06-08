@@ -11,8 +11,8 @@ import * as $api_printChapter from "./routes/api/printChapter.ts";
 import * as $api_printChapterWithCover from "./routes/api/printChapterWithCover.ts";
 import * as $api_upload from "./routes/api/upload.ts";
 import * as $index from "./routes/index.tsx";
-import * as $new_project from "./routes/new-project.tsx";
-import * as $AddProject from "./islands/AddProject.tsx";
+import * as $new_chapter from "./routes/new-chapter.tsx";
+import * as $AddChapter from "./islands/AddChapter.tsx";
 import * as $ChapterData from "./islands/ChapterData.tsx";
 import * as $Chapters from "./islands/Chapters.tsx";
 import * as $Chapters_Test from "./islands/Chapters_Test.tsx";
@@ -38,10 +38,10 @@ const manifest = {
     "./routes/api/printChapterWithCover.ts": $api_printChapterWithCover,
     "./routes/api/upload.ts": $api_upload,
     "./routes/index.tsx": $index,
-    "./routes/new-project.tsx": $new_project,
+    "./routes/new-chapter.tsx": $new_chapter,
   },
   islands: {
-    "./islands/AddProject.tsx": $AddProject,
+    "./islands/AddChapter.tsx": $AddChapter,
     "./islands/ChapterData.tsx": $ChapterData,
     "./islands/Chapters.tsx": $Chapters,
     "./islands/Chapters_Test.tsx": $Chapters_Test,

@@ -1,7 +1,7 @@
 import { useState } from "preact/hooks";
 import Loader from "../components/Loader.tsx";
 
-export default function AddProject() {
+export default function AddChapter() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -42,7 +42,7 @@ export default function AddProject() {
     }
   };
 
-  const addProject = () => {
+  const addChapter = () => {
     if (title === "" || description === "" || !imageUrl) {
       alert("Please fill in all fields.");
       return;
@@ -116,7 +116,7 @@ export default function AddProject() {
           Cancel
         </a>
         <button
-          onClick={() => addProject()}
+          onClick={() => addChapter()}
           class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
         >
           Add
