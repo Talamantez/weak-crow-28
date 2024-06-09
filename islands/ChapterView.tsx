@@ -13,6 +13,9 @@ import { AddSubSection } from "../util/AddSubSection.tsx";
 import { AddSection } from "../util/AddSection.tsx";
 import Loader from "../components/Loader.tsx";
 
+const dbName = "MyDatabase";
+const storeName = "Chapters";
+
 export default function ChapterData({ title }: { title: string }) {
   const [loading, setLoading] = useState(true);
   const [description, setDescription] = useState("");
@@ -55,31 +58,7 @@ export default function ChapterData({ title }: { title: string }) {
     setLoading(false);
   }, []);
 
-  const getDatabaseInfo = (db: IDBDatabase) => {
-    console.log("Database name:", db.name);
-    console.log("Database version:", db.version);
-  
-    const objectStoreNames = db.objectStoreNames;
-    console.log("Object stores:");
-    for (let i = 0; i < objectStoreNames.length; i++) {
-      const storeName = objectStoreNames[i];
-      console.log("- " + storeName);
-  
-      const transaction = db.transaction(storeName, "readonly");
-      const objectStore = transaction.objectStore(storeName);
-  
-      const countRequest = objectStore.count();
-      countRequest.onsuccess = function (event: Event) {
-        const count = event.target.result;
-        console.log(`  Number of items in ${storeName}: ${count}`);
-      };
-    }
-  };
-
   useEffect(() => {
-    const dbName = "MyDatabase";
-    const storeName = "Chapters";
-
     const request = indexedDB.open(dbName);
 
     request.onerror = function (event: Event) {
@@ -89,16 +68,18 @@ export default function ChapterData({ title }: { title: string }) {
     request.onsuccess = function (event: Event) {
       const db = event.target.result;
 
-      getDatabaseInfo(db);
-
       const transaction = db.transaction(storeName, "readonly");
+
       const objectStore = transaction.objectStore(storeName);
 
       const getRequest = objectStore.get(title);
 
       getRequest.onsuccess = function (event: Event) {
         const stored = event.target.result;
-
+        if (stored) {
+          setDescription(stored.description);
+          setSections(stored.subSections);
+        }
       };
 
       getRequest.onerror = function (event: Event) {
@@ -108,9 +89,6 @@ export default function ChapterData({ title }: { title: string }) {
   }, []);
 
   useEffect(() => {
-    const dbName = "MyDatabase";
-    const storeName = "Chapters";
-
     const request = indexedDB.open(dbName);
 
     request.onerror = function (event: Event) {
@@ -121,22 +99,14 @@ export default function ChapterData({ title }: { title: string }) {
       const db = event.target.result;
       const transaction = db.transaction(storeName, "readonly");
       const objectStore = transaction.objectStore(storeName);
-
       const getRequest = objectStore.get(title);
 
-      getDatabaseInfo(db);
-
-      
       getRequest.onsuccess = function (event: Event) {
         const stored = event.target.result;
-      
-        const objectStore = db.transaction(storeName, "readonly").objectStore(storeName);
-        const getAllKeysRequest = objectStore.getAllKeys();
-      
-        getAllKeysRequest.onsuccess = function (event: Event) {
-          const keys = event.target.result;
-          console.log("Object store keys:", keys);
-        };
+        if (stored) {
+          setDescription(stored.description);
+          setSections(stored.sections);
+        }
       };
 
       getRequest.onerror = function (event: Event) {
@@ -146,9 +116,6 @@ export default function ChapterData({ title }: { title: string }) {
   }, [isAddingSection]);
 
   const deleteChapter = () => {
-    const dbName = "MyDatabase";
-    const storeName = "Chapters";
-
     const request = indexedDB.open(dbName);
 
     request.onerror = function (event: Event) {
@@ -173,9 +140,6 @@ export default function ChapterData({ title }: { title: string }) {
   };
 
   const deleteSection = (section: Section) => {
-    const dbName = "MyDatabase";
-    const storeName = "Chapters";
-
     const request = indexedDB.open(dbName);
 
     request.onerror = function (event: Event) {
@@ -222,61 +186,58 @@ export default function ChapterData({ title }: { title: string }) {
     return sections.find((section) => section.title === sectionTitle);
   };
   const deleteSubSection = (sectionTitle: string, subSection: string) => {
-    const dbName = "MyDatabase";
-    const storeName = "Chapters";
-  
     const request = indexedDB.open(dbName);
-  
+
     request.onerror = function (event: Event) {
       console.error("Error opening database:", event.target.error);
     };
-  
+
     request.onsuccess = function (event: Event) {
       const db = event.target.result;
       const transaction = db.transaction(storeName, "readwrite");
       const objectStore = transaction.objectStore(storeName);
-  
+
       const getRequest = objectStore.get(title);
-  
+
       getRequest.onsuccess = function (event: Event) {
         const stored = event.target.result;
-  
+
         const section = findSection(stored.sections, sectionTitle);
-  
+
         if (!section) {
           console.log(`Section ${sectionTitle} not found`);
           return;
         }
-  
+
         const updatedSection = removeSubSection(section, subSection);
-  
+
         if (!updatedSection) {
           console.log(`removeSubSection failed.`);
           return;
         }
-  
+
         const updatedSections = updateSections(
           stored.sections,
           sectionTitle,
           updatedSection,
         );
-  
+
         const updatedChapter = {
           ...stored,
           sections: updatedSections,
         };
-  
+
         const putRequest = objectStore.put(updatedChapter);
-  
+
         putRequest.onsuccess = function () {
           location.reload();
         };
-  
+
         putRequest.onerror = function (event: Event) {
           console.error("Error updating chapter:", event.target.error);
         };
       };
-  
+
       getRequest.onerror = function (event: Event) {
         console.error("Error retrieving chapter data:", event.target.error);
       };
@@ -314,9 +275,6 @@ export default function ChapterData({ title }: { title: string }) {
     chapterTitle: string,
   ): void {
     if (newText.trim() === "") return window.location.reload();
-
-    const dbName = "MyDatabase";
-    const storeName = "Chapters";
 
     const request = indexedDB.open(dbName);
 
@@ -365,9 +323,6 @@ export default function ChapterData({ title }: { title: string }) {
     title: string,
     chapterTitle: string,
   ): void {
-    const dbName = "MyDatabase";
-    const storeName = "Chapters";
-
     const request = indexedDB.open(dbName);
 
     request.onerror = function (event: Event) {
@@ -415,9 +370,6 @@ export default function ChapterData({ title }: { title: string }) {
   ): void {
     if (newText.trim() === "") return window.location.reload();
 
-    const dbName = "MyDatabase";
-    const storeName = "Chapters";
-
     const request = indexedDB.open(dbName);
 
     request.onerror = function (event: Event) {
@@ -457,9 +409,6 @@ export default function ChapterData({ title }: { title: string }) {
   }
 
   async function printChapter(): Promise<void> {
-    const dbName = "MyDatabase";
-    const storeName = "Chapters";
-
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(dbName);
 

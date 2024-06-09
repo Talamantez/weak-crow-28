@@ -95,7 +95,8 @@ export default function Chapters() {
       request.onupgradeneeded = function (event: IDBVersionChangeEvent) {
         const db = event.target.result;
         if (!db.objectStoreNames.contains(storeName)) {
-          db.createObjectStore(storeName, { keyPath: "index" });
+          const objectStore = db.createObjectStore(storeName, { keyPath: "title" });
+          objectStore.createIndex("titleIndex", "title", { unique: true }); // Create the index here
         }
       };
   
