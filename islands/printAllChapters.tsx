@@ -2,49 +2,67 @@ import { safeSessionStorageGetItem } from "../util/safeSessionStorageGetItem.ts"
 
 
 export async function printAllChapters(): Promise<void> {
-  // Retrieve all chapters from session storage
-  const chapters = [];
+  const dbName = "MyDatabase";
+  const storeName = "Chapters";
 
-  for (let i = 0; i < sessionStorage.length; i++) {
-    const key = sessionStorage.key(i);
-    if (key && key.startsWith("Chapter Manager:")) {
-      const stored = await safeSessionStorageGetItem(key);
-      if (stored) {
-        chapters.push(JSON.parse(stored));
-      }
-    }
-  }
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(dbName);
 
-  const sortedChapters = chapters.sort((a, b) => a.index - b.index);
+    request.onerror = function (event: Event) {
+      console.error("Error opening database:", event.target.error);
+      reject(event.target.error);
+    };
 
-  fetch("/api/printAllChapters", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(sortedChapters),
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.blob();
-      } else {
-        throw new Error("Request failed.");
-      }
-    })
-    .then((blob) => {
-      // Create a temporary URL for the blob
-      const url = URL.createObjectURL(blob);
+    request.onsuccess = function (event: Event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, "readonly");
+      const objectStore = transaction.objectStore(storeName);
 
-      // Create a temporary link element and trigger the download
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "output.pdf";
-      link.click();
+      const getAllRequest = objectStore.getAll();
 
-      // Clean up the temporary URL
-      URL.revokeObjectURL(url);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
+      getAllRequest.onsuccess = function (event: Event) {
+        const chapters = event.target.result;
+        const sortedChapters = chapters.sort((a, b) => a.index - b.index);
+
+        fetch("/api/printAllChapters", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(sortedChapters),
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.blob();
+            } else {
+              throw new Error("Request failed.");
+            }
+          })
+          .then((blob) => {
+            // Create a temporary URL for the blob
+            const url = URL.createObjectURL(blob);
+            // Create a temporary link element and trigger the download
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "output.pdf";
+            link.click();
+            // Clean up the temporary URL
+            URL.revokeObjectURL(url);
+            db.close();
+            resolve();
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            db.close();
+            reject(error);
+          });
+      };
+
+      getAllRequest.onerror = function (event: Event) {
+        console.error("Error retrieving chapters from IndexedDB:", event.target.error);
+        db.close();
+        reject(event.target.error);
+      };
+    };
+  });
 }
