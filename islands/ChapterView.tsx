@@ -243,7 +243,7 @@ export default function ChapterData({ title }: { title: string }) {
       };
     };
   };
-
+  // removeSubSection is a component of deleteSubSection - it is not redundant
   const removeSubSection = (section: Section, subSection: string) => {
     if (!section) {
       console.log("Section not found");
@@ -482,10 +482,9 @@ export default function ChapterData({ title }: { title: string }) {
               >
                 ⬅️ Back
               </a>
-              <ClickToEditHeading
-                text={title}
-                onTextChange={(newText) => updateChapterTitle(newText, title)}
-              />
+              <div class="font-bold text-2xl text-left w-full"
+              >{title}</div>
+              
               {description !== "" && (
                 <ClickToEditTextArea
                   text={description}
