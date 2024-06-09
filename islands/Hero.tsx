@@ -21,7 +21,7 @@ export default function Hero() {
         </p>
         <Button text="Generate Example Chapters"
           onClick={() => {
-            generateChaptersFromJSON();
+            generateChaptersFromJSON("MyDatabase", "Chapters");
           }}
           styles="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
         />

@@ -9,6 +9,10 @@ interface ChapterData {
   imageUrl?: string;
 }
 
+const dbName = "MyDatabase";
+const storeName = "Chapters";
+const dbVersion = 2;
+
 const clearAllChapters = () => {
   for (let i = 0; i < sessionStorage.length; i++) {
     const key = sessionStorage.key(i);
@@ -27,25 +31,90 @@ export default function Chapters() {
     sections: [],
     imageUrl: "",
   }]);
+  
+  const getDatabaseInfo = (db: IDBDatabase) => {
+    console.log("Database name:", db.name);
+    console.log("Database version:", db.version);
+  
+    const objectStoreNames = db.objectStoreNames;
+    console.log("Object stores:");
+    for (let i = 0; i < objectStoreNames.length; i++) {
+      const storeName = objectStoreNames[i];
+      console.log("- " + storeName);
+  
+      const transaction = db.transaction(storeName, "readonly");
+      const objectStore = transaction.objectStore(storeName);
+  
+      const countRequest = objectStore.count();
+      countRequest.onsuccess = function (event: Event) {
+        const count = event.target.result;
+        console.log(`  Number of items in ${storeName}: ${count}`);
+      };
+    }
+  };
+
+  const initializeDatabase = () => {
+    return new Promise((resolve, reject) => {
+
+      const request = indexedDB.open(dbName, dbVersion);
+  
+      request.onerror = function (event: Event) {
+        console.error("Error opening database:", event.target.error);
+        reject(event.target.error);
+      };
+  
+      request.onupgradeneeded = function (event: IDBVersionChangeEvent) {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains(storeName)) {
+          db.createObjectStore(storeName, { keyPath: "index" });
+        }
+      };
+  
+      request.onsuccess = function (event: Event) {
+        const db = event.target.result;
+        console.log("Database initialized successfully.");
+        resolve(db);
+      };
+    });
+  };
+
+  const fetchChaptersFromIndexedDB = (db: IDBDatabase) => {
+    return new Promise((resolve, reject) => {
+  
+      const transaction = db.transaction(storeName, "readonly");
+      const objectStore = transaction.objectStore(storeName);
+      const getAllRequest = objectStore.getAll();
+  
+      getAllRequest.onsuccess = function (event: Event) {
+        const chapters = event.target.result;
+        const sortedChapters = chapters.sort((a, b) => a.index - b.index);
+        resolve(sortedChapters);
+      };
+  
+      getAllRequest.onerror = function (event: Event) {
+        console.error("Error fetching chapters:", event.target.error);
+        reject(event.target.error);
+      };
+    });
+  };
 
   useEffect(() => {
-    const tempChapters = [];
-    let sortedTempChapters = [];
-    for (let i = 0; i < sessionStorage.length; i++) {
-      const key = sessionStorage.key(i);
-      if (key?.includes("Chapter")) {
-        const stored = JSON.parse(sessionStorage.getItem(key)!);
-        tempChapters.push(stored);
-      }
-    }
-    sortedTempChapters = tempChapters.sort((a, b) => a.index - b.index);
-    setChapters(sortedTempChapters);
+    initializeDatabase()
+      .then((db) => {
+        getDatabaseInfo(db); // Add this line to get database info
+        return fetchChaptersFromIndexedDB(db);
+      })
+      .then((chapters) => {
+        setChapters(chapters);
+      })
+      .catch((error) => {
+        console.error("Error initializing database or fetching chapters:", error);
+      });
   }, []);
-
+  
   return (
     <div class="flex flex-col items-center w-full">
       <div class="flex justify-end w-full">
-
         <button
           onClick={clearAllChapters}
           class="bg-green-500 hover:bg-green-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
