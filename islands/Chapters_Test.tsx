@@ -2,13 +2,44 @@ import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
 
 const clearAllChapters = () => {
-  for (let i = 0; i < sessionStorage.length; i++) {
-    const key = sessionStorage.key(i);
-    if (key?.includes("Chapter Manager")) {
-      sessionStorage.removeItem(key);
-    }
-  }
-  window.location.reload();
+  const dbName = "MyDatabase";
+  const storeName = "Chapters";
+
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(dbName);
+
+    request.onerror = function (event: Event) {
+      console.error("Error opening database:", event.target.error);
+      reject(event.target.error);
+    };
+
+    request.onsuccess = function (event: Event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+
+      // Clear all chapters from the object store
+      const clearRequest = objectStore.clear();
+
+      clearRequest.onsuccess = function () {
+        console.log("All chapters cleared from IndexedDB");
+        db.close();
+        resolve();
+      };
+
+      clearRequest.onerror = function (event: Event) {
+        console.error("Error clearing chapters from IndexedDB:", event.target.error);
+        db.close();
+        reject(event.target.error);
+      };
+    };
+  })
+    .then(() => {
+      window.location.reload();
+    })
+    .catch((error) => {
+      console.error("Error clearing chapters:", error);
+    });
 };
 interface ChapterData {
   index: number;
