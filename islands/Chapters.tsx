@@ -1,6 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
-
 interface ChapterData {
   index: number;
   title: string;
@@ -13,7 +12,7 @@ const dbName = "MyDatabase";
 const storeName = "Chapters";
 const dbVersion = 2;
 
-const clearAllChapters = () => {
+export const clearAllChapters = () => {
 
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(dbName);
@@ -144,15 +143,6 @@ export default function Chapters() {
   
   return (
     <div class="flex flex-col items-center w-full">
-      <div class="flex justify-end w-full">
-        <button
-          onClick={clearAllChapters}
-          class="bg-green-500 hover:bg-green-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
-        >
-          Clear Chapters
-        </button>
-      </div>
-
       <div class="grid grid-cols-1 gap-y-5 md:(grid-cols-2 gap-x-20 gap-y-10) w-full">
         {chapters.length > 0 && chapters[0].title.length > 0 &&
           (

@@ -19,10 +19,10 @@ interface ButtonProps {
 export default function Button({ text, icon:Icon, onClick, styles }: ButtonProps): JSX.Element {
   return (
     <button class={styles} onClick={onClick}>
-      <span>{text}</span>
-      {Icon &&
+            {Icon &&
       <Icon size={20} className="ml-2" />
       }
+      <span>{text}</span>
     </button>
   );
 }
