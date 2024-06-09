@@ -45,22 +45,44 @@ export default function AddChapter() {
       alert("Please fill in all fields.");
       return;
     }
-    try {
-      sessionStorage.setItem(
-        "Chapter Manager: " + title,
-        JSON.stringify({
-          index: sessionStorage.length,
-          title: title,
-          description: description,
-          sections: [],
-          imageUrl: imageUrl,
-        }),
-      );
-    } catch (error) {
-      alert(error.message);
-    }
 
-    window.location.href = "/";
+    const dbName = "MyDatabase";
+    const storeName = "Chapters";
+
+    const request = indexedDB.open(dbName);
+
+    request.onerror = function (event: Event) {
+      console.error("Error opening database:", event.target.error);
+      alert("Error opening database. Please try again.");
+    };
+
+    request.onsuccess = function (event: Event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+
+      const chapter = {
+        index: Date.now(), // Use current timestamp as index
+        title: title,
+        description: description,
+        sections: [],
+        imageUrl: imageUrl,
+      };
+
+      const addRequest = objectStore.add(chapter);
+
+      addRequest.onsuccess = function () {
+        console.log("Chapter added to IndexedDB");
+        db.close();
+        window.location.href = "/";
+      };
+
+      addRequest.onerror = function (event: Event) {
+        console.error("Error adding chapter to IndexedDB:", event.target.error);
+        alert("Error adding chapter. Please try again.");
+        db.close();
+      };
+    };
   };
 
   return (
