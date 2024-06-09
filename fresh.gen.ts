@@ -13,15 +13,14 @@ import * as $api_upload from "./routes/api/upload.ts";
 import * as $index from "./routes/index.tsx";
 import * as $new_chapter from "./routes/new-chapter.tsx";
 import * as $AddChapter from "./islands/AddChapter.tsx";
-import * as $ChapterData from "./islands/ChapterData.tsx";
+import * as $ChapterView from "./islands/ChapterView.tsx";
 import * as $Chapters from "./islands/Chapters.tsx";
 import * as $Chapters_Test from "./islands/Chapters_Test.tsx";
-import * as $File from "./islands/File.tsx";
 import * as $Hero from "./islands/Hero.tsx";
 import * as $HomeContent from "./islands/HomeContent.tsx";
+import * as $ImageChooser from "./islands/ImageChooser.tsx";
 import * as $LoaderIsland from "./islands/LoaderIsland.tsx";
 import * as $Sections from "./islands/Sections.tsx";
-import * as $generateChaptersFromJSON from "./islands/generateChaptersFromJSON.tsx";
 import * as $generateIntroduction from "./islands/generateIntroduction.tsx";
 import * as $printAllChapters from "./islands/printAllChapters.tsx";
 import * as $renderImages from "./islands/renderImages.tsx";
@@ -42,15 +41,14 @@ const manifest = {
   },
   islands: {
     "./islands/AddChapter.tsx": $AddChapter,
-    "./islands/ChapterData.tsx": $ChapterData,
+    "./islands/ChapterView.tsx": $ChapterView,
     "./islands/Chapters.tsx": $Chapters,
     "./islands/Chapters_Test.tsx": $Chapters_Test,
-    "./islands/File.tsx": $File,
     "./islands/Hero.tsx": $Hero,
     "./islands/HomeContent.tsx": $HomeContent,
+    "./islands/ImageChooser.tsx": $ImageChooser,
     "./islands/LoaderIsland.tsx": $LoaderIsland,
     "./islands/Sections.tsx": $Sections,
-    "./islands/generateChaptersFromJSON.tsx": $generateChaptersFromJSON,
     "./islands/generateIntroduction.tsx": $generateIntroduction,
     "./islands/printAllChapters.tsx": $printAllChapters,
     "./islands/renderImages.tsx": $renderImages,
