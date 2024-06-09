@@ -23,7 +23,7 @@ export const generateChaptersFromJSON = async (dbName: string, storeName: string
     Object.entries(chapters).forEach(([index]) => {
       const { title, description, imageUrl, sections } = chapters[index];
       const chapter = {
-        index: index+3,
+        index: index,
         title: title,
         description: description,
         sections: sections,
@@ -48,6 +48,7 @@ export const generateChaptersFromJSON = async (dbName: string, storeName: string
 
     transaction.oncomplete = function () {
       db.close();
+      window.location.reload();
     };
   };
 };
