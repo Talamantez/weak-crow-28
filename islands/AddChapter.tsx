@@ -117,12 +117,6 @@ export default function AddChapter() {
             </form>
             {imageUrl && (
               <div class="flex">
-                <button
-                  onClick={handleSave}
-                  class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5 max-h-32"
-                >
-                  Accept and Save Image
-                </button>
                 <img class="max-h-56" src={imageUrl} alt="Uploaded" />
               </div>
             )}
