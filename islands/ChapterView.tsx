@@ -6,7 +6,6 @@ import ClickToEditTextArea from "../components/ClickToEditTextArea.tsx";
 import {
   safeSessionStorageSetItem,
 } from "../util/safeSessionStorageSetItem.ts";
-import { safeSessionStorageRemoveItem } from "../util/safeSessionStorageRemoveItem.ts";
 import { safeSessionStorageGetItem } from "../util/safeSessionStorageGetItem.ts";
 import { updateChapterTitle } from "../util/updateChapterTitle.tsx";
 import { updateSubSection } from "../util/updateSubSection.tsx";
@@ -56,90 +55,232 @@ export default function ChapterData({ title }: { title: string }) {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    const storedString = safeSessionStorageGetItem(`Chapter Manager: ${title}`);
-
-    if (storedString) {
-      const stored = JSON.parse(storedString);
-
-      if (stored && typeof stored === "object") {
-        setDescription(stored.description);
-        setSections(stored.sections);
-      } else {
-        console.error("Stored data is not an object");
-      }
-    } else {
-      console.error("No stored data found");
+  const getDatabaseInfo = (db: IDBDatabase) => {
+    console.log("Database name:", db.name);
+    console.log("Database version:", db.version);
+  
+    const objectStoreNames = db.objectStoreNames;
+    console.log("Object stores:");
+    for (let i = 0; i < objectStoreNames.length; i++) {
+      const storeName = objectStoreNames[i];
+      console.log("- " + storeName);
+  
+      const transaction = db.transaction(storeName, "readonly");
+      const objectStore = transaction.objectStore(storeName);
+  
+      const countRequest = objectStore.count();
+      countRequest.onsuccess = function (event: Event) {
+        const count = event.target.result;
+        console.log(`  Number of items in ${storeName}: ${count}`);
+      };
     }
+  };
+
+  useEffect(() => {
+    const dbName = "MyDatabase";
+    const storeName = "Chapters";
+
+    const request = indexedDB.open(dbName);
+
+    request.onerror = function (event: Event) {
+      console.error("Error opening database:", event.target.error);
+    };
+
+    request.onsuccess = function (event: Event) {
+      const db = event.target.result;
+
+      getDatabaseInfo(db);
+
+      const transaction = db.transaction(storeName, "readonly");
+      const objectStore = transaction.objectStore(storeName);
+
+      const getRequest = objectStore.get(title);
+
+      getRequest.onsuccess = function (event: Event) {
+        const stored = event.target.result;
+
+      };
+
+      getRequest.onerror = function (event: Event) {
+        console.error("Error retrieving chapter data:", event.target.error);
+      };
+    };
   }, []);
 
   useEffect(() => {
-    const storedString = safeSessionStorageGetItem(`Chapter Manager: ${title}`);
+    const dbName = "MyDatabase";
+    const storeName = "Chapters";
 
-    if (storedString) {
-      const stored = JSON.parse(storedString);
+    const request = indexedDB.open(dbName);
 
-      if (stored && typeof stored === "object") {
-        setSections(stored.sections);
-      } else {
-        console.error("Stored data is not an object");
-      }
-    } else {
-      console.error("No stored data found");
-    }
+    request.onerror = function (event: Event) {
+      console.error("Error opening database:", event.target.error);
+    };
+
+    request.onsuccess = function (event: Event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, "readonly");
+      const objectStore = transaction.objectStore(storeName);
+
+      const getRequest = objectStore.get(title);
+
+      getDatabaseInfo(db);
+
+      
+      getRequest.onsuccess = function (event: Event) {
+        const stored = event.target.result;
+      
+        const objectStore = db.transaction(storeName, "readonly").objectStore(storeName);
+        const getAllKeysRequest = objectStore.getAllKeys();
+      
+        getAllKeysRequest.onsuccess = function (event: Event) {
+          const keys = event.target.result;
+          console.log("Object store keys:", keys);
+        };
+      };
+
+      getRequest.onerror = function (event: Event) {
+        console.error("Error retrieving chapter data:", event.target.error);
+      };
+    };
   }, [isAddingSection]);
 
   const deleteChapter = () => {
-    safeSessionStorageRemoveItem(`Chapter Manager: ${title}`);
-    window.location.href = "/";
+    const dbName = "MyDatabase";
+    const storeName = "Chapters";
+
+    const request = indexedDB.open(dbName);
+
+    request.onerror = function (event: Event) {
+      console.error("Error opening database:", event.target.error);
+    };
+
+    request.onsuccess = function (event: Event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+
+      const deleteRequest = objectStore.delete(title);
+
+      deleteRequest.onsuccess = function () {
+        window.location.href = "/";
+      };
+
+      deleteRequest.onerror = function (event: Event) {
+        console.error("Error deleting chapter:", event.target.error);
+      };
+    };
   };
 
   const deleteSection = (section: Section) => {
-    const tempSections = sections.filter((t) => t.title !== section.title);
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${title}`)!,
-    );
-    safeSessionStorageSetItem(
-      "Chapter Manager: " + title,
-      JSON.stringify({
-        title: title,
-        description: description,
-        imageUrl: stored.imageUrl,
-        sections: tempSections,
-      }),
-    );
-    location.reload();
+    const dbName = "MyDatabase";
+    const storeName = "Chapters";
+
+    const request = indexedDB.open(dbName);
+
+    request.onerror = function (event: Event) {
+      console.error("Error opening database:", event.target.error);
+    };
+
+    request.onsuccess = function (event: Event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+
+      const getRequest = objectStore.get(title);
+
+      getRequest.onsuccess = function (event: Event) {
+        const stored = event.target.result;
+
+        const updatedSections = stored.sections.filter((t) =>
+          t.title !== section.title
+        );
+
+        const updatedChapter = {
+          ...stored,
+          sections: updatedSections,
+        };
+
+        const putRequest = objectStore.put(updatedChapter);
+
+        putRequest.onsuccess = function () {
+          location.reload();
+        };
+
+        putRequest.onerror = function (event: Event) {
+          console.error("Error updating chapter:", event.target.error);
+        };
+      };
+
+      getRequest.onerror = function (event: Event) {
+        console.error("Error retrieving chapter data:", event.target.error);
+      };
+    };
   };
 
   const findSection = (sections: Section[], sectionTitle: string) => {
     return sections.find((section) => section.title === sectionTitle);
   };
   const deleteSubSection = (sectionTitle: string, subSection: string) => {
-    const section = findSection(sections, sectionTitle);
-
-    if (!section) return console.log(`Section ${sectionTitle} not found`);
-
-    const updatedSection = removeSubSection(section, subSection);
-
-    if (!updatedSection) return console.log(`removeSubSection failed.`);
-    const updatedSections = updateSections(
-      sections,
-      sectionTitle,
-      updatedSection,
-    );
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${title}`)!,
-    );
-    safeSessionStorageSetItem(
-      "Chapter Manager: " + title,
-      JSON.stringify({
-        title: title,
-        description: description,
-        imageUrl: stored.imageUrl,
-        sections: updatedSections,
-      }),
-    );
-    location.reload();
+    const dbName = "MyDatabase";
+    const storeName = "Chapters";
+  
+    const request = indexedDB.open(dbName);
+  
+    request.onerror = function (event: Event) {
+      console.error("Error opening database:", event.target.error);
+    };
+  
+    request.onsuccess = function (event: Event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+  
+      const getRequest = objectStore.get(title);
+  
+      getRequest.onsuccess = function (event: Event) {
+        const stored = event.target.result;
+  
+        const section = findSection(stored.sections, sectionTitle);
+  
+        if (!section) {
+          console.log(`Section ${sectionTitle} not found`);
+          return;
+        }
+  
+        const updatedSection = removeSubSection(section, subSection);
+  
+        if (!updatedSection) {
+          console.log(`removeSubSection failed.`);
+          return;
+        }
+  
+        const updatedSections = updateSections(
+          stored.sections,
+          sectionTitle,
+          updatedSection,
+        );
+  
+        const updatedChapter = {
+          ...stored,
+          sections: updatedSections,
+        };
+  
+        const putRequest = objectStore.put(updatedChapter);
+  
+        putRequest.onsuccess = function () {
+          location.reload();
+        };
+  
+        putRequest.onerror = function (event: Event) {
+          console.error("Error updating chapter:", event.target.error);
+        };
+      };
+  
+      getRequest.onerror = function (event: Event) {
+        console.error("Error retrieving chapter data:", event.target.error);
+      };
+    };
   };
 
   const removeSubSection = (section: Section, subSection: string) => {
@@ -174,38 +315,99 @@ export default function ChapterData({ title }: { title: string }) {
   ): void {
     if (newText.trim() === "") return window.location.reload();
 
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
-    );
-    safeSessionStorageSetItem(
-      `Chapter Manager: ${chapterTitle}`,
-      JSON.stringify({
-        ...stored,
-        sections: stored.sections.map((s: Section) =>
+    const dbName = "MyDatabase";
+    const storeName = "Chapters";
+
+    const request = indexedDB.open(dbName);
+
+    request.onerror = function (event: Event) {
+      console.error("Error opening database:", event.target.error);
+    };
+
+    request.onsuccess = function (event: Event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+
+      const getRequest = objectStore.get(chapterTitle);
+
+      getRequest.onsuccess = function (event: Event) {
+        const stored = event.target.result;
+
+        const updatedSections = stored.sections.map((s: Section) =>
           s.title === title ? { ...s, title: newText } : s
-        ),
-      }),
-    );
-    window.location.reload();
+        );
+
+        const updatedChapter = {
+          ...stored,
+          sections: updatedSections,
+        };
+
+        const putRequest = objectStore.put(updatedChapter);
+
+        putRequest.onsuccess = function () {
+          window.location.reload();
+        };
+
+        putRequest.onerror = function (event: Event) {
+          console.error("Error updating chapter:", event.target.error);
+        };
+      };
+
+      getRequest.onerror = function (event: Event) {
+        console.error("Error retrieving chapter data:", event.target.error);
+      };
+    };
   }
+
   function updateSectionDescription(
     newText: string,
     title: string,
     chapterTitle: string,
   ): void {
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${chapterTitle}`)!,
-    );
-    safeSessionStorageSetItem(
-      `Chapter Manager: ${chapterTitle}`,
-      JSON.stringify({
-        ...stored,
-        sections: stored.sections.map((s: Section) =>
+    const dbName = "MyDatabase";
+    const storeName = "Chapters";
+
+    const request = indexedDB.open(dbName);
+
+    request.onerror = function (event: Event) {
+      console.error("Error opening database:", event.target.error);
+    };
+
+    request.onsuccess = function (event: Event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+
+      const getRequest = objectStore.get(chapterTitle);
+
+      getRequest.onsuccess = function (event: Event) {
+        const stored = event.target.result;
+
+        const updatedSections = stored.sections.map((s: Section) =>
           s.title === title ? { ...s, description: newText } : s
-        ),
-      }),
-    );
-    window.location.reload();
+        );
+
+        const updatedChapter = {
+          ...stored,
+          sections: updatedSections,
+        };
+
+        const putRequest = objectStore.put(updatedChapter);
+
+        putRequest.onsuccess = function () {
+          window.location.reload();
+        };
+
+        putRequest.onerror = function (event: Event) {
+          console.error("Error updating chapter:", event.target.error);
+        };
+      };
+
+      getRequest.onerror = function (event: Event) {
+        console.error("Error retrieving chapter data:", event.target.error);
+      };
+    };
   }
 
   function updateChapterDescription(
@@ -213,49 +415,110 @@ export default function ChapterData({ title }: { title: string }) {
   ): void {
     if (newText.trim() === "") return window.location.reload();
 
-    const stored = JSON.parse(
-      safeSessionStorageGetItem(`Chapter Manager: ${title}`)!,
-    );
-    safeSessionStorageSetItem(
-      `Chapter Manager: ${title}`,
-      JSON.stringify({ ...stored, description: newText }),
-    );
-    window.location.reload();
+    const dbName = "MyDatabase";
+    const storeName = "Chapters";
+
+    const request = indexedDB.open(dbName);
+
+    request.onerror = function (event: Event) {
+      console.error("Error opening database:", event.target.error);
+    };
+
+    request.onsuccess = function (event: Event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+
+      const getRequest = objectStore.get(title);
+
+      getRequest.onsuccess = function (event: Event) {
+        const stored = event.target.result;
+
+        const updatedChapter = {
+          ...stored,
+          description: newText,
+        };
+
+        const putRequest = objectStore.put(updatedChapter);
+
+        putRequest.onsuccess = function () {
+          window.location.reload();
+        };
+
+        putRequest.onerror = function (event: Event) {
+          console.error("Error updating chapter:", event.target.error);
+        };
+      };
+
+      getRequest.onerror = function (event: Event) {
+        console.error("Error retrieving chapter data:", event.target.error);
+      };
+    };
   }
 
   async function printChapter(): Promise<void> {
-    const stored = await safeSessionStorageGetItem(`Chapter Manager: ${title}`);
-    console.log(stored);
-    fetch("/api/printChapterWithCover", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: stored,
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.blob();
-        } else {
-          throw new Error("Request failed.");
-        }
-      })
-      .then((blob) => {
-        // Create a temporary URL for the blob
-        const url = URL.createObjectURL(blob);
+    const dbName = "MyDatabase";
+    const storeName = "Chapters";
 
-        // Create a temporary link element and trigger the download
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "output.pdf";
-        link.click();
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(dbName);
 
-        // Clean up the temporary URL
-        URL.revokeObjectURL(url);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+      request.onerror = function (event: Event) {
+        console.error("Error opening database:", event.target.error);
+        reject(event.target.error);
+      };
+
+      request.onsuccess = function (event: Event) {
+        const db = event.target.result;
+        const transaction = db.transaction(storeName, "readonly");
+        const objectStore = transaction.objectStore(storeName);
+
+        const getRequest = objectStore.get(title);
+
+        getRequest.onsuccess = function (event: Event) {
+          const stored = event.target.result;
+
+          fetch("/api/printChapterWithCover", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(stored),
+          })
+            .then((response) => {
+              if (response.ok) {
+                return response.blob();
+              } else {
+                throw new Error("Request failed.");
+              }
+            })
+            .then((blob) => {
+              // Create a temporary URL for the blob
+              const url = URL.createObjectURL(blob);
+
+              // Create a temporary link element and trigger the download
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "output.pdf";
+              link.click();
+
+              // Clean up the temporary URL
+              URL.revokeObjectURL(url);
+
+              resolve();
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              reject(error);
+            });
+        };
+
+        getRequest.onerror = function (event: Event) {
+          console.error("Error retrieving chapter data:", event.target.error);
+          reject(event.target.error);
+        };
+      };
+    });
   }
 
   return (
