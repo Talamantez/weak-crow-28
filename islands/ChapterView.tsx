@@ -1,13 +1,11 @@
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
-import ClickToEditHeading from "../components/ClickToEditHeading.tsx";
 import ClickToEdit from "../components/ClickToEdit.tsx";
 import ClickToEditTextArea from "../components/ClickToEditTextArea.tsx";
 import {
   safeSessionStorageSetItem,
 } from "../util/safeSessionStorageSetItem.ts";
 import { safeSessionStorageGetItem } from "../util/safeSessionStorageGetItem.ts";
-import { updateChapterTitle } from "../util/updateChapterTitle.tsx";
 import { updateSubSection } from "../util/updateSubSection.tsx";
 import { AddSubSection } from "../util/AddSubSection.tsx";
 import { AddSection } from "../util/AddSection.tsx";
@@ -30,7 +28,6 @@ export default function ChapterData({ title }: { title: string }) {
   const [isAddingSubSection, setIsAddingSubSection] = useState(false);
   // Step 1: Function to save scroll position
   function saveScrollPosition() {
-    safeSessionStorageSetItem("scrollX", globalThis.scrollX.toString());
     safeSessionStorageSetItem("scrollY", globalThis.scrollY.toString());
   }
 
@@ -39,19 +36,13 @@ export default function ChapterData({ title }: { title: string }) {
 
   // Step 3: Set scroll position on component mount
   useEffect(() => {
-    const scrollX = safeSessionStorageGetItem("scrollX");
     const scrollY = safeSessionStorageGetItem("scrollY");
-
-    if (scrollX !== null && scrollY !== null) {
+    if (scrollY !== null) {
       // Delay the scroll until after the page has fully loaded
       setTimeout(() => {
-        globalThis.scrollTo(parseInt(scrollX), parseInt(scrollY));
-      }, 0);
+        globalThis.scrollTo(0, parseInt(scrollY));
+      }, 100);
     }
-    return () => {
-      globalThis.scrollTo(0, 0);
-      globalThis.removeEventListener("scroll", saveScrollPosition);
-    };
   }, []);
 
   useEffect(() => {
@@ -482,9 +473,8 @@ export default function ChapterData({ title }: { title: string }) {
               >
                 ⬅️ Back
               </a>
-              <div class="font-bold text-2xl text-left w-full"
-              >{title}</div>
-              
+              <div class="font-bold text-2xl text-left w-full">{title}</div>
+
               {description !== "" && (
                 <ClickToEditTextArea
                   text={description}
