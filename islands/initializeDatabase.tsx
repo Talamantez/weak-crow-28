@@ -42,7 +42,6 @@ export const initializeDatabase = (
       request.onsuccess = function (event: Event) {
         const request = event.target as IDBOpenDBRequest;
         const db = request.result;
-        console.log("Database initialized successfully.");
         resolve(db);
       };
     };

@@ -33,10 +33,6 @@ export const generateChaptersFromJSON = async (dbName: string, storeName: string
       // Store the chapter data in IndexedDB
       const request = objectStore.put(chapter);
 
-      request.onsuccess = function (_event) {
-        console.log(`Chapter ${index} stored successfully`);
-      };
-
       request.onerror = function (event) {
         if (event.target) {
           console.error(`Error storing chapter ${index}:`, event.target);

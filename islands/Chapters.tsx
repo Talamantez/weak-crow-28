@@ -1,8 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
-// import { getDatabaseInfo } from "./getDatabaseInfo.tsx";
-import { initializeDatabase } from "./initializeDatabase.tsx";
+import { initializeDatabaseIfNeeded } from "../util/initializeDatabaseIfNeeded.ts";
 import { fetchChaptersFromIndexedDB } from "./fetchChaptersFromIndexedDB.tsx";
+
 interface ChapterData {
   index: number;
   title: string;
@@ -16,7 +16,6 @@ export const storeName = "Chapters";
 export const dbVersion = 5;
 
 export default function Chapters() {
-  // @ts-ignore - TS2488 [ERROR]: Type '[{}, StateUpdater<{}>]' must have a '[Symbol.iterator]()' method that returns an iterator. It is probably an issue with TS.
   const [chapters, setChapters] = useState<ChapterData[]>([{
     index: 0,
     title: "",
@@ -26,67 +25,14 @@ export default function Chapters() {
   }]);
 
   useEffect(() => {
-    const openDatabase = (indexedDB: IDBFactory): Promise<IDBDatabase> => {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(dbName, dbVersion);
-        request.onerror = () => {
-          reject(new Error("Error opening database"));
-        };
-        request.onsuccess = () => {
-          const db = request.result;
-          resolve(db);
-        };
-      });
-    };
-
-    const checkDatabaseInitialized = (db: IDBDatabase): Promise<boolean> => {
-      return new Promise((resolve) => {
-        if (!db.objectStoreNames.contains(storeName)) {
-          resolve(false);
-        } else {
-          const transaction = db.transaction(storeName, "readonly");
-          const objectStore = transaction.objectStore(storeName);
-          if (!objectStore.indexNames.contains("titleIndex")) {
-            resolve(false);
-          } else {
-            const request = objectStore.count();
-            request.onsuccess = () => {
-              const count = request.result;
-              resolve(count > 0);
-            };
-          }
-        }
-      });
-    };
-
-    const initializeDatabaseIfNeeded = (
-      indexedDB: IDBFactory,
-    ): Promise<IDBDatabase> => {
-      return openDatabase(indexedDB)
-        .then((db: IDBDatabase) => {
-          return checkDatabaseInitialized(db).then((isInitialized) => {
-            if (isInitialized) {
-              return db;
-            } else {
-              db.close();
-              return initializeDatabase(
-                indexedDB,
-                dbName,
-                dbVersion,
-                storeName,
-              );
-            }
-          });
-        });
-    };
-
-    initializeDatabaseIfNeeded(indexedDB)
+    initializeDatabaseIfNeeded(indexedDB, dbName, dbVersion, storeName)
       .then((db: IDBDatabase) =>
         fetchChaptersFromIndexedDB(db) as Promise<ChapterData[]>
       )
       .then((chapters: ChapterData[]) => {
         setChapters(chapters);
       })
+      // deno-lint-ignore no-explicit-any
       .catch((error: any) => {
         console.error(
           "Error initializing database or fetching chapters:",
@@ -98,11 +44,9 @@ export default function Chapters() {
   return (
     <div class="flex flex-col items-center w-full">
       <div class="grid grid-cols-1 gap-y-5 md:(grid-cols-2 gap-x-20 gap-y-10) w-full">
-        {/* @ts-ignore */}
         {chapters.length > 0 && chapters[0].title.length > 0 &&
           (
             <>
-              {/* @ts-ignore */}
               {chapters!.map((chapter) => (
                 <a
                   key={chapter.title}
@@ -143,7 +87,6 @@ export default function Chapters() {
             </>
           )}
       </div>
-      {/* @ts-ignore */}
       {(!chapters[0] || !chapters[0].title || !chapters[0].title.length) && (
         <div class="flex w-full m-0">
           <h1 class="my-6 w-full text-left m-0">No chapters yet</h1>
