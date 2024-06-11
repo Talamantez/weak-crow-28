@@ -13,7 +13,7 @@ interface ChapterData {
 
 export const dbName = "MyDatabase";
 export const storeName = "Chapters";
-export const dbVersion = 2;
+export const dbVersion = 5;
 
 export default function Chapters() {
   // @ts-ignore - TS2488 [ERROR]: Type '[{}, StateUpdater<{}>]' must have a '[Symbol.iterator]()' method that returns an iterator. It is probably an issue with TS.
@@ -38,36 +38,60 @@ export default function Chapters() {
         };
       });
     };
-  
+
     const checkDatabaseInitialized = (db: IDBDatabase): Promise<boolean> => {
       return new Promise((resolve) => {
-        const transaction = db.transaction(storeName, "readonly");
-        const objectStore = transaction.objectStore(storeName);
-        const request = objectStore.count();
-        request.onsuccess = () => {
-          const count = request.result;
-          resolve(count > 0);
-        };
+        if (!db.objectStoreNames.contains(storeName)) {
+          resolve(false);
+        } else {
+          const transaction = db.transaction(storeName, "readonly");
+          const objectStore = transaction.objectStore(storeName);
+          if (!objectStore.indexNames.contains("titleIndex")) {
+            resolve(false);
+          } else {
+            const request = objectStore.count();
+            request.onsuccess = () => {
+              const count = request.result;
+              resolve(count > 0);
+            };
+          }
+        }
       });
     };
-  
-    openDatabase(indexedDB)
-      .then((db: IDBDatabase) => {
-        return checkDatabaseInitialized(db).then((isInitialized) => {
-          if (isInitialized) {
-            return db;
-          } else {
-            return initializeDatabase(indexedDB, dbName, dbVersion, storeName).then(() => db);
-          }
+
+    const initializeDatabaseIfNeeded = (
+      indexedDB: IDBFactory,
+    ): Promise<IDBDatabase> => {
+      return openDatabase(indexedDB)
+        .then((db: IDBDatabase) => {
+          return checkDatabaseInitialized(db).then((isInitialized) => {
+            if (isInitialized) {
+              return db;
+            } else {
+              db.close();
+              return initializeDatabase(
+                indexedDB,
+                dbName,
+                dbVersion,
+                storeName,
+              );
+            }
+          });
         });
-      })
-      // @ts-ignore TS does not see 'Promise'
-      .then((db: IDBDatabase) => fetchChaptersFromIndexedDB(db) as Promise<ChapterData[]>)
+    };
+
+    initializeDatabaseIfNeeded(indexedDB)
+      .then((db: IDBDatabase) =>
+        fetchChaptersFromIndexedDB(db) as Promise<ChapterData[]>
+      )
       .then((chapters: ChapterData[]) => {
         setChapters(chapters);
       })
       .catch((error: any) => {
-        console.error("Error initializing database or fetching chapters:", error);
+        console.error(
+          "Error initializing database or fetching chapters:",
+          error,
+        );
       });
   }, []);
 
