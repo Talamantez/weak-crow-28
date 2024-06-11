@@ -13,7 +13,7 @@ interface ChapterData {
 
 export const dbName = "MyDatabase";
 export const storeName = "Chapters";
-export const dbVersion = 3;
+export const dbVersion = 2;
 
 export default function Chapters() {
   // @ts-ignore - TS2488 [ERROR]: Type '[{}, StateUpdater<{}>]' must have a '[Symbol.iterator]()' method that returns an iterator. It is probably an issue with TS.
