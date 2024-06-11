@@ -23,7 +23,11 @@ export default function Hero() {
         </p>
         <Button text="Generate Example Chapters"
           onClick={() => {
-            generateChaptersFromJSON("MyDatabase", "Chapters");
+            try {
+              generateChaptersFromJSON("MyDatabase", "Chapters");
+            } catch (error) {
+              console.error("Error generating chapters:", error); // Log the error for debugging
+            }
           }}
           styles="flex items-center justify-center gap-2 bg-white rounded-md py-1 px-10 text-blue-800 transition-colors focus:outline-none outline-none mt-5"
           icon={IconWand}

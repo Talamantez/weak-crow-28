@@ -2,7 +2,7 @@ export const generateChaptersFromJSON = async (dbName: string, storeName: string
   const chapters = await fetch("./static/chapters.json").then((res) => res.json());
 
   // Open the IndexedDB database
-  const request = indexedDB.open(dbName, 2);
+  const request = indexedDB.open(dbName, 5);
 
   request.onerror = function (event) {
     if ((event.target as IDBOpenDBRequest).error) {
