@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "start": "deno run -A --watch=static/,routes/ dev.ts",
+    "start": "deno test -A ./test/*.test.ts && deno run -A --watch=static/,routes/ dev.ts",
     "build": "deno run -A dev.ts build",
     "preview": "deno run -A main.ts",
     "test": "deno test -A ./test/*.test.ts"
