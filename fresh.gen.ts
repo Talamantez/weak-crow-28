@@ -21,7 +21,10 @@ import * as $HomeContent from "./islands/HomeContent.tsx";
 import * as $ImageChooser from "./islands/ImageChooser.tsx";
 import * as $LoaderIsland from "./islands/LoaderIsland.tsx";
 import * as $Sections from "./islands/Sections.tsx";
+import * as $fetchChaptersFromIndexedDB from "./islands/fetchChaptersFromIndexedDB.tsx";
 import * as $generateIntroduction from "./islands/generateIntroduction.tsx";
+import * as $getDatabaseInfo from "./islands/getDatabaseInfo.tsx";
+import * as $initializeDatabase from "./islands/initializeDatabase.tsx";
 import * as $printAllChapters from "./islands/printAllChapters.tsx";
 import * as $renderImages from "./islands/renderImages.tsx";
 import { type Manifest } from "$fresh/server.ts";
@@ -49,7 +52,10 @@ const manifest = {
     "./islands/ImageChooser.tsx": $ImageChooser,
     "./islands/LoaderIsland.tsx": $LoaderIsland,
     "./islands/Sections.tsx": $Sections,
+    "./islands/fetchChaptersFromIndexedDB.tsx": $fetchChaptersFromIndexedDB,
     "./islands/generateIntroduction.tsx": $generateIntroduction,
+    "./islands/getDatabaseInfo.tsx": $getDatabaseInfo,
+    "./islands/initializeDatabase.tsx": $initializeDatabase,
     "./islands/printAllChapters.tsx": $printAllChapters,
     "./islands/renderImages.tsx": $renderImages,
   },

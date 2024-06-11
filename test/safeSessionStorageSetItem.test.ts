@@ -1,5 +1,7 @@
+/// <reference lib="deno.ns" />
+
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { safeSessionStorageSetItem } from "./safeSessionStorageSetItem.ts";
+import { safeSessionStorageSetItem } from "../util/safeSessionStorageSetItem.ts";
 
 Deno.test("safeSessionStorageSetItem sets item in session storage", () => {
   const key = "testKey";

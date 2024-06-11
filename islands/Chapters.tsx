@@ -1,5 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
+// import { getDatabaseInfo } from "./getDatabaseInfo.tsx";
+import { initializeDatabase } from "./initializeDatabase.tsx";
+import { fetchChaptersFromIndexedDB } from "./fetchChaptersFromIndexedDB.tsx";
 interface ChapterData {
   index: number;
   title: string;
@@ -8,50 +11,12 @@ interface ChapterData {
   imageUrl?: string;
 }
 
-const dbName = "MyDatabase";
-const storeName = "Chapters";
-const dbVersion = 2;
-
-export const clearAllChapters = () => {
-
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(dbName);
-
-    request.onerror = function (event: Event) {
-      console.error("Error opening database:", event.target.error);
-      reject(event.target.error);
-    };
-
-    request.onsuccess = function (event: Event) {
-      const db = event.target.result;
-      const transaction = db.transaction(storeName, "readwrite");
-      const objectStore = transaction.objectStore(storeName);
-
-      // Clear all chapters from the object store
-      const clearRequest = objectStore.clear();
-
-      clearRequest.onsuccess = function () {
-        console.log("All chapters cleared from IndexedDB");
-        db.close();
-        resolve();
-      };
-
-      clearRequest.onerror = function (event: Event) {
-        console.error("Error clearing chapters from IndexedDB:", event.target.error);
-        db.close();
-        reject(event.target.error);
-      };
-    };
-  })
-    .then(() => {
-      window.location.reload();
-    })
-    .catch((error) => {
-      console.error("Error clearing chapters:", error);
-    });
-};
+export const dbName = "MyDatabase";
+export const storeName = "Chapters";
+export const dbVersion = 3;
 
 export default function Chapters() {
+  // @ts-ignore - TS2488 [ERROR]: Type '[{}, StateUpdater<{}>]' must have a '[Symbol.iterator]()' method that returns an iterator. It is probably an issue with TS.
   const [chapters, setChapters] = useState<ChapterData[]>([{
     index: 0,
     title: "",
@@ -59,94 +24,61 @@ export default function Chapters() {
     sections: [],
     imageUrl: "",
   }]);
-  
-  const getDatabaseInfo = (db: IDBDatabase) => {
-    console.log("Database name:", db.name);
-    console.log("Database version:", db.version);
-  
-    const objectStoreNames = db.objectStoreNames;
-    console.log("Object stores:");
-    for (let i = 0; i < objectStoreNames.length; i++) {
-      const storeName = objectStoreNames[i];
-      console.log("- " + storeName);
-  
-      const transaction = db.transaction(storeName, "readonly");
-      const objectStore = transaction.objectStore(storeName);
-  
-      const countRequest = objectStore.count();
-      countRequest.onsuccess = function (event: Event) {
-        const count = event.target.result;
-        console.log(`  Number of items in ${storeName}: ${count}`);
-      };
-    }
-  };
-
-  const initializeDatabase = () => {
-    return new Promise((resolve, reject) => {
-
-      const request = indexedDB.open(dbName, dbVersion);
-  
-      request.onerror = function (event: Event) {
-        console.error("Error opening database:", event.target.error);
-        reject(event.target.error);
-      };
-  
-      request.onupgradeneeded = function (event: IDBVersionChangeEvent) {
-        const db = event.target.result;
-        if (!db.objectStoreNames.contains(storeName)) {
-          const objectStore = db.createObjectStore(storeName, { keyPath: "title" });
-          objectStore.createIndex("titleIndex", "title", { unique: true }); // Create the index here
-        }
-      };
-  
-      request.onsuccess = function (event: Event) {
-        const db = event.target.result;
-        console.log("Database initialized successfully.");
-        resolve(db);
-      };
-    });
-  };
-
-  const fetchChaptersFromIndexedDB = (db: IDBDatabase) => {
-    return new Promise((resolve, reject) => {
-  
-      const transaction = db.transaction(storeName, "readonly");
-      const objectStore = transaction.objectStore(storeName);
-      const getAllRequest = objectStore.getAll();
-  
-      getAllRequest.onsuccess = function (event: Event) {
-        const chapters = event.target.result;
-        const sortedChapters = chapters.sort((a, b) => a.index - b.index);
-        resolve(sortedChapters);
-      };
-  
-      getAllRequest.onerror = function (event: Event) {
-        console.error("Error fetching chapters:", event.target.error);
-        reject(event.target.error);
-      };
-    });
-  };
 
   useEffect(() => {
-    initializeDatabase()
-      .then((db) => {
-        getDatabaseInfo(db); // Add this line to get database info
-        return fetchChaptersFromIndexedDB(db);
+    const openDatabase = (indexedDB: IDBFactory): Promise<IDBDatabase> => {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, dbVersion);
+        request.onerror = () => {
+          reject(new Error("Error opening database"));
+        };
+        request.onsuccess = () => {
+          const db = request.result;
+          resolve(db);
+        };
+      });
+    };
+  
+    const checkDatabaseInitialized = (db: IDBDatabase): Promise<boolean> => {
+      return new Promise((resolve) => {
+        const transaction = db.transaction(storeName, "readonly");
+        const objectStore = transaction.objectStore(storeName);
+        const request = objectStore.count();
+        request.onsuccess = () => {
+          const count = request.result;
+          resolve(count > 0);
+        };
+      });
+    };
+  
+    openDatabase(indexedDB)
+      .then((db: IDBDatabase) => {
+        return checkDatabaseInitialized(db).then((isInitialized) => {
+          if (isInitialized) {
+            return db;
+          } else {
+            return initializeDatabase(indexedDB, dbName, dbVersion, storeName).then(() => db);
+          }
+        });
       })
-      .then((chapters) => {
+      // @ts-ignore TS does not see 'Promise'
+      .then((db: IDBDatabase) => fetchChaptersFromIndexedDB(db) as Promise<ChapterData[]>)
+      .then((chapters: ChapterData[]) => {
         setChapters(chapters);
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error("Error initializing database or fetching chapters:", error);
       });
   }, []);
-  
+
   return (
     <div class="flex flex-col items-center w-full">
       <div class="grid grid-cols-1 gap-y-5 md:(grid-cols-2 gap-x-20 gap-y-10) w-full">
+        {/* @ts-ignore */}
         {chapters.length > 0 && chapters[0].title.length > 0 &&
           (
             <>
+              {/* @ts-ignore */}
               {chapters!.map((chapter) => (
                 <a
                   key={chapter.title}
@@ -187,6 +119,7 @@ export default function Chapters() {
             </>
           )}
       </div>
+      {/* @ts-ignore */}
       {(!chapters[0] || !chapters[0].title || !chapters[0].title.length) && (
         <div class="flex w-full m-0">
           <h1 class="my-6 w-full text-left m-0">No chapters yet</h1>
