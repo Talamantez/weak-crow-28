@@ -6,7 +6,6 @@ export default function AddChapter() {
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [saving, setSaving] = useState(false);
 
   const handleImageUpload = async (e: Event) => {
     e.preventDefault();
@@ -26,18 +25,6 @@ export default function AddChapter() {
     }
     setUploading(false);
     imageForm.reset();
-  };
-
-  const handleSave = () => {
-    if (imageUrl) {
-      try {
-        sessionStorage.setItem("savedImage", imageUrl);
-      } catch (error) {
-        setSaving(false);
-        return alert(error.message);
-      }
-      alert("Image saved to session storage.");
-    }
   };
 
   const addChapter = () => {
