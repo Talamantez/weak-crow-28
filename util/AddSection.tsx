@@ -1,7 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
 import { Section } from "./SectionData.ts";
-import { safeSessionStorageSetItem } from "./safeSessionStorageSetItem.ts";
-import { safeSessionStorageGetItem } from "./safeSessionStorageGetItem.ts";
 
 export interface AddSectionProps {
   chapterTitle: string;
@@ -15,7 +13,6 @@ export function AddSection(
   { chapterTitle, sections, isAddingSection, setIsAddingSection }: AddSectionProps
 ) {
   const [description, setDescription] = useState("");
-
   const [title, setTitle] = useState("");
   const [section, setSection] = useState<Section>(
     {
@@ -37,43 +34,61 @@ export function AddSection(
   }, [title, description]);
 
   const addSection = () => {
-    let newSections: Section[] = [];
+    const dbName = "MyDatabase";
+    const storeName = "Chapters";
 
-    const stored = safeSessionStorageGetItem(
-      `Chapter Manager: ${chapterTitle}`
-    );
+    const request = indexedDB.open(dbName);
 
-    const chapter = JSON.parse(stored as string);
+    request.onerror = function (event: Event) {
+      console.error("Error opening database:", event.target.error);
+    };
 
-    if (section) {
-      if (!section) newSections = [section];
-      else newSections = [...sections, section];
+    request.onsuccess = function (event: Event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+      const getRequest = objectStore.get(chapterTitle);
 
-      safeSessionStorageSetItem(
-        "Chapter Manager: " + chapterTitle,
-        JSON.stringify({
-          title: chapterTitle,
-          description: chapter.description,
-          imageUrl: chapter.imageUrl,
-          sections: newSections,
-        })
-      );
-    }
-    location.reload();
+      getRequest.onsuccess = function (event: Event) {
+        const chapter = event.target.result;
 
-    setIsAddingSection(false);
+        if (chapter) {
+          const newSections = section ? [...sections, section] : [section];
+
+          const updatedChapter = {
+            ...chapter,
+            sections: newSections,
+          };
+
+          const putRequest = objectStore.put(updatedChapter);
+
+          putRequest.onsuccess = function () {
+            location.reload();
+            setIsAddingSection(false);
+          };
+
+          putRequest.onerror = function (event: Event) {
+            console.error("Error updating chapter:", event.target.error);
+          };
+        }
+      };
+
+      getRequest.onerror = function (event: Event) {
+        console.error("Error retrieving chapter:", event.target.error);
+      };
+    };
   };
 
   return (
     <div class={isAddingSection ? "block w-full mt-5" : "hidden"}>
-      <input 
+      <input
         type="text"
         placeholder="Section Title"
         onChange={(e) => {
           setTitle((e.target as HTMLInputElement).value);
         }}
         class="w-full border-2 rounded-md mt-2 p-5 text-left border-blue-500 focus:border-blue-600 outline-none" />
-      <textarea 
+      <textarea
         type="text"
         placeholder="Section Description"
         onChange={(e) => {
@@ -82,13 +97,13 @@ export function AddSection(
         rows={10}
         class="w-full border-2 rounded-md mt-2 px-2 py-1 text-left border-blue-500 focus:border-blue-600 outline-none" />
       <div class="w-full flex items-center justify-between">
-        <button 
+        <button
           onClick={() => setIsAddingSection(false)}
           class="bg-red-500 hover:bg-red-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
         >
           Cancel
         </button>
-        <button 
+        <button
           onClick={() => addSection()}
           class="bg-blue-500 hover:bg-blue-600 rounded-md py-1 px-10 text-gray-100 transition-colors focus:outline-none outline-none mt-5"
         >
