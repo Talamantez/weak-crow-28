@@ -1,9 +1,6 @@
-import { safeSessionStorageGetItem } from "../util/safeSessionStorageGetItem.ts";
+import { dbName, storeName } from "../util/dbInfo.ts";
 
-
-export async function printAllChapters(): Promise<void> {
-  const dbName = "MyDatabase";
-  const storeName = "Chapters";
+export async function printAllChapters(): Promise<void> {  const storeName = "Chapters";
 
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(dbName);

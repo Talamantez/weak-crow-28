@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks";
 import Loader from "../components/Loader.tsx";
+import { dbName, storeName } from "../util/dbInfo.ts";
 
 export default function AddChapter() {
   const [title, setTitle] = useState("");
@@ -32,9 +33,6 @@ export default function AddChapter() {
       alert("Please fill in all fields.");
       return;
     }
-
-    const dbName = "MyDatabase";
-    const storeName = "Chapters";
 
     const request = indexedDB.open(dbName);
 

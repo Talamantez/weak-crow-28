@@ -10,9 +10,7 @@ import { updateSubSection } from "../util/updateSubSection.tsx";
 import { AddSubSection } from "../util/AddSubSection.tsx";
 import { AddSection } from "../util/AddSection.tsx";
 import Loader from "../components/Loader.tsx";
-
-const dbName = "MyDatabase";
-const storeName = "Chapters";
+import { dbName, storeName } from "../util/dbInfo.ts";
 
 export default function ChapterData({ title }: { title: string }) {
   const [loading, setLoading] = useState(true);

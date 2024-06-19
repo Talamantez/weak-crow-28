@@ -5,9 +5,7 @@ import Chapters from "./Chapters.tsx";
 import Button from "../components/Button.tsx";
 import IconPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/plus.tsx";
 import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
-
-const dbName = "MyDatabase";
-const storeName = "Chapters"
+import { dbName, storeName } from "../util/dbInfo.ts";
 
 const clearAllChapters = () => {
 

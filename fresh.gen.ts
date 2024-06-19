@@ -15,7 +15,6 @@ import * as $new_chapter from "./routes/new-chapter.tsx";
 import * as $AddChapter from "./islands/AddChapter.tsx";
 import * as $ChapterView from "./islands/ChapterView.tsx";
 import * as $Chapters from "./islands/Chapters.tsx";
-import * as $Chapters_Test from "./islands/Chapters_Test.tsx";
 import * as $Hero from "./islands/Hero.tsx";
 import * as $HomeContent from "./islands/HomeContent.tsx";
 import * as $ImageChooser from "./islands/ImageChooser.tsx";
@@ -46,7 +45,6 @@ const manifest = {
     "./islands/AddChapter.tsx": $AddChapter,
     "./islands/ChapterView.tsx": $ChapterView,
     "./islands/Chapters.tsx": $Chapters,
-    "./islands/Chapters_Test.tsx": $Chapters_Test,
     "./islands/Hero.tsx": $Hero,
     "./islands/HomeContent.tsx": $HomeContent,
     "./islands/ImageChooser.tsx": $ImageChooser,

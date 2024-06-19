@@ -1,4 +1,5 @@
 import { Section } from "./SectionData.ts";
+import { dbName, storeName } from "./dbInfo.ts";
 
 export function updateSubSection(
   newText: string,
@@ -11,9 +12,6 @@ export function updateSubSection(
       window.location.reload();
     });
   }
-
-  const dbName = "MyDatabase";
-  const storeName = "Chapters";
 
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(dbName);

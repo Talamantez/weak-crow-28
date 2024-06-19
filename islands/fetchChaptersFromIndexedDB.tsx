@@ -1,4 +1,4 @@
-import { storeName } from "./Chapters.tsx";
+import { storeName } from "../util/dbInfo.ts";
 
 export const fetchChaptersFromIndexedDB = (db: IDBDatabase) => {
   // @ts-ignore TS7006 [ERROR]: Parameter 'reject' implicitly has an 'any' type.

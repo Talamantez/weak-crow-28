@@ -1,7 +1,7 @@
 // initializeDatabase.test.ts
 import { initializeDatabase } from "../islands/initializeDatabase.tsx";
 import "https://deno.land/x/indexeddb@v1.1.0/polyfill.ts";
-import { dbName, dbVersion, storeName } from "../islands/Chapters.tsx";
+import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { assert } from "https://deno.land/std@0.224.0/assert/assert.ts";
 
 Deno.test({

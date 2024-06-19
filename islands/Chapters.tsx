@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { Section } from "../util/SectionData.ts";
 import { initializeDatabaseIfNeeded } from "../util/initializeDatabaseIfNeeded.ts";
 import { fetchChaptersFromIndexedDB } from "./fetchChaptersFromIndexedDB.tsx";
+import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 
 interface ChapterData {
   index: number;
@@ -10,10 +11,6 @@ interface ChapterData {
   sections: Section[];
   imageUrl?: string;
 }
-
-export const dbName = "MyDatabase";
-export const storeName = "Chapters";
-export const dbVersion = 5;
 
 export default function Chapters() {
   const [chapters, setChapters] = useState<ChapterData[]>([{
