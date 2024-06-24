@@ -19,7 +19,16 @@ export async function handler(req: Request, ctx: FreshContext) {
       status: 403,
     });
   }
-
+  if (pathname.endsWith(".gz")) {
+    return new Response("Access denied. GZ requests are not allowed", {
+      status: 403
+    })
+  }
+  if (pathname.endsWith("credentials")) {
+    return new Response("Access denied. Credentials requests are not allowed", {
+      status: 403
+    })
+  }
   // Pass the request to the next handler
   const resp = await ctx.next();
 
