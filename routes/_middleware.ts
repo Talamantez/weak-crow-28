@@ -20,12 +20,17 @@ export async function handler(req: Request, ctx: FreshContext) {
     });
   }
   if (pathname.endsWith(".gz")) {
-    return new Response("Access denied. GZ requests are not allowed", {
+    return new Response("Access denied. GZ requests are not allowed.", {
       status: 403
     })
   }
   if (pathname.endsWith("credentials")) {
-    return new Response("Access denied. Credentials requests are not allowed", {
+    return new Response("Access denied. Credentials requests are not allowed.", {
+      status: 403
+    })
+  }
+  if (pathname.endsWith(".env")) {
+    return new Response("Access denied. ENV requests are not allowed.", {
       status: 403
     })
   }
