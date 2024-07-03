@@ -1,0 +1,29 @@
+{
+  "Chapters": [
+    {
+      "title": "An Overview of Mental Health Conditions",
+      "description": "Living with mental illness is a challenge, and often the effects of living with mental health challenges extend to friends and family. A person affected by mental health conditions faces the ups and downs on the road to recovery—from diagnosis and treatment to managing their wellness to balancing work, school and mental health. But more often than not, the journey on that road to recovery can involve parents, siblings, partners, grandparents and children, too.  Some families can be completely overwhelmed by the experience, while others deny the situation entirely. Many times families are strengthened and unified, which can even extend to the community beyond the family and generate understanding for others who face the road to recovery.  This \"roadmap\" is meant to provide families and individuals with mental health conditions help and hope for living in a world affected by mental health challenges, from an overview of symptoms to navigating the health system in the Puget Sound area. People in recovery who live with mental illness and their families can be an influential force that can inspire their communities, fight stigma and transform the state of mental health care. Together, we can advocate for an array of readily available resources designed to meet the diverse needs of persons with mental health conditions and their families.",
+      "sections": [
+        {
+            "title": "Anxiety Disorders",
+            "description": "Everyone experiences anxiety. Speaking in front of a group makes most of us anxious, but that motivates us to prepare and do well. Driving in heavy traffic is a common source of anxiety, but it keeps us alert and cautious to better avoid accidents. However, when feelings of intense fear and distress are overwhelming and prevent us from doing everyday activities, an anxiety disorder may be the cause. Anxiety disorders are the most common mental health concern in the United States. Over 40 million adults in the U.S. (19.1%) have an anxiety disorder. Meanwhile, approximately 7% of children aged 3-17 experience issues with anxiety each year. Most people develop symptoms before age 21 and women are twice as likely to be diagnosed with an anxiety disorder than men.",
+            "sections": [
+              {
+                "title": "Common Symptoms",
+                "description": "Anxiety disorders are a group of related conditions, and each has unique symptoms. However, all anxiety disorders have one thing in common: persistent, excessive fear or worry in situations that are not threatening. People can experience one or more of the following symptoms:",
+                "subSections": [
+                  {
+                    "title": "Emotional symptoms:",
+                    "content": "» Feelings of apprehension or dread » Feeling tense and jumpy » Restlessness or irritability » Anticipating the worst and being watchful for signs of danger"
+                  },
+                  {
+                    "title": "Physical symptoms:",
+                    "content": "» Pounding or racing heart and shortness of breath » Sweating, tremors and twitches » Headaches, fatigue and insomnia » Upset stomach, frequent urination or diarrhea"
+                  }
+                ],
+                "chapterTitle": "An Overview of Mental Health Conditions"
+              }
+      ]}]
+    }
+  ]
+}
