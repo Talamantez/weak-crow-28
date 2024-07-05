@@ -1,13 +1,13 @@
 import { useEffect, useState } from "preact/hooks";
 
-export const useLoadChapters = (dbName: string, storeName: string, version: number = 1) => {
+export const useLoadChapters = (dbName: string, storeName: string, dbVersion: number) => {
   const [chapters, setChapters] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadChapters = async () => {
       try {
-        const db = await openDatabase(dbName, storeName, version);
+        const db = await openDatabase(dbName, storeName, dbVersion);
         const loadedChapters = await getAllChapters(db, storeName);
         setChapters(loadedChapters);
       } catch (err) {
@@ -17,24 +17,24 @@ export const useLoadChapters = (dbName: string, storeName: string, version: numb
     };
 
     loadChapters();
-  }, [dbName, storeName, version]);
+  }, [dbName, storeName, dbVersion]);
 
   return { chapters, error };
 };
 
-const openDatabase = (dbName: string, storeName: string, version: number): Promise<IDBDatabase> => {
+const openDatabase = (dbName: string, storeName: string, dbVersion: number): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(dbName, version);
+    const request = indexedDB.open(dbName, dbVersion);
 
     request.onerror = () => reject(new Error('Failed to open database'));
 
     request.onsuccess = (event: Event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       if (!db.objectStoreNames.contains(storeName)) {
-        // If the object store doesn't exist, close the database and reopen it with a new version
+        // If the object store doesn't exist, close the database and reopen it with a new dbVersion
         db.close();
-        const newVersion = db.version + 1;
-        openDatabase(dbName, storeName, newVersion).then(resolve).catch(reject);
+        const newDbVersion = db.version + 1;
+        openDatabase(dbName, storeName, newDbVersion).then(resolve).catch(reject);
       } else {
         resolve(db);
       }

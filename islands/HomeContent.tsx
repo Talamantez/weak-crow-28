@@ -7,7 +7,10 @@ import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
 import IconCheck from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/check.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
-import { dbName, storeName } from "../util/dbInfo.ts";
+import { dbName, storeName, dbVersion } from "../util/dbInfo.ts";
+import { printAllChapters } from "./printAllChapters.tsx";
+import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
+
 
 const EditableText = ({ initialText, onSave }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -64,21 +67,21 @@ const Chapter = ({ chapter, onUpdate }) => {
 };
 
 export default function HomeContent() {
-  const { chapters, error } = useLoadChapters(dbName, storeName);
+  const { chapters, error } = useLoadChapters(dbName, storeName, dbVersion);
 
-  // useEffect(() => {
-  //   // Load chapters from IndexedDB
-  //   const request = indexedDB.open(dbName);
-  //   request.onsuccess = (event) => {
-  //     const db = event.target.result;
-  //     const transaction = db.transaction(storeName, "readonly");
-  //     const objectStore = transaction.objectStore(storeName);
-  //     const getAllRequest = objectStore.getAll();
-  //     getAllRequest.onsuccess = () => {
-  //       setChapters(getAllRequest.result);
-  //     };
-  //   };
-  // }, []);
+  const handlePrint = () => {
+    printAllChapters();
+  }
+
+  const handleGenerate = async () => {
+    console.log("Generate button clicked");
+    try {
+      await generateChaptersFromJSON("MyDatabase", "Chapters");
+      console.log("Generation completed successfully");
+    } catch (error) {
+      console.error("Error generating chapters:", error);
+    }
+  }
 
   const updateChapter = (updatedChapter) => {
     const request = indexedDB.open(dbName);
@@ -142,12 +145,12 @@ export default function HomeContent() {
           <Button
             text="Generate Example Chapters"
             styles="bg-white text-gray-800 rounded px-4 py-2 mb-2 w-full"
-            onClick={() => {/* Handle generation */}}
+            onClick={() => {handleGenerate();}}
           />
           <Button
             text="Print Your Roadmap"
             styles="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 w-full"
-            onClick={() => {/* Handle printing */}}
+            onClick={() => {handlePrint();}}
           />
         </div>
         
