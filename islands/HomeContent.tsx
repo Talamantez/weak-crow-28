@@ -6,6 +6,7 @@ import IconPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/plus.tsx";
 import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
 import IconCheck from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/check.tsx";
+import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, storeName } from "../util/dbInfo.ts";
 
 const EditableText = ({ initialText, onSave }) => {
@@ -63,21 +64,21 @@ const Chapter = ({ chapter, onUpdate }) => {
 };
 
 export default function HomeContent() {
-  const [chapters, setChapters] = useState([]);
+  const { chapters, error } = useLoadChapters(dbName, storeName);
 
-  useEffect(() => {
-    // Load chapters from IndexedDB
-    const request = indexedDB.open(dbName);
-    request.onsuccess = (event) => {
-      const db = event.target.result;
-      const transaction = db.transaction(storeName, "readonly");
-      const objectStore = transaction.objectStore(storeName);
-      const getAllRequest = objectStore.getAll();
-      getAllRequest.onsuccess = () => {
-        setChapters(getAllRequest.result);
-      };
-    };
-  }, []);
+  // useEffect(() => {
+  //   // Load chapters from IndexedDB
+  //   const request = indexedDB.open(dbName);
+  //   request.onsuccess = (event) => {
+  //     const db = event.target.result;
+  //     const transaction = db.transaction(storeName, "readonly");
+  //     const objectStore = transaction.objectStore(storeName);
+  //     const getAllRequest = objectStore.getAll();
+  //     getAllRequest.onsuccess = () => {
+  //       setChapters(getAllRequest.result);
+  //     };
+  //   };
+  // }, []);
 
   const updateChapter = (updatedChapter) => {
     const request = indexedDB.open(dbName);
