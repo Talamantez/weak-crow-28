@@ -1,77 +1,85 @@
-import { useState, useEffect } from "preact/hooks";
 import { Head } from "$fresh/runtime.ts";
 import Footer from "../components/Footer.tsx";
 import Button from "../components/Button.tsx";
 import IconPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/plus.tsx";
-import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
-import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
-import IconCheck from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/check.tsx";
+import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";;
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, storeName, dbVersion } from "../util/dbInfo.ts";
-import { printAllChapters } from "./printAllChapters.tsx";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
 
 
-const EditableText = ({ initialText, onSave }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [text, setText] = useState(initialText);
+const ChapterSection = ({ section, depth = 1 }) => {
+  const renderHeading = () => {
+    switch (depth) {
+      case 1:
+        return <h3 class="font-bold mt-2">{section.title}</h3>;
+      case 2:
+        return <h4 class="font-bold mt-2">{section.title}</h4>;
+      case 3:
+        return <h5 class="font-bold mt-2">{section.title}</h5>;
+      default:
+        return <h6 class="font-bold mt-2">{section.title}</h6>;
+    }
+  };
 
-  return isEditing ? (
-    <div className="flex items-center">
-      <input
-        type="text"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        className="border rounded px-2 py-1 mr-2"
-      />
-      <Button
-        icon={IconCheck}
-        onClick={() => {
-          onSave(text);
-          setIsEditing(false);
-        }}
-        styles="bg-green-500 hover:bg-green-600 text-white rounded-full p-1"
-      />
-    </div>
-  ) : (
-    <div className="flex items-center">
-      <span className="mr-2">{text}</span>
-      <Button
-        icon={IconEdit}
-        onClick={() => setIsEditing(true)}
-        styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-1"
-      />
+  return (
+    <div class={`ml-${depth * 4}`}>
+      {renderHeading()}
+      <p>{section.description?.blocks[0]?.text || ''}</p>
+      {section.sections?.map((subSection, index) => (
+        <ChapterSection key={index} section={subSection} depth={depth + 1} />
+      ))}
     </div>
   );
 };
-
 const Chapter = ({ chapter, onUpdate }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-      <img src={chapter.imageUrl} alt={chapter.title} className="w-full h-32 object-cover rounded-t-lg mb-2" />
-      <EditableText
-        initialText={chapter.title}
-        onSave={(newTitle) => onUpdate({ ...chapter, title: newTitle })}
-      />
-      <EditableText
-        initialText={`${chapter.sections} Sections`}
-        onSave={(newSections) => onUpdate({ ...chapter, sections: parseInt(newSections) })}
-      />
+    <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+      <img src={chapter.imageUrl} alt={chapter.title} class="w-full h-32 object-cover rounded-t-lg mb-2" />
+      <h2 class="text-xl font-bold mb-2">{chapter.title}</h2>
+      {chapter.sections?.map((section, index) => (
+        <ChapterSection key={index} section={section} />
+      ))}
       <Button
-        text="View"
+        text="Edit"
         styles="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-1 mt-2"
-        onClick={() => {/* Handle view action */}}
+        onClick={() => onUpdate(chapter)}
       />
     </div>
   );
 };
 
 export default function HomeContent() {
+
   const { chapters, error } = useLoadChapters(dbName, storeName, dbVersion);
 
-  const handlePrint = () => {
-    printAllChapters();
-  }
+  const handlePrint = async () => {
+    try {
+      const response = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(chapters),
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = "resource_roadmap.pdf";
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } else {
+        console.error("Failed to generate PDF");
+      }
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
+  };
 
   const handleGenerate = async () => {
     console.log("Generate button clicked");
@@ -150,8 +158,8 @@ export default function HomeContent() {
           <Button
             text="Print Your Roadmap"
             styles="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 w-full"
-            onClick={() => {handlePrint();}}
-          />
+            onClick={handlePrint}
+            />
         </div>
         
         <div className="w-full flex-col justify-between mb-10">

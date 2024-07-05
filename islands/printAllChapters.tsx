@@ -1,6 +1,6 @@
-import { dbName, storeName } from "../util/dbInfo.ts";
+import { dbName } from "../util/dbInfo.ts";
 
-export async function printAllChapters(): Promise<void> {  const storeName = "Chapters";
+export function printAllChapters(): Promise<void> {  const storeName = "Chapters";
 
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(dbName);

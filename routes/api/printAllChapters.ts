@@ -79,8 +79,8 @@ const wrapText = (
   if (!text) {
     return "";
   }
+  const words = text.trim().split(/\s+/);
 
-  const words = text.split(" ");
   let line = "";
   let result = "";
   for (let n = 0; n < words.length; n++) {

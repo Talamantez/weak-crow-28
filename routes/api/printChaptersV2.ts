@@ -33,7 +33,7 @@ interface Data {
   Chapters: Chapter[];
 }
 
-async function generatePDF(data: Data): Promise<Uint8Array> {
+export async function generatePDF(data: Data): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.create();
   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);

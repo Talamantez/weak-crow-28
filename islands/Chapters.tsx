@@ -56,7 +56,7 @@ export default function Chapters() {
                         <img
                           src={chapter.imageUrl}
                           alt="chapter cover image"
-                          class="w-full h-48 object-cover"
+                          class="h-48 object-scale-down"
                         />
                       </div>
                     )}
