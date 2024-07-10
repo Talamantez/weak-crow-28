@@ -1,15 +1,52 @@
 import { useEffect, useState } from "preact/hooks";
-import { Section } from "../util/SectionData.ts";
+// import { Section } from "../util/SectionData.ts";
 import { initializeDatabaseIfNeeded } from "../util/initializeDatabaseIfNeeded.ts";
 import { fetchChaptersFromIndexedDB } from "./fetchChaptersFromIndexedDB.tsx";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 
+// Define the RichText interface (similar to the PDF generator)
+interface RichText {
+  blocks: Block[];
+}
+
+interface Block {
+  type: BlockType;
+  text: string;
+}
+
+type BlockType = "paragraph" | "header" | "unordered-list-item";
+
+// Update the ChapterData interface
 interface ChapterData {
   index: number;
-  title: string;
-  description: string;
+  title: RichText;
+  description: RichText;
   sections: Section[];
   imageUrl?: string;
+}
+
+// Update the Section interface (assuming it's imported from SectionData.ts)
+interface Section {
+  title: RichText;
+  description?: RichText;
+  content?: RichText;
+  sections?: Section[];
+}
+
+// Helper function to render RichText
+function renderRichText(richText: RichText) {
+  return richText.blocks.map((block, index) => {
+    switch (block.type) {
+      case "header":
+        return <h2 key={index}>{block.text}</h2>;
+      case "paragraph":
+        return <p key={index}>{block.text}</p>;
+      case "unordered-list-item":
+        return <li key={index}>{block.text}</li>;
+      default:
+        return <span key={index}>{block.text}</span>;
+    }
+  });
 }
 
 export default function Chapters() {

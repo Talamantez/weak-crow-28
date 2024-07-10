@@ -6,13 +6,18 @@ import * as $_chapter_ from "./routes/[chapter].tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
 import * as $add_chapter from "./routes/add-chapter.tsx";
+import * as $api_Data from "./routes/api/Data.ts";
+import * as $api_generate_pdf from "./routes/api/generate-pdf.ts";
 import * as $api_printAllChapters from "./routes/api/printAllChapters.ts";
 import * as $api_printChapter from "./routes/api/printChapter.ts";
 import * as $api_printChapterWithCover from "./routes/api/printChapterWithCover.ts";
+import * as $api_printChaptersV2 from "./routes/api/printChaptersV2.ts";
+import * as $api_sampleData from "./routes/api/sampleData.ts";
 import * as $api_upload from "./routes/api/upload.ts";
 import * as $index from "./routes/index.tsx";
 import * as $new_chapter from "./routes/new-chapter.tsx";
 import * as $AddChapter from "./islands/AddChapter.tsx";
+import * as $ChapterEditor from "./islands/ChapterEditor.tsx";
 import * as $ChapterView from "./islands/ChapterView.tsx";
 import * as $Chapters from "./islands/Chapters.tsx";
 import * as $Hero from "./islands/Hero.tsx";
@@ -34,15 +39,20 @@ const manifest = {
     "./routes/_app.tsx": $_app,
     "./routes/_middleware.ts": $_middleware,
     "./routes/add-chapter.tsx": $add_chapter,
+    "./routes/api/Data.ts": $api_Data,
+    "./routes/api/generate-pdf.ts": $api_generate_pdf,
     "./routes/api/printAllChapters.ts": $api_printAllChapters,
     "./routes/api/printChapter.ts": $api_printChapter,
     "./routes/api/printChapterWithCover.ts": $api_printChapterWithCover,
+    "./routes/api/printChaptersV2.ts": $api_printChaptersV2,
+    "./routes/api/sampleData.ts": $api_sampleData,
     "./routes/api/upload.ts": $api_upload,
     "./routes/index.tsx": $index,
     "./routes/new-chapter.tsx": $new_chapter,
   },
   islands: {
     "./islands/AddChapter.tsx": $AddChapter,
+    "./islands/ChapterEditor.tsx": $ChapterEditor,
     "./islands/ChapterView.tsx": $ChapterView,
     "./islands/Chapters.tsx": $Chapters,
     "./islands/Hero.tsx": $Hero,
