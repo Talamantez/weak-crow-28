@@ -6,10 +6,10 @@ const staticDir = "static";
 
 export async function handler(req: Request, ctx: FreshContext) {
   // Log the incoming request URL
-  console.log(`[Middleware] Request URL: ${req.url}`);
+  // console.log(`[Middleware] Request URL: ${req.url}`);
 
   // Log the destination of the request
-  console.log(`[Middleware] Destination: ${ctx.destination}`);
+  // console.log(`[Middleware] Destination: ${ctx.destination}`);
 
   // Block all '.php' requests
   const url = new URL(req.url);
