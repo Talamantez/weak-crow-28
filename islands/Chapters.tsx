@@ -19,8 +19,8 @@ type BlockType = "paragraph" | "header" | "unordered-list-item";
 // Update the ChapterData interface
 interface ChapterData {
   index: number;
-  title: RichText;
-  description: RichText;
+  title: string; // Change the type of 'title' to string
+  description: RichText | string; // Update the type of 'description' to be RichText or string
   sections: Section[];
   imageUrl?: string;
 }
