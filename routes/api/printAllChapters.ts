@@ -20,14 +20,14 @@ interface RichText {
 
 interface Section {
   title: string;
-  description?: RichText;
-  content?: RichText;
+  description?: RichText | string;
+  content?: RichText | string;
   sections?: Section[];
 }
 
 interface Chapter {
   title: string;
-  description: RichText;
+  description: RichText | string;
   sections: Section[];
   imageUrl?: string;
 }
@@ -87,8 +87,14 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
 
         if (coverImage) {
           let imageDims = coverImage.scale(1);
-          if (imageDims.width > width - 2*margin || imageDims.height > height - 2*margin) {
-            imageDims = coverImage.scaleToFit(width - 2*margin, height - 2*margin);
+          if (
+            imageDims.width > width - 2 * margin ||
+            imageDims.height > height - 2 * margin
+          ) {
+            imageDims = coverImage.scaleToFit(
+              width - 2 * margin,
+              height - 2 * margin
+            );
           }
 
           page.drawImage(coverImage, {
@@ -103,12 +109,18 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
 
     // Draw chapter title
     const titleFontSize = 36;
-    const wrappedTitle = wrapText(chapter.title, width - 2*margin, timesRomanFont, titleFontSize);
+    const wrappedTitle = wrapText(
+      chapter.title,
+      width - 2 * margin,
+      timesRomanFont,
+      titleFontSize
+    );
     const titleLines = wrappedTitle.split("\n");
-    
+
     titleLines.forEach((line, index) => {
       page.drawText(line, {
-        x: width / 2 - timesRomanFont.widthOfTextAtSize(line, titleFontSize) / 2,
+        x:
+          width / 2 - timesRomanFont.widthOfTextAtSize(line, titleFontSize) / 2,
         y: height / 4 - index * titleFontSize * 1.5,
         font: timesRomanFont,
         size: titleFontSize,
@@ -122,7 +134,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   async function generateCoverPage() {
     const coverPage = pdfDoc.addPage();
     const { width, height } = coverPage.getSize();
-  
+
     // Add background color
     coverPage.drawRectangle({
       x: 0,
@@ -131,40 +143,64 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       height: height,
       color: colors.background,
     });
-  
+
     // Find the first chapter with a valid image URL
-    const chapterWithImage = data.Chapters.find((chapter) => chapter.imageURL);
-    if (chapterWithImage && chapterWithImage.imageURL) {
-      const imageUrl = chapterWithImage.imageURL;
+    const chapterWithImage = data.Chapters.find((chapter) => chapter.imageUrl);
+    if (chapterWithImage && chapterWithImage.imageUrl) {
+      // console.log("Found chapter with image URL:", chapterWithImage.imageUrl);
+      const imageUrl = chapterWithImage.imageUrl;
       const [imageData, base64Data] = imageUrl.split(",");
       if (base64Data) {
-        const imageBytes = decode(base64Data);
-        const imageType = imageData.split(";")[0].split(":")[1];
-        const imageBlob = new Blob([imageBytes], { type: imageType });
-        let coverImage = null;
-        if (imageType === "image/png") {
-          coverImage = await pdfDoc.embedPng(await imageBlob.arrayBuffer());
-        } else if (imageType === "image/jpeg") {
-          coverImage = await pdfDoc.embedJpg(await imageBlob.arrayBuffer());
-        }
-        if (coverImage) {
-          let imageDims = coverImage.scale(1);
-          if (imageDims.width > width - 2*margin || imageDims.height > height - 2*margin) {
-            imageDims = coverImage.scaleToFit(width - 2*margin, height - 2*margin);
+        try {
+          const imageBytes = decode(base64Data);
+          const imageType = imageData.split(";")[0].split(":")[1];
+          // console.log("Image type:", imageType);
+          const imageBlob = new Blob([imageBytes], { type: imageType });
+          let coverImage = null;
+          if (imageType === "image/png") {
+            coverImage = await pdfDoc.embedPng(await imageBlob.arrayBuffer());
+          } else if (imageType === "image/jpeg") {
+            coverImage = await pdfDoc.embedJpg(await imageBlob.arrayBuffer());
+          } else {
+            console.warn("Unsupported image type:", imageType);
           }
-          coverPage.drawImage(coverImage, {
-            x: width / 2 - imageDims.width / 2,
-            y: height / 2 - imageDims.height / 2,
-            width: imageDims.width,
-            height: imageDims.height,
-            opacity: 0.3, // Make the image semi-transparent
-          });
+          if (coverImage) {
+            console.log("Image embedded successfully");
+            let imageDims = coverImage.scale(1);
+            console.log("Original image dimensions:", imageDims);
+            if (
+              imageDims.width > width - 2 * margin ||
+              imageDims.height > height - 2 * margin
+            ) {
+              imageDims = coverImage.scaleToFit(
+                width - 2 * margin,
+                height - 2 * margin
+              );
+              console.log("Scaled image dimensions:", imageDims);
+            }
+            coverPage.drawImage(coverImage, {
+              x: width / 2 - imageDims.width / 2,
+              y: height / 2 - imageDims.height / 2,
+              width: imageDims.width,
+              height: imageDims.height,
+              opacity: 1,
+            });
+            console.log("Image drawn on cover page");
+          } else {
+            console.warn("Failed to embed image");
+          }
+        } catch (error) {
+          console.error("Error processing image:", error);
         }
+      } else {
+        console.warn("No base64 data found in image URL");
       }
+    } else {
+      console.warn("No chapter found with a valid image URL");
     }
-  
+
     // Add title
-    const title = "Mental Health Guide";
+    const title = "Resource Roadmap";
     const titleSize = 48;
     const titleWidth = timesRomanFont.widthOfTextAtSize(title, titleSize);
     coverPage.drawText(title, {
@@ -174,11 +210,14 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       font: timesRomanFont,
       color: colors.primary,
     });
-  
+
     // Add subtitle
-    const subtitle = "A Comprehensive Overview";
+    const subtitle = "A Guide to Mental Health";
     const subtitleSize = 24;
-    const subtitleWidth = helveticaFont.widthOfTextAtSize(subtitle, subtitleSize);
+    const subtitleWidth = helveticaFont.widthOfTextAtSize(
+      subtitle,
+      subtitleSize
+    );
     coverPage.drawText(subtitle, {
       x: width / 2 - subtitleWidth / 2,
       y: height - 200,
@@ -186,17 +225,8 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       font: helveticaFont,
       color: colors.secondary,
     });
-  
-    // Add decorative element
-    const elementSize = 100;
-    coverPage.drawCircle({
-      x: width / 2,
-      y: height / 2,
-      size: elementSize,
-      color: colors.accent,
-      opacity: 0.5,
-    });
-  
+
+    console.log("Cover page generated");
     return coverPage;
   }
 
@@ -385,9 +415,9 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     isHeader: boolean = false,
     startY: number
   ): number {
-    console.log('\n')
-    console.log('Drawing wrapped text for text: ' + text)
-    console.log('n')
+    console.log("\n");
+    console.log("Drawing wrapped text for text: " + text);
+    console.log("n");
 
     // console.log(page)
     const { width, height } = page.getSize();
@@ -399,9 +429,9 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     const lines = splitTextIntoLines(text, width - 2 * margin, fontSize, font);
     const lineHeight = fontSize * 1.4;
     const totalHeight = lineHeight * lines.length + (isHeader ? 20 : 10);
-  
+
     let y = startY;
-  
+
     lines.forEach((line, index) => {
       page.drawText(line, {
         x: margin,
@@ -411,7 +441,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         color: isHeader ? colors.primary : colors.text,
       });
     });
-  
+
     if (isHeader) {
       page.drawLine({
         start: { x: margin, y: y - lineHeight * lines.length - 5 },
@@ -420,48 +450,95 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         color: colors.secondary,
       });
     }
-  
+
     return y - totalHeight;
   }
+  function convertPlainTextToRichText(text: string): RichText {
+    // Split the text into paragraphs
+    const paragraphs = text.split("\n\n");
 
-  function drawRichText(page: PDFPage, richText: RichText, startY: number): number {
+    // Convert each paragraph to a RichText block
+    const blocks: Block[] = paragraphs.map((paragraph) => ({
+      type: "paragraph",
+      text: paragraph.trim(),
+    }));
+
+    return { blocks };
+  }
+  function drawRichText(
+    page: PDFPage,
+    richText: RichText | string,
+    startY: number
+  ): number {
+    console.log("\n");
+    console.log("Drawing rich text or plain text");
+    console.log("\n");
+
     let y = startY;
-    richText.blocks.forEach((block) => {
-      switch (block.type) {
-        case "paragraph":
-          y = drawWrappedText(page, block.text, 11, false, false, y);
-          break;
-        case "header":
-          y = drawWrappedText(page, block.text, 16, true, true, y);
-          break;
-        case "unordered-list-item":
-          y = drawWrappedText(page, `• ${block.text}`, 11, false, false, y);
-          break;
-      }
-    });
+
+    if (typeof richText === "string") {
+      // Convert plain text to RichText object
+      richText = convertPlainTextToRichText(richText);
+    }
+
+    if (
+      richText &&
+      typeof richText === "object" &&
+      Array.isArray(richText.blocks)
+    ) {
+      // Handle RichText input
+      console.log("Processing RichText input");
+      richText.blocks.forEach((block) => {
+        switch (block.type) {
+          case "paragraph":
+            y = drawWrappedText(page, block.text, 11, false, false, y);
+            break;
+          case "header":
+            y = drawWrappedText(page, block.text, 16, true, true, y);
+            break;
+          case "unordered-list-item":
+            y = drawWrappedText(page, `• ${block.text}`, 11, false, false, y);
+            break;
+          default:
+            console.warn(`Unsupported block type: ${block.type}`);
+        }
+      });
+    } else {
+      console.warn(
+        "Invalid input for drawRichText. Expected RichText object or string."
+      );
+    }
+
     return y;
   }
 
-  function drawSection(page: PDFPage, section: Section, depth: number = 0, startY: number): number {
-    console.log('/n')
-    console.log('Drawing section')
-    console.log('/n')
-    const { width, height } = page.getSize();
-    const fontSize = 20 - depth * 2;
-    let y = startY;
-  
-    y = drawWrappedText(page, section.title, fontSize, true, true, y);
-  
+  function drawSection(
+    page: PDFPage,
+    section: Section,
+    depth: number,
+    y: number,
+    addNewPageIfNeeded: () => void
+  ): number {
+    addNewPageIfNeeded();
+    y = drawWrappedText(page, section.title, 20 - depth * 2, true, true, y);
+
     if (section.description) {
+      addNewPageIfNeeded();
       y = drawRichText(page, section.description, y);
     }
+
     if (section.content) {
+      addNewPageIfNeeded();
       y = drawRichText(page, section.content, y);
     }
-    section.sections?.forEach((subSection) => {
-      y = drawSection(page, subSection, depth + 1, y);
-    });
-  
+
+    if (section.sections) {
+      for (const subSection of section.sections) {
+        addNewPageIfNeeded();
+        y = drawSection(page, subSection, depth + 1, y, addNewPageIfNeeded);
+      }
+    }
+
     return y;
   }
 
@@ -477,102 +554,104 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   // Add page number to first page
   addPageNumber();
 
-// Generate TOC entries
-function generateTableOfContents(chapters: Chapter[]): any[] {
-  console.log('\n')
-  console.log('Generating table of contents')
-  console.log('\n')
-  
-  const tocEntries: any[] = [];
-  let pageNumber = 3; // Assuming TOC takes 1 page and starts on page 2
+  // Generate TOC entries
+  function generateTableOfContents(chapters: Chapter[]): any[] {
+    console.log("\n");
+    console.log("Generating table of contents");
+    console.log("\n");
 
-  chapters.forEach((chapter, chapterIndex) => {
-    tocEntries.push({
-      title: chapter.title,
-      level: 0,
-      pageNumber: pageNumber,
-    });
-    pageNumber++; // Assume each chapter starts on a new page
+    const tocEntries: any[] = [];
+    let pageNumber = 3; // Assuming TOC takes 1 page and starts on page 2
 
-    chapter.sections.forEach((section: { title: any }, sectionIndex: any) => {
+    chapters.forEach((chapter, chapterIndex) => {
       tocEntries.push({
-        title: section.title,
-        level: 1,
+        title: chapter.title,
+        level: 0,
         pageNumber: pageNumber,
       });
-      pageNumber++; // Simplification: assume each section takes a page
+      pageNumber++; // Assume each chapter starts on a new page
+
+      chapter.sections.forEach((section: { title: any }, sectionIndex: any) => {
+        tocEntries.push({
+          title: section.title,
+          level: 1,
+          pageNumber: pageNumber,
+        });
+        pageNumber++; // Simplification: assume each section takes a page
+      });
     });
-  });
 
-  return tocEntries;
-}
-
-function drawTableOfContents(page: PDFPage, tocEntries: any[]) {
-  addNewPageIfNeeded(height); // Start TOC on a new page
-
-  // Ensure y is a valid number
-  let y = height - margin;
-  if (isNaN(y)) {
-    console.warn(`Invalid y value in drawTableOfContents: ${y}. Using default.`);
-    y = height - margin;
+    return tocEntries;
   }
 
-  // Draw TOC title
-  y = drawWrappedText(page, "Table of Contents", 24, true, true, y);
-  y -= 20;
-  
-  console.log('Drawing TOC entries')
-  console.log(tocEntries)
+  function drawTableOfContents(page: PDFPage, tocEntries: any[]) {
+    addNewPageIfNeeded(height); // Start TOC on a new page
 
-  // Draw TOC entries
-  tocEntries.forEach(entry => {
-    const fontSize = entry.level === 0 ? 14 : 12;
-    const numberFontSize = 12;
-    const indent = entry.level * 20;
-    const text = `${entry.title}`;
-
-    const font = entry.level === 0 ? helveticaBoldFont : helveticaFont;
-    const textWidth = font.widthOfTextAtSize(text, fontSize);
-    const pageNumWidth = helveticaFont.widthOfTextAtSize(
-      entry.pageNumber.toString(),
-      numberFontSize
-    );
-    const dotsWidth = maxWidth - textWidth - pageNumWidth - indent-10;
-
-    let line = text;
-    if (dotsWidth > 0) {
-      const dots = ".".repeat(
-        Math.floor(dotsWidth / helveticaFont.widthOfTextAtSize(".", fontSize))
+    // Ensure y is a valid number
+    let y = height - margin;
+    if (isNaN(y)) {
+      console.warn(
+        `Invalid y value in drawTableOfContents: ${y}. Using default.`
       );
-      line += " " + dots;
+      y = height - margin;
     }
 
-    if (addNewPageIfNeeded(fontSize * 1.5)) return;
+    // Draw TOC title
+    y = drawWrappedText(page, "Table of Contents", 24, true, true, y);
+    y -= 20;
 
-    if (!isNaN(y)) {
-      // Draw the text and dots
-      page.drawText(line, {
-        x: margin + indent,
-        y,
-        size: fontSize,
-        font: font,
-        color: colors.text,
-      });
+    console.log("Drawing TOC entries");
+    console.log(tocEntries);
 
-      // Draw the page number
-      page.drawText(entry.pageNumber.toString(), {
-        x: width - margin - pageNumWidth,
-        y,
-        size: numberFontSize,
-        font: helveticaFont,
-        color: colors.text,
-      });
+    // Draw TOC entries
+    tocEntries.forEach((entry) => {
+      const fontSize = entry.level === 0 ? 14 : 12;
+      const numberFontSize = 12;
+      const indent = entry.level * 20;
+      const text = `${entry.title}`;
 
-      y -= fontSize * 1.5;
-    } else {
-      console.warn(`Skipping TOC entry due to invalid y value: ${y}`);
-    }
-  });
+      const font = entry.level === 0 ? helveticaBoldFont : helveticaFont;
+      const textWidth = font.widthOfTextAtSize(text, fontSize);
+      const pageNumWidth = helveticaFont.widthOfTextAtSize(
+        entry.pageNumber.toString(),
+        numberFontSize
+      );
+      const dotsWidth = maxWidth - textWidth - pageNumWidth - indent - 10;
+
+      let line = text;
+      if (dotsWidth > 0) {
+        const dots = ".".repeat(
+          Math.floor(dotsWidth / helveticaFont.widthOfTextAtSize(".", fontSize))
+        );
+        line += " " + dots;
+      }
+
+      if (addNewPageIfNeeded(fontSize * 1.5)) return;
+
+      if (!isNaN(y)) {
+        // Draw the text and dots
+        page.drawText(line, {
+          x: margin + indent,
+          y,
+          size: fontSize,
+          font: font,
+          color: colors.text,
+        });
+
+        // Draw the page number
+        page.drawText(entry.pageNumber.toString(), {
+          x: width - margin - pageNumWidth,
+          y,
+          size: numberFontSize,
+          font: helveticaFont,
+          color: colors.text,
+        });
+
+        y -= fontSize * 1.5;
+      } else {
+        console.warn(`Skipping TOC entry due to invalid y value: ${y}`);
+      }
+    });
 
     // Add a page break after the Table of Contents
     addNewPageIfNeeded(height);
@@ -584,87 +663,87 @@ function drawTableOfContents(page: PDFPage, tocEntries: any[]) {
 
   // Generate cover page
   const coverPage = await generateCoverPage();
-  pdfDoc.insertPage(0, coverPage); 
-
-  // Draw title on cover page
-  // const titleFontSize = 36;
-  // const title = "Mental Health Guide";
-  // const titleWidth = timesRomanFont.widthOfTextAtSize(title, titleFontSize);
-  // page.drawText(title, {
-  //   x: (width - titleWidth) / 2,
-  //   y: height - 200,
-  //   size: titleFontSize,
-  //   font: timesRomanFont,
-  //   color: colors.primary,
-  // });
-
-  // // Draw subtitle
-  // const subtitle = "A Comprehensive Overview";
-  // const subtitleFontSize = 24;
-  // const subtitleWidth = helveticaFont.widthOfTextAtSize(
-  //   subtitle,
-  //   subtitleFontSize
-  // );
-  // page.drawText(subtitle, {
-  //   x: (width - subtitleWidth) / 2,
-  //   y: height - 250,
-  //   size: subtitleFontSize,
-  //   font: helveticaFont,
-  //   color: colors.secondary,
-  // });
-
-  // // Draw decorative element on cover
-  // const coverElementSize = 100;
-  // page.drawCircle({
-  //   x: width / 2,
-  //   y: height / 2,
-  //   size: coverElementSize,
-  //   color: colors.accent,
-  // });
+  pdfDoc.insertPage(0, coverPage);
 
   // Draw table of contents
-  drawTableOfContents(page,tocEntries);
+  drawTableOfContents(page, tocEntries);
 
   // Reset page count for main content
   pageCount = 1;
 
   function generateChapterContent(chapter: Chapter): PDFPage[] {
+    console.log(
+      `\nStarting content generation for chapter: "${chapter.title}"`
+    );
     const pages: PDFPage[] = [];
     let currentPage = pdfDoc.addPage();
-    pages.push(currentPage);
     let y = currentPage.getHeight() - margin;
-  
-    // Draw chapter title
-    y = drawWrappedText(currentPage, chapter.title, 24, true, true, y);
-  
-    // Draw chapter description
-    if (chapter.description) {
-      y = drawRichText(currentPage, chapter.description, y);
-    }
-  
-    // Draw sections
-    for (const section of chapter.sections) {
-      // Check if we need a new page
+
+    function addNewPageIfNeeded() {
       if (y < margin + 100) {
         currentPage = pdfDoc.addPage();
         pages.push(currentPage);
         y = currentPage.getHeight() - margin;
+        console.log(`New page added. Y reset to: ${y}`);
       }
-  
-      y = drawSection(currentPage, section, 0, y);
     }
-  
+
+    // Draw chapter title
+    y = drawWrappedText(currentPage, chapter.title, 24, true, true, y);
+    console.log(`Y position after title: ${y}`);
+
+    // Draw chapter description
+    if (chapter.description) {
+      addNewPageIfNeeded();
+      y = drawRichText(currentPage, chapter.description, y);
+      console.log(`Y position after description: ${y}`);
+    }
+
+    // Draw sections
+    for (const section of chapter.sections) {
+      addNewPageIfNeeded();
+      y = drawSection(currentPage, section, 0, y, addNewPageIfNeeded);
+      console.log(`Y position after section: ${y}`);
+    }
+
+    pages.push(currentPage);
+    console.log(
+      `Generated ${pages.length} pages for chapter: "${chapter.title}"\n`
+    );
     return pages;
   }
 
   // Main content generation
-  // Generate PDF content
   for (const [index, chapter] of data.Chapters.entries()) {
-    console.log(`Drawing Chapter ${index + 1}: ${chapter.title}`);
+    console.log(
+      `\n--- Processing Chapter ${index + 1}: "${chapter.title}" ---`
+    );
+
+    // Generate and add chapter cover page
     const coverPage = await generateChapterCoverPage(chapter);
     pdfDoc.addPage(coverPage);
+    console.log(`Added cover page for Chapter ${index + 1}`);
+
+    // Generate and add chapter content pages
+    const contentPages = generateChapterContent(chapter);
+    console.log(
+      `Generated ${contentPages.length} content pages for Chapter ${index + 1}`
+    );
+
+    contentPages.forEach((page, pageIndex) => {
+      pdfDoc.addPage(page);
+      console.log(
+        `Added content page ${pageIndex + 1} for Chapter ${index + 1}`
+      );
+    });
+
+    console.log(`Completed processing Chapter ${index + 1}`);
   }
-  console.log(`PDF generation completed. Total pages: ${pageCount}`);
+
+  console.log(
+    `\nPDF generation completed. Total pages: ${pdfDoc.getPageCount()}`
+  );
+
   return pdfDoc.save();
 }
 
