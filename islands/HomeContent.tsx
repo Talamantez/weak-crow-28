@@ -2,11 +2,10 @@ import { Head } from "$fresh/runtime.ts";
 import Footer from "../components/Footer.tsx";
 import Button from "../components/Button.tsx";
 import IconPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/plus.tsx";
-import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";;
+import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, storeName, dbVersion } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
-
 
 const ChapterSection = ({ section, depth = 1 }) => {
   const renderHeading = () => {
@@ -25,18 +24,21 @@ const ChapterSection = ({ section, depth = 1 }) => {
   return (
     <div class={`ml-${depth * 4}`}>
       {renderHeading()}
-      <p>{section.description?.blocks[0]?.text || ''}</p>
+      <p>{section.description?.blocks?.[0]?.text || ''}</p>
       {section.sections?.map((subSection, index) => (
         <ChapterSection key={index} section={subSection} depth={depth + 1} />
       ))}
     </div>
   );
 };
+
 const Chapter = ({ chapter, onUpdate }) => {
   return (
     <div class="bg-white rounded-lg shadow-md p-4 mb-4">
-      <img src={chapter.imageUrl} alt={chapter.title} class="w-full h-32 object-cover rounded-t-lg mb-2" />
-      <h2 class="text-xl font-bold mb-2">{chapter.title}</h2>
+      {chapter.imageUrl && (
+        <img src={chapter.imageUrl} alt={chapter.title || 'Chapter image'} class="w-full h-32 object-cover rounded-t-lg mb-2" />
+      )}
+      <h2 class="text-xl font-bold mb-2">{chapter.title || 'Untitled Chapter'}</h2>
       {chapter.sections?.map((section, index) => (
         <ChapterSection key={index} section={section} />
       ))}
@@ -50,8 +52,7 @@ const Chapter = ({ chapter, onUpdate }) => {
 };
 
 export default function HomeContent() {
-
-  const { chapters, error } = useLoadChapters(dbName, storeName, dbVersion);
+  const { chapters = [], error } = useLoadChapters(dbName, storeName, dbVersion);
 
   const handlePrint = async () => {
     try {
@@ -92,6 +93,11 @@ export default function HomeContent() {
   }
 
   const updateChapter = (updatedChapter) => {
+    if (!updatedChapter || !updatedChapter.id) {
+      console.error("Invalid chapter data");
+      return;
+    }
+
     const request = indexedDB.open(dbName);
     request.onsuccess = (event) => {
       const db = event.target.result;
@@ -103,29 +109,27 @@ export default function HomeContent() {
   };
 
   const clearAllChapters = () => {
-
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(dbName);
-  
+
       request.onerror = function (event: Event) {
         console.error("Error opening database:", event.target.error);
         reject(event.target.error);
       };
-  
+
       request.onsuccess = function (event: Event) {
         const db = event.target.result;
         const transaction = db.transaction(storeName, "readwrite");
         const objectStore = transaction.objectStore(storeName);
-  
-        // Clear all chapters from the object store
+
         const clearRequest = objectStore.clear();
-  
+
         clearRequest.onsuccess = function () {
           console.log("All chapters cleared from IndexedDB");
           db.close();
           resolve();
         };
-  
+
         clearRequest.onerror = function (event: Event) {
           console.error("Error clearing chapters from IndexedDB:", event.target.error);
           db.close();
@@ -141,7 +145,7 @@ export default function HomeContent() {
       });
   };
 
- return (
+  return (
     <div>
       <Head>
         <title>Resource Roadmap Editor</title>
@@ -153,13 +157,13 @@ export default function HomeContent() {
           <Button
             text="Generate Example Chapters"
             styles="bg-white text-gray-800 rounded px-4 py-2 mb-2 w-full"
-            onClick={() => {handleGenerate();}}
+            onClick={handleGenerate}
           />
           <Button
             text="Print Your Roadmap"
             styles="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 w-full"
             onClick={handlePrint}
-            />
+          />
         </div>
         
         <div className="w-full flex-col justify-between mb-10">
@@ -190,4 +194,4 @@ export default function HomeContent() {
       </main>
     </div>
   );
-};
+}
