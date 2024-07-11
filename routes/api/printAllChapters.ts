@@ -1,5 +1,6 @@
 import {
   PDFDocument,
+  PDFPage,
   rgb,
   StandardFonts,
 } from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
@@ -43,7 +44,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
 
   const margin = 50;
-  let pageCount = 0;
+  let pageCount = 1;
 
   let page = pdfDoc.addPage();
 
@@ -53,7 +54,6 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   const maxWidth = width - 2 * margin;
   const pageBottom = margin + 50;
 
-  // let pageCount = 1;
   console.log(`Page ${pageCount} created. Height: ${height}, Initial y: ${y}`);
 
   // Calm color palette
@@ -71,8 +71,8 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     pageCount++;
 
     // Add image if available
-    if (chapter.imageURL) {
-      const [imageData, base64Data] = chapter.imageURL.split(",");
+    if (chapter.imageUrl) {
+      const [imageData, base64Data] = chapter.imageUrl.split(",");
       if (base64Data) {
         const imageBytes = decode(base64Data);
         const imageType = imageData.split(";")[0].split(":")[1];
@@ -414,7 +414,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     isBold: boolean = false,
     isHeader: boolean = false,
     startY: number
-  ): number {
+  ): { page: PDFPage; y: number } {
     console.log("\n");
     console.log("Drawing wrapped text for text: " + text);
     console.log("n");
@@ -451,7 +451,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       });
     }
 
-    return y - totalHeight;
+    return { page: page, y: y };
   }
   function convertPlainTextToRichText(text: string): RichText {
     // Split the text into paragraphs
@@ -469,7 +469,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     page: PDFPage,
     richText: RichText | string,
     startY: number
-  ): number {
+  ): { page: PDFPage; y: number } {
     console.log("\n");
     console.log("Drawing rich text or plain text");
     console.log("\n");
@@ -489,19 +489,33 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       // Handle RichText input
       console.log("Processing RichText input");
       richText.blocks.forEach((block) => {
-        switch (block.type) {
-          case "paragraph":
-            y = drawWrappedText(page, block.text, 11, false, false, y);
-            break;
-          case "header":
-            y = drawWrappedText(page, block.text, 16, true, true, y);
-            break;
-          case "unordered-list-item":
-            y = drawWrappedText(page, `• ${block.text}`, 11, false, false, y);
-            break;
-          default:
+        if (block.type) {
+          if (block.type === "paragraph") {
+            y = drawWrappedText(page, block.text, 11, false, false, y).y;
+            return { page: PDFPage, y: y };
+          } else if (block.type === "header") {
+            y = drawWrappedText(page, block.text, 16, true, true, y).y;
+            return { page: PDFPage, y: y };
+          } else if (block.type === "unordered-list-item") {
+            y = drawWrappedText(page, `• ${block.text}`, 11, false, false, y).y;
+            return { page: PDFPage, y: y };
+          } else {
             console.warn(`Unsupported block type: ${block.type}`);
+          }
         }
+        // switch (block.type) {
+        //   case "paragraph":
+        //     y = drawWrappedText(page, block.text, 11, false, false, y);
+        //     break;
+        //   case "header":
+        //     y = drawWrappedText(page, block.text, 16, true, true, y);
+        //     break;
+        //   case "unordered-list-item":
+        //     y = drawWrappedText(page, `• ${block.text}`, 11, false, false, y);
+        //     break;
+        //   default:
+        //     console.warn(`Unsupported block type: ${block.type}`);
+        // }
       });
     } else {
       console.warn(
@@ -509,7 +523,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       );
     }
 
-    return y;
+    return { page: page, y: y };
   }
 
   function drawSection(
@@ -518,28 +532,28 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     depth: number,
     y: number,
     addNewPageIfNeeded: () => void
-  ): number {
+  ): { page: PDFPage; y: number } {
     addNewPageIfNeeded();
-    y = drawWrappedText(page, section.title, 20 - depth * 2, true, true, y);
+    drawWrappedText(page, section.title, 20 - depth * 2, true, true, y).y;
 
     if (section.description) {
       addNewPageIfNeeded();
-      y = drawRichText(page, section.description, y);
+      y = drawRichText(page, section.description, y).y;
     }
 
     if (section.content) {
       addNewPageIfNeeded();
-      y = drawRichText(page, section.content, y);
+      y = drawRichText(page, section.content, y).y;
     }
 
     if (section.sections) {
       for (const subSection of section.sections) {
         addNewPageIfNeeded();
-        y = drawSection(page, subSection, depth + 1, y, addNewPageIfNeeded);
+        y = drawSection(page, subSection, depth + 1, y, addNewPageIfNeeded).y;
       }
     }
 
-    return y;
+    return { page: page, y: y };
   }
 
   // Add calming background to first page
@@ -597,8 +611,8 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     }
 
     // Draw TOC title
-    y = drawWrappedText(page, "Table of Contents", 24, true, true, y);
-    y -= 20;
+    y = drawWrappedText(page, "Table of Contents", 24, true, true, y).y;
+    y -= 40;
 
     console.log("Drawing TOC entries");
     console.log(tocEntries);
@@ -668,15 +682,10 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   // Draw table of contents
   drawTableOfContents(page, tocEntries);
 
-  // Reset page count for main content
-  pageCount = 1;
-
   function generateChapterContent(chapter: Chapter): PDFPage[] {
-    console.log(
-      `\nStarting content generation for chapter: "${chapter.title}"`
-    );
     const pages: PDFPage[] = [];
     let currentPage = pdfDoc.addPage();
+    pages.push(currentPage); // Add the first page immediately
     let y = currentPage.getHeight() - margin;
 
     function addNewPageIfNeeded() {
@@ -684,35 +693,33 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         currentPage = pdfDoc.addPage();
         pages.push(currentPage);
         y = currentPage.getHeight() - margin;
-        console.log(`New page added. Y reset to: ${y}`);
+        console.log(`New page added. Total pages: ${pages.length}`);
       }
     }
 
     // Draw chapter title
-    y = drawWrappedText(currentPage, chapter.title, 24, true, true, y);
-    console.log(`Y position after title: ${y}`);
+    let result = drawWrappedText(currentPage, chapter.title, 24, true, true, y);
+    currentPage = result.page;
+    y = result.y;
 
     // Draw chapter description
     if (chapter.description) {
       addNewPageIfNeeded();
-      y = drawRichText(currentPage, chapter.description, y);
-      console.log(`Y position after description: ${y}`);
+      result = drawRichText(currentPage, chapter.description, y);
+      currentPage = result.page;
+      y = result.y;
     }
 
     // Draw sections
     for (const section of chapter.sections) {
       addNewPageIfNeeded();
-      y = drawSection(currentPage, section, 0, y, addNewPageIfNeeded);
-      console.log(`Y position after section: ${y}`);
+      result = drawSection(currentPage, section, 0, y, addNewPageIfNeeded);
+      currentPage = result.page;
+      y = result.y;
     }
 
-    pages.push(currentPage);
-    console.log(
-      `Generated ${pages.length} pages for chapter: "${chapter.title}"\n`
-    );
     return pages;
   }
-
   // Main content generation
   for (const [index, chapter] of data.Chapters.entries()) {
     console.log(
@@ -743,7 +750,6 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   console.log(
     `\nPDF generation completed. Total pages: ${pdfDoc.getPageCount()}`
   );
-
   return pdfDoc.save();
 }
 
