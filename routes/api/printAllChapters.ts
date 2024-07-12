@@ -517,30 +517,42 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     page: PDFPage,
     section: Section,
     depth: number,
-    y: number,
-    addNewPageIfNeeded: () => void,
+    startY: number,
+    addNewPageIfNeeded: (space: number) => void
   ): { page: PDFPage; y: number } {
-    addNewPageIfNeeded();
-    drawWrappedText(page, section.title, 20 - depth * 2, true, true, y).y;
-
-    if (section.description) {
-      addNewPageIfNeeded();
-      y = drawRichText(page, section.description, y).y;
-    }
-
-    if (section.content) {
-      addNewPageIfNeeded();
-      y = drawRichText(page, section.content, y).y;
-    }
-
-    if (section.sections) {
-      for (const subSection of section.sections) {
-        addNewPageIfNeeded();
-        y = drawSection(page, subSection, depth + 1, y, addNewPageIfNeeded).y;
+    let y = startY;
+  
+    // Draw section title
+    let result = drawWrappedText(page, section.title, 18 - depth * 2, true, true, y);
+    page = result.page;
+    y = result.y - 15;
+  
+    // Draw section description or content
+    if (section.description || section.content) {
+      addNewPageIfNeeded(100);
+      if (section.description) {
+        result = drawRichText(page, section.description, y);
+        page = result.page;
+        y = result.y - 10;
+      }
+      if (section.content) {
+        result = drawRichText(page, section.content, y);
+        page = result.page;
+        y = result.y - 10;
       }
     }
-
-    return { page: page, y: y };
+  
+    // Draw subsections
+    if (section.sections) {
+      for (const subSection of section.sections) {
+        addNewPageIfNeeded(100);
+        result = drawSection(page, subSection, depth + 1, y, addNewPageIfNeeded);
+        page = result.page;
+        y = result.y - 20;
+      }
+    }
+  
+    return { page, y };
   }
 
   // Add calming background to first page
@@ -684,8 +696,8 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     pages.push(currentPage);
     let y = currentPage.getHeight() - margin;
   
-    function addNewPageIfNeeded() {
-      if (y < margin + 100) {
+    function addNewPageIfNeeded(requiredSpace: number) {
+      if (y - requiredSpace < margin + 50) {
         currentPage = pdfDoc.addPage();
         pages.push(currentPage);
         y = currentPage.getHeight() - margin;
@@ -697,24 +709,24 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     console.log(`Drawing chapter title: ${chapter.title}`);
     let result = drawWrappedText(currentPage, chapter.title, 24, true, true, y);
     currentPage = result.page;
-    y = result.y;
+    y = result.y - 70; // Add extra space after title
   
     // Draw chapter description
     if (chapter.description) {
       console.log("Drawing chapter description");
-      addNewPageIfNeeded();
+      addNewPageIfNeeded(100); // Ensure enough space for description
       result = drawRichText(currentPage, chapter.description, y);
       currentPage = result.page;
-      y = result.y;
+      y = result.y - 50; // Add space after description
     }
   
     // Draw sections
     for (const section of chapter.sections) {
       console.log(`Drawing section: ${section.title}`);
-      addNewPageIfNeeded();
+      addNewPageIfNeeded(150); // Ensure enough space for section title and some content
       result = drawSection(currentPage, section, 0, y, addNewPageIfNeeded);
       currentPage = result.page;
-      y = result.y;
+      y = result.y - 50; // Add extra space between sections
     }
   
     console.log(`Chapter content generation complete. Total pages: ${pages.length}`);
