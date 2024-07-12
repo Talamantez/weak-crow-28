@@ -1,5 +1,6 @@
 import {
   PDFDocument,
+  PDFFont,
   PDFPage,
   rgb,
   StandardFonts,
@@ -27,6 +28,7 @@ interface Section {
 }
 
 interface Chapter {
+  index: number;
   title: string;
   description: RichText | string;
   sections: Section[];
