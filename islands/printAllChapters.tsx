@@ -20,6 +20,7 @@ export function printAllChapters(): Promise<void> {  const storeName = "Chapters
       getAllRequest.onsuccess = function (event: Event) {
         const chapters = event.target.result;
         const sortedChapters = chapters.sort((a, b) => a.index - b.index);
+        console.log("Chapters:", sortedChapters)
 
         fetch("/api/printAllChapters", {
           method: "POST",

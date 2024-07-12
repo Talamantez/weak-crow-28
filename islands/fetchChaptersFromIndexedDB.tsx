@@ -10,7 +10,7 @@ export const fetchChaptersFromIndexedDB = (db: IDBDatabase): Promise<any[]> => {
       const chapters = (event.target as IDBRequest).result;
       
       // Ensure all chapters have a valid index
-      const chaptersWithIndex = chapters.map((chapter, i) => ({
+      const chaptersWithIndex = chapters.map((chapter: any, i: number) => ({
         ...chapter,
         index: typeof chapter.index === 'number' ? chapter.index : i
       }));

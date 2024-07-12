@@ -93,7 +93,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
           ) {
             imageDims = coverImage.scaleToFit(
               width - 2 * margin,
-              height - 2 * margin
+              height - 2 * margin,
             );
           }
 
@@ -113,14 +113,14 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       chapter.title,
       width - 2 * margin,
       timesRomanFont,
-      titleFontSize
+      titleFontSize,
     );
     const titleLines = wrappedTitle.split("\n");
 
     titleLines.forEach((line, index) => {
       page.drawText(line, {
-        x:
-          width / 2 - timesRomanFont.widthOfTextAtSize(line, titleFontSize) / 2,
+        x: width / 2 -
+          timesRomanFont.widthOfTextAtSize(line, titleFontSize) / 2,
         y: height / 4 - index * titleFontSize * 1.5,
         font: timesRomanFont,
         size: titleFontSize,
@@ -174,7 +174,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
             ) {
               imageDims = coverImage.scaleToFit(
                 width - 2 * margin,
-                height - 2 * margin
+                height - 2 * margin,
               );
               console.log("Scaled image dimensions:", imageDims);
             }
@@ -216,7 +216,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     const subtitleSize = 24;
     const subtitleWidth = helveticaFont.widthOfTextAtSize(
       subtitle,
-      subtitleSize
+      subtitleSize,
     );
     coverPage.drawText(subtitle, {
       x: width / 2 - subtitleWidth / 2,
@@ -250,7 +250,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       addPageNumber();
 
       console.log(
-        `New page ${pageCount} created. Height: ${height}, New y: ${y}`
+        `New page ${pageCount} created. Height: ${height}, New y: ${y}`,
       );
       return true;
     }
@@ -350,7 +350,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       pullQuote,
       quoteWidth - padding * 2,
       fontSize,
-      timesRomanFont
+      timesRomanFont,
     );
     const requiredHeight = lineHeight * lines.length + padding * 2;
 
@@ -383,7 +383,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     text: string,
     maxWidth: number,
     fontSize: number,
-    font: any
+    font: any,
   ): string[] {
     const words = text.split(" ");
     let lines: string[] = [];
@@ -413,14 +413,14 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     fontSize: number,
     isBold: boolean = false,
     isHeader: boolean = false,
-    startY: number
+    startY: number,
   ): { page: PDFPage; y: number } {
     console.log("\n");
     console.log("Drawing wrapped text for text: " + text);
     console.log("n");
 
     // console.log(page)
-    const { width, height } = page.getSize();
+    const { width } = page.getSize();
     const font = isHeader
       ? timesRomanFont
       : isBold
@@ -428,9 +428,9 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       : helveticaFont;
     const lines = splitTextIntoLines(text, width - 2 * margin, fontSize, font);
     const lineHeight = fontSize * 1.4;
-    const totalHeight = lineHeight * lines.length + (isHeader ? 20 : 10);
+    // const totalHeight = lineHeight * lines.length + (isHeader ? 20 : 10);
 
-    let y = startY;
+    const y = startY;
 
     lines.forEach((line, index) => {
       page.drawText(line, {
@@ -468,7 +468,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   function drawRichText(
     page: PDFPage,
     richText: RichText | string,
-    startY: number
+    startY: number,
   ): { page: PDFPage; y: number } {
     console.log("\n");
     console.log("Drawing rich text or plain text");
@@ -503,23 +503,10 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
             console.warn(`Unsupported block type: ${block.type}`);
           }
         }
-        // switch (block.type) {
-        //   case "paragraph":
-        //     y = drawWrappedText(page, block.text, 11, false, false, y);
-        //     break;
-        //   case "header":
-        //     y = drawWrappedText(page, block.text, 16, true, true, y);
-        //     break;
-        //   case "unordered-list-item":
-        //     y = drawWrappedText(page, `• ${block.text}`, 11, false, false, y);
-        //     break;
-        //   default:
-        //     console.warn(`Unsupported block type: ${block.type}`);
-        // }
       });
     } else {
       console.warn(
-        "Invalid input for drawRichText. Expected RichText object or string."
+        "Invalid input for drawRichText. Expected RichText object or string.",
       );
     }
 
@@ -531,7 +518,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     section: Section,
     depth: number,
     y: number,
-    addNewPageIfNeeded: () => void
+    addNewPageIfNeeded: () => void,
   ): { page: PDFPage; y: number } {
     addNewPageIfNeeded();
     drawWrappedText(page, section.title, 20 - depth * 2, true, true, y).y;
@@ -605,7 +592,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     let y = height - margin;
     if (isNaN(y)) {
       console.warn(
-        `Invalid y value in drawTableOfContents: ${y}. Using default.`
+        `Invalid y value in drawTableOfContents: ${y}. Using default.`,
       );
       y = height - margin;
     }
@@ -628,14 +615,16 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       const textWidth = font.widthOfTextAtSize(text, fontSize);
       const pageNumWidth = helveticaFont.widthOfTextAtSize(
         entry.pageNumber.toString(),
-        numberFontSize
+        numberFontSize,
       );
       const dotsWidth = maxWidth - textWidth - pageNumWidth - indent - 10;
 
       let line = text;
       if (dotsWidth > 0) {
         const dots = ".".repeat(
-          Math.floor(dotsWidth / helveticaFont.widthOfTextAtSize(".", fontSize))
+          Math.floor(
+            dotsWidth / helveticaFont.widthOfTextAtSize(".", fontSize),
+          ),
         );
         line += " " + dots;
       }
@@ -672,84 +661,100 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     console.log("Added page break after Table of Contents");
   }
 
-  // Generate TOC entries
-  const tocEntries = generateTableOfContents(data.Chapters);
+  // Create an array to hold all pages
+  const pages: PDFPage[] = [];
 
   // Generate cover page
   const coverPage = await generateCoverPage();
-  pdfDoc.insertPage(0, coverPage);
+  pages.push(coverPage);
+  console.log("Cover page generated");
 
-  // Draw table of contents
-  drawTableOfContents(page, tocEntries);
+  // Generate TOC entries
+  const tocEntries = generateTableOfContents(data.Chapters);
+
+  // Generate TOC page
+  const tocPage = pdfDoc.addPage();
+  drawTableOfContents(tocPage, tocEntries);
+  pages.push(tocPage);
+  console.log("TOC page generated");
 
   function generateChapterContent(chapter: Chapter): PDFPage[] {
     const pages: PDFPage[] = [];
     let currentPage = pdfDoc.addPage();
-    pages.push(currentPage); // Add the first page immediately
+    pages.push(currentPage);
     let y = currentPage.getHeight() - margin;
-
+  
     function addNewPageIfNeeded() {
       if (y < margin + 100) {
         currentPage = pdfDoc.addPage();
         pages.push(currentPage);
         y = currentPage.getHeight() - margin;
-        console.log(`New page added. Total pages: ${pages.length}`);
+        console.log(`New page added to chapter. Total chapter pages: ${pages.length}`);
       }
     }
-
+  
     // Draw chapter title
+    console.log(`Drawing chapter title: ${chapter.title}`);
     let result = drawWrappedText(currentPage, chapter.title, 24, true, true, y);
     currentPage = result.page;
     y = result.y;
-
+  
     // Draw chapter description
     if (chapter.description) {
+      console.log("Drawing chapter description");
       addNewPageIfNeeded();
       result = drawRichText(currentPage, chapter.description, y);
       currentPage = result.page;
       y = result.y;
     }
-
+  
     // Draw sections
     for (const section of chapter.sections) {
+      console.log(`Drawing section: ${section.title}`);
       addNewPageIfNeeded();
       result = drawSection(currentPage, section, 0, y, addNewPageIfNeeded);
       currentPage = result.page;
       y = result.y;
     }
-
+  
+    console.log(`Chapter content generation complete. Total pages: ${pages.length}`);
     return pages;
   }
+
   // Main content generation
-  for (const [index, chapter] of data.Chapters.entries()) {
-    console.log(
-      `\n--- Processing Chapter ${index + 1}: "${chapter.title}" ---`
-    );
-
-    // Generate and add chapter cover page
-    const coverPage = await generateChapterCoverPage(chapter);
-    pdfDoc.addPage(coverPage);
-    console.log(`Added cover page for Chapter ${index + 1}`);
-
-    // Generate and add chapter content pages
-    const contentPages = generateChapterContent(chapter);
-    console.log(
-      `Generated ${contentPages.length} content pages for Chapter ${index + 1}`
-    );
-
-    contentPages.forEach((page, pageIndex) => {
-      pdfDoc.addPage(page);
+  try {
+    for (const [index, chapter] of data.Chapters.entries()) {
       console.log(
-        `Added content page ${pageIndex + 1} for Chapter ${index + 1}`
+        `\n--- Processing Chapter ${index + 1}: "${chapter.title}" ---`,
       );
-    });
 
-    console.log(`Completed processing Chapter ${index + 1}`);
+      // Generate chapter cover page
+      const chapterCoverPage = await generateChapterCoverPage(chapter);
+      pages.push(chapterCoverPage);
+      console.log(`Chapter ${index + 1} cover page generated`);
+
+      // Generate chapter content pages
+      const contentPages = generateChapterContent(chapter);
+      pages.push(...contentPages);
+      console.log(
+        `Generated ${contentPages.length} content pages for Chapter ${
+          index + 1
+        }`,
+      );
+
+      console.log(`Completed processing Chapter ${index + 1}`);
+    }
+  } catch (error) {
+    console.error("Error during content generation:", error);
   }
 
-  console.log(
-    `\nPDF generation completed. Total pages: ${pdfDoc.getPageCount()}`
-  );
+  // Add all generated pages to the PDF document
+  pages.forEach((page, index) => {
+    pdfDoc.addPage(page);
+    console.log(`Added page ${index + 1} to PDF document`);
+  });
+
+  console.log(`\nPDF generation completed. Total pages: ${pdfDoc.getPageCount()}`);
   return pdfDoc.save();
 }
 
@@ -783,7 +788,7 @@ function wrapText(
   text: string,
   maxWidth: number,
   font: any,
-  fontSize: number
+  fontSize: number,
 ): string {
   const words = text.split(" ");
   let lines = [];

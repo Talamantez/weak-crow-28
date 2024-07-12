@@ -7,7 +7,7 @@ import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, storeName, dbVersion } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
 
-const ChapterSection = ({ section, depth = 1 }) => {
+const ChapterSection = ({ section, depth = 1 }: { section: any[], depth?: number }) => {
   const renderHeading = () => {
     switch (depth) {
       case 1:
@@ -25,14 +25,14 @@ const ChapterSection = ({ section, depth = 1 }) => {
     <div class={`ml-${depth * 4}`}>
       {renderHeading()}
       <p>{section.description?.blocks?.[0]?.text || ''}</p>
-      {section.sections?.map((subSection, index) => (
+      {section.sections?.map((subSection: any, index: number) => (
         <ChapterSection key={index} section={subSection} depth={depth + 1} />
       ))}
     </div>
   );
 };
 
-const Chapter = ({ chapter, onUpdate }) => {
+const Chapter = ({ chapter, onUpdate }: { chapter: any, onUpdate: any }) => {
   return (
     <div class="bg-white rounded-lg shadow-md p-4 mb-4">
       {chapter.imageUrl && (
