@@ -54,7 +54,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   const maxWidth = width - 2 * margin;
   const pageBottom = margin + 50;
 
-  console.log(`Page ${pageCount} created. Height: ${height}, Initial y: ${y}`);
+  // console.log(`Page ${pageCount} created. Height: ${height}, Initial y: ${y}`);
 
   // Calm color palette
   const colors = {
@@ -147,14 +147,14 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     // Find the first chapter with a valid image URL
     const chapterWithImage = data.Chapters.find((chapter) => chapter.imageUrl);
     if (chapterWithImage && chapterWithImage.imageUrl) {
-      // console.log("Found chapter with image URL:", chapterWithImage.imageUrl);
+      // // console.log("Found chapter with image URL:", chapterWithImage.imageUrl);
       const imageUrl = chapterWithImage.imageUrl;
       const [imageData, base64Data] = imageUrl.split(",");
       if (base64Data) {
         try {
           const imageBytes = decode(base64Data);
           const imageType = imageData.split(";")[0].split(":")[1];
-          // console.log("Image type:", imageType);
+          // // console.log("Image type:", imageType);
           const imageBlob = new Blob([imageBytes], { type: imageType });
           let coverImage = null;
           if (imageType === "image/png") {
@@ -165,9 +165,9 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
             console.warn("Unsupported image type:", imageType);
           }
           if (coverImage) {
-            console.log("Image embedded successfully");
+            // console.log("Image embedded successfully");
             let imageDims = coverImage.scale(1);
-            console.log("Original image dimensions:", imageDims);
+            // console.log("Original image dimensions:", imageDims);
             if (
               imageDims.width > width - 2 * margin ||
               imageDims.height > height - 2 * margin
@@ -176,7 +176,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
                 width - 2 * margin,
                 height - 2 * margin,
               );
-              console.log("Scaled image dimensions:", imageDims);
+              // console.log("Scaled image dimensions:", imageDims);
             }
             coverPage.drawImage(coverImage, {
               x: width / 2 - imageDims.width / 2,
@@ -185,7 +185,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
               height: imageDims.height,
               opacity: 1,
             });
-            console.log("Image drawn on cover page");
+            // console.log("Image drawn on cover page");
           } else {
             console.warn("Failed to embed image");
           }
@@ -226,7 +226,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       color: colors.secondary,
     });
 
-    console.log("Cover page generated");
+    // console.log("Cover page generated");
     return coverPage;
   }
 
@@ -249,9 +249,9 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       // Add page number
       addPageNumber();
 
-      console.log(
-        `New page ${pageCount} created. Height: ${height}, New y: ${y}`,
-      );
+      // console.log(
+      //   `New page ${pageCount} created. Height: ${height}, New y: ${y}`,
+      // );
       return true;
     }
     return false;
@@ -415,9 +415,9 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     isHeader: boolean = false,
     startY: number,
   ): { page: PDFPage; y: number } {
-    console.log("\n");
-    console.log("Drawing wrapped text for text: " + text);
-    console.log("n");
+    // console.log("\n");
+    // console.log("Drawing wrapped text for text: " + text);
+    // console.log("n");
 
     // console.log(page)
     const { width } = page.getSize();
@@ -470,9 +470,9 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     richText: RichText | string,
     startY: number,
   ): { page: PDFPage; y: number } {
-    console.log("\n");
-    console.log("Drawing rich text or plain text");
-    console.log("\n");
+    // console.log("\n");
+    // console.log("Drawing rich text or plain text");
+    // console.log("\n");
 
     let y = startY;
 
@@ -487,7 +487,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       Array.isArray(richText.blocks)
     ) {
       // Handle RichText input
-      console.log("Processing RichText input");
+      // console.log("Processing RichText input");
       richText.blocks.forEach((block) => {
         if (block.type) {
           if (block.type === "paragraph") {
@@ -513,40 +513,56 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     return { page: page, y: y };
   }
 
+  function addNewSectionPageIfNeeded(
+    currentPage: PDFPage,
+    requiredSpace: number,
+    y: number,
+    margin: number
+  ): PDFPage {
+    if (y - requiredSpace < margin) {
+      return pdfDoc.addPage();
+    }
+    return currentPage;
+  }
+
   function drawSection(
     page: PDFPage,
     section: Section,
     depth: number,
     startY: number,
-    addNewPageIfNeeded: (space: number) => void
+    addNewPage: (space: number) => void
   ): { page: PDFPage; y: number } {
     let y = startY;
+    const indent = depth * 20; // Increase indentation for nested subsections
+    const titleFontSize = Math.max(18 - depth * 2, 12); // Decrease font size for deeper subsections, but not below 12
+  
+    addNewPage(titleFontSize * 2 + 40); // Ensure enough space for title and some content
   
     // Draw section title
-    let result = drawWrappedText(page, section.title, 18 - depth * 2, true, true, y);
+    let result = drawWrappedText(page, section.title, titleFontSize, true, true, y);
     page = result.page;
-    y = result.y - 15;
+    y = result.y - 60; // Add space after title
   
     // Draw section description or content
     if (section.description || section.content) {
-      addNewPageIfNeeded(100);
+      addNewPage(100);
       if (section.description) {
         result = drawRichText(page, section.description, y);
         page = result.page;
-        y = result.y - 10;
+        y = result.y - 80;
       }
       if (section.content) {
         result = drawRichText(page, section.content, y);
         page = result.page;
-        y = result.y - 10;
+        y = result.y - 80;
       }
     }
   
     // Draw subsections
     if (section.sections) {
       for (const subSection of section.sections) {
-        addNewPageIfNeeded(100);
-        result = drawSection(page, subSection, depth + 1, y, addNewPageIfNeeded);
+        addNewPage(100);
+        result = drawSection(page, subSection, depth + 1, y, addNewPage);
         page = result.page;
         y = result.y - 20;
       }
@@ -569,9 +585,9 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
 
   // Generate TOC entries
   function generateTableOfContents(chapters: Chapter[]): any[] {
-    console.log("\n");
-    console.log("Generating table of contents");
-    console.log("\n");
+    // // console.log("\n");
+    // console.log("Generating table of contents");
+    // console.log("\n");
 
     const tocEntries: any[] = [];
     let pageNumber = 3; // Assuming TOC takes 1 page and starts on page 2
@@ -613,8 +629,8 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     y = drawWrappedText(page, "Table of Contents", 24, true, true, y).y;
     y -= 40;
 
-    console.log("Drawing TOC entries");
-    console.log(tocEntries);
+    // console.log("Drawing TOC entries");
+    // console.log(tocEntries);
 
     // Draw TOC entries
     tocEntries.forEach((entry) => {
@@ -670,7 +686,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
 
     // Add a page break after the Table of Contents
     addNewPageIfNeeded(height);
-    console.log("Added page break after Table of Contents");
+    // console.log("Added page break after Table of Contents");
   }
 
   // Create an array to hold all pages
@@ -679,7 +695,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   // Generate cover page
   const coverPage = await generateCoverPage();
   pages.push(coverPage);
-  console.log("Cover page generated");
+  // console.log("Cover page generated");
 
   // Generate TOC entries
   const tocEntries = generateTableOfContents(data.Chapters);
@@ -688,7 +704,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   const tocPage = pdfDoc.addPage();
   drawTableOfContents(tocPage, tocEntries);
   pages.push(tocPage);
-  console.log("TOC page generated");
+  // console.log("TOC page generated");
 
   function generateChapterContent(chapter: Chapter): PDFPage[] {
     const pages: PDFPage[] = [];
@@ -696,65 +712,72 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     pages.push(currentPage);
     let y = currentPage.getHeight() - margin;
   
-    function addNewPageIfNeeded(requiredSpace: number) {
-      if (y - requiredSpace < margin + 50) {
+    const addNewPage = (requiredSpace: number): void => {
+      if (y - requiredSpace < margin) {
         currentPage = pdfDoc.addPage();
         pages.push(currentPage);
         y = currentPage.getHeight() - margin;
-        console.log(`New page added to chapter. Total chapter pages: ${pages.length}`);
       }
-    }
+    };
   
     // Draw chapter title
-    console.log(`Drawing chapter title: ${chapter.title}`);
-    let result = drawWrappedText(currentPage, chapter.title, 24, true, true, y);
+    const titleFontSize = 24;
+    let result = drawWrappedText(currentPage, chapter.title, titleFontSize, true, true, y);
     currentPage = result.page;
-    y = result.y - 70; // Add extra space after title
+    y = result.y - titleFontSize * 2; // Add extra space after title
+  
+    // Draw line under the title
+    const { width } = currentPage.getSize();
+    currentPage.drawLine({
+      start: { x: margin, y: y + titleFontSize },
+      end: { x: width - margin, y: y + titleFontSize },
+      thickness: 1,
+      color: colors.secondary,
+    });
+  
+    y -= 20; // Add some space after the line
   
     // Draw chapter description
     if (chapter.description) {
-      console.log("Drawing chapter description");
-      addNewPageIfNeeded(100); // Ensure enough space for description
+      addNewPage(100); // Ensure there's enough space for the description
       result = drawRichText(currentPage, chapter.description, y);
       currentPage = result.page;
-      y = result.y - 50; // Add space after description
+      y = result.y - 100; // Add extra space after description
     }
   
     // Draw sections
     for (const section of chapter.sections) {
-      console.log(`Drawing section: ${section.title}`);
-      addNewPageIfNeeded(150); // Ensure enough space for section title and some content
-      result = drawSection(currentPage, section, 0, y, addNewPageIfNeeded);
+      addNewPage(100); // Ensure there's enough space for each section
+      result = drawSection(currentPage, section, 0, y, addNewPage);
       currentPage = result.page;
-      y = result.y - 50; // Add extra space between sections
+      y = result.y - 30; // Add extra space between sections
     }
   
-    console.log(`Chapter content generation complete. Total pages: ${pages.length}`);
     return pages;
   }
 
   // Main content generation
   try {
     for (const [index, chapter] of data.Chapters.entries()) {
-      console.log(
-        `\n--- Processing Chapter ${index + 1}: "${chapter.title}" ---`,
-      );
+      // console.log(
+      //   `\n--- Processing Chapter ${index + 1}: "${chapter.title}" ---`,
+      // );
 
       // Generate chapter cover page
       const chapterCoverPage = await generateChapterCoverPage(chapter);
       pages.push(chapterCoverPage);
-      console.log(`Chapter ${index + 1} cover page generated`);
+      // console.log(`Chapter ${index + 1} cover page generated`);
 
       // Generate chapter content pages
       const contentPages = generateChapterContent(chapter);
       pages.push(...contentPages);
-      console.log(
-        `Generated ${contentPages.length} content pages for Chapter ${
-          index + 1
-        }`,
-      );
+      // console.log(
+      //   `Generated ${contentPages.length} content pages for Chapter ${
+      //     index + 1
+      //   }`,
+      // );
 
-      console.log(`Completed processing Chapter ${index + 1}`);
+      // console.log(`Completed processing Chapter ${index + 1}`);
     }
   } catch (error) {
     console.error("Error during content generation:", error);
@@ -763,10 +786,10 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   // Add all generated pages to the PDF document
   pages.forEach((page, index) => {
     pdfDoc.addPage(page);
-    console.log(`Added page ${index + 1} to PDF document`);
+    // console.log(`Added page ${index + 1} to PDF document`);
   });
 
-  console.log(`\nPDF generation completed. Total pages: ${pdfDoc.getPageCount()}`);
+  // console.log(`\nPDF generation completed. Total pages: ${pdfDoc.getPageCount()}`);
   return pdfDoc.save();
 }
 
