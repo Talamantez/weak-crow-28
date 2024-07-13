@@ -74,8 +74,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   // Generate cover page first
   const coverPage = await generateCoverPage();
   pdfDoc.removePage(0);
-  pdfDoc.insertPage(0,coverPage);
-
+  pdfDoc.insertPage(0, coverPage);
 
   async function generateChapterCoverPage(chapter: Chapter) {
     const page = pdfDoc.addPage();
@@ -358,6 +357,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       });
     }
   }
+
   function addNewPageIfNeeded(requiredSpace: number): boolean {
     if (y - requiredSpace < pageBottom) {
       page = pdfDoc.addPage();
@@ -373,9 +373,6 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         height: height,
         color: colors.background,
       });
-
-      // Add page number (only for content pages)
-      addPageNumber();
 
       return true;
     }
@@ -899,13 +896,29 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   drawTableOfContents(actualTocPage, tocEntries);
 
   // Replace the placeholder TOC with the actual one
+  pdfDoc.removePage(2);
   pdfDoc.removePage(1); // Remove placeholder
   pdfDoc.insertPage(1, actualTocPage); // Insert actual TOC
 
-  // Add all generated pages to the PDF document
+  // Add all generated pages to the PDF document and add page numbers
   pages.forEach((page, index) => {
     pdfDoc.addPage(page);
-    // console.log(`Added page ${index + 1} to PDF document`);
+
+    // Add page numbers to content pages (skip cover and TOC)
+    if (index >= 1) { // Assuming index 0 is cover, index 1 is TOC
+      const pageNumber = index; // Adjust this if you want different numbering
+      const pageNumberText = `Page ${pageNumber}`;
+      const { width } = page.getSize();
+      const textWidth = helveticaFont.widthOfTextAtSize(pageNumberText, 10);
+
+      page.drawText(pageNumberText, {
+        x: width - margin - textWidth,
+        y: margin / 2,
+        size: 10,
+        font: helveticaFont,
+        color: colors.secondary,
+      });
+    }
   });
 
   // console.log(`\nPDF generation completed. Total pages: ${pdfDoc.getPageCount()}`);
