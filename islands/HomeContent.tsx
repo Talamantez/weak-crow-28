@@ -7,39 +7,48 @@ import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, storeName, dbVersion } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
 
-const ChapterSection = ({ section, depth = 1 }: { section: any[], depth?: number }) => {
-  const renderHeading = () => {
-    switch (depth) {
-      case 1:
-        return <h3 class="font-bold mt-2">{section.title}</h3>;
-      case 2:
-        return <h4 class="font-bold mt-2">{section.title}</h4>;
-      case 3:
-        return <h5 class="font-bold mt-2">{section.title}</h5>;
-      default:
-        return <h6 class="font-bold mt-2">{section.title}</h6>;
-    }
-  };
+import { Chapter, Section, Content } from "./types.ts";
+
+const renderContent = (content: any) => {
+  if (!content) return null;
+  
+  if (typeof content === 'string') {
+    return <p>{content}</p>;
+  }
+  
+  if (content.blocks) {
+    return content.blocks.map((block: any, index: number) => (
+      <p key={index}>{block.text}</p>
+    ));
+  }
+  
+  return null;
+};
+
+const ChapterSection = ({ section, depth = 1 }: { section: Section, depth?: number }) => {
+  const HeadingTag = `h${Math.min(depth + 2, 6)}` as keyof JSX.IntrinsicElements;
 
   return (
-    <div class={`ml-${depth * 4}`}>
-      {renderHeading()}
-      <p>{section.description?.blocks?.[0]?.text || ''}</p>
-      {section.sections?.map((subSection: any, index: number) => (
+    <div className={`ml-${depth * 4}`}>
+      <HeadingTag className="font-bold mt-2 text-lg">{section.title}</HeadingTag>
+      {renderContent(section.description)}
+      {renderContent(section.content)}
+      {section.sections?.map((subSection, index) => (
         <ChapterSection key={index} section={subSection} depth={depth + 1} />
       ))}
     </div>
   );
 };
 
-const Chapter = ({ chapter, onUpdate }: { chapter: any, onUpdate: any }) => {
+const ChapterComponent = ({ chapter, onUpdate }: { chapter: Chapter, onUpdate: (chapter: Chapter) => void }) => {
   return (
-    <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+    <div className="bg-white rounded-lg shadow-md p-4 mb-4">
       {chapter.imageUrl && (
-        <img src={chapter.imageUrl} alt={chapter.title || 'Chapter image'} class="w-full h-32 object-cover rounded-t-lg mb-2" />
+        <img src={chapter.imageUrl} alt={chapter.title || 'Chapter image'} className="w-full h-32 object-cover rounded-t-lg mb-2" />
       )}
-      <h2 class="text-xl font-bold mb-2">{chapter.title || 'Untitled Chapter'}</h2>
-      {chapter.sections?.map((section, index) => (
+      <h2 className="text-xl font-bold mb-2">{chapter.title}</h2>
+      {renderContent(chapter.description)}
+      {chapter.sections.map((section, index) => (
         <ChapterSection key={index} section={section} />
       ))}
       <Button
@@ -50,7 +59,6 @@ const Chapter = ({ chapter, onUpdate }: { chapter: any, onUpdate: any }) => {
     </div>
   );
 };
-
 export default function HomeContent() {
   const { chapters = [], error } = useLoadChapters(dbName, storeName, dbVersion);
 
@@ -186,7 +194,7 @@ export default function HomeContent() {
         
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
           {chapters.map(chapter => (
-            <Chapter key={chapter.id} chapter={chapter} onUpdate={updateChapter} />
+            <ChapterComponent key={chapter.id} chapter={chapter} onUpdate={updateChapter} />
           ))}
         </div>
         
