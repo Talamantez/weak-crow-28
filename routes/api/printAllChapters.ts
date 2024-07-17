@@ -536,10 +536,8 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       : helveticaFont;
     const lines = splitTextIntoLines(text, width - 2 * margin, fontSize, font);
     const lineHeight = fontSize * 1.4;
-    // const totalHeight = lineHeight * lines.length + (isHeader ? 20 : 10);
-
-    const y = startY;
-
+    let y = startY;
+  
     lines.forEach((line, index) => {
       page.drawText(line, {
         x: margin,
@@ -549,17 +547,20 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         color: isHeader ? colors.primary : colors.text,
       });
     });
-
+  
+    y -= lineHeight * lines.length;
+  
     if (isHeader) {
       page.drawLine({
-        start: { x: margin, y: y - lineHeight * lines.length - 5 },
-        end: { x: width - margin, y: y - lineHeight * lines.length - 5 },
+        start: { x: margin, y: y - 5 },
+        end: { x: width - margin, y: y - 5 },
         thickness: 0.5,
         color: colors.secondary,
       });
+      y -= 10; // Extra space after header
     }
-
-    return { page: page, y: y };
+  
+    return { page, y };
   }
   function convertPlainTextToRichText(text: string): RichText {
     // Split the text into paragraphs
@@ -576,49 +577,41 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   function drawRichText(
     page: PDFPage,
     richText: RichText | string,
-    startY: number,
+    startY: number
   ): { page: PDFPage; y: number } {
-    // console.log("\n");
-    // console.log("Drawing rich text or plain text");
-    // console.log("\n");
-
     let y = startY;
-
+  
     if (typeof richText === "string") {
-      // Convert plain text to RichText object
       richText = convertPlainTextToRichText(richText);
     }
-
-    if (
-      richText &&
-      typeof richText === "object" &&
-      Array.isArray(richText.blocks)
-    ) {
-      // Handle RichText input
-      // console.log("Processing RichText input");
-      richText.blocks.forEach((block) => {
+  
+    if (richText && typeof richText === "object" && Array.isArray(richText.blocks)) {
+      for (const block of richText.blocks) {
         if (block.type) {
+          let result;
+          if (y < margin) {
+            page = pdfDoc.addPage();
+            y = page.getHeight() - margin;
+          }
           if (block.type === "paragraph") {
-            y = drawWrappedText(page, block.text, 11, false, false, y).y;
-            return { page: PDFPage, y: y };
+            result = drawWrappedText(page, block.text, 11, false, false, y);
           } else if (block.type === "header") {
-            y = drawWrappedText(page, block.text, 16, true, true, y).y;
-            return { page: PDFPage, y: y };
+            result = drawWrappedText(page, block.text, 16, true, true, y);
           } else if (block.type === "unordered-list-item") {
-            y = drawWrappedText(page, `• ${block.text}`, 11, false, false, y).y;
-            return { page: PDFPage, y: y };
+            result = drawWrappedText(page, `• ${block.text}`, 11, false, false, y);
           } else {
             console.warn(`Unsupported block type: ${block.type}`);
+            continue;
           }
+          page = result.page;
+          y = result.y - 20; // Add some space between blocks
         }
-      });
+      }
     } else {
-      console.warn(
-        "Invalid input for drawRichText. Expected RichText object or string.",
-      );
+      console.warn("Invalid input for drawRichText. Expected RichText object or string.");
     }
-
-    return { page: page, y: y };
+  
+    return { page, y };
   }
 
   function addNewSectionPageIfNeeded(
