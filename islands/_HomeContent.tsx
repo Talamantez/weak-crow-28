@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "preact/hooks";
-
+import { useState, useEffect, useRef } from "preact/hooks";
 import { Head } from "$fresh/runtime.ts";
 import Footer from "../components/Footer.tsx";
 import Button from "../components/Button.tsx";
@@ -48,72 +47,34 @@ const AddBlockButton = ({ onAdd, text }) => (
   />
 );
 
-const ChapterComponent = ({ chapter, onUpdate, onDelete }: { chapter: Chapter, onUpdate: (updatedChapter: Chapter) => void, onDelete: () => void }) => {
-  const addSection = () => {
-    const newSection: Section = { title: "New Section", description: { blocks: [] } };
-    const updatedSections = [...chapter.sections, newSection];
-    onUpdate({ ...chapter, sections: updatedSections });
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">{chapter.title}</h2>
-        <Button text="Delete Chapter" onClick={onDelete} styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1" />
-      </div>
-      {chapter.imageUrl && (
-        <img src={chapter.imageUrl} alt={chapter.title || 'Chapter image'} className="w-full h-32 object-cover rounded-t-lg mb-2" />
-      )}
-      <p className="mb-4">{chapter.description}</p>
-      {chapter.sections.map((section, index) => (
-        <ChapterSection
-          key={index}
-          section={section}
-          onUpdate={(updatedSection) => {
-            const updatedSections = [...chapter.sections];
-            updatedSections[index] = updatedSection;
-            onUpdate({ ...chapter, sections: updatedSections });
-          }}
-          onDelete={() => {
-            const updatedSections = chapter.sections.filter((_, i) => i !== index);
-            onUpdate({ ...chapter, sections: updatedSections });
-          }}
-        />
-      ))}
-      <AddBlockButton onAdd={addSection} text="Add Section" />
-    </div>
-  );
-};
-
-// Update the ChapterSection component
 const ChapterSection = ({ section, depth = 1, onUpdate, onDelete }: { section: Section, depth?: number, onUpdate: (updatedSection: Section) => void, onDelete: () => void }) => {
   const HeadingTag = `h${Math.min(depth + 2, 6)}` as keyof JSX.IntrinsicElements;
 
-  const addBlock = (type: string) => {
+  const addBlock = (type: BlockType) => {
     const newBlock: Block = { type, text: "" };
-    const updatedDescription = section.description
-      ? { blocks: [...section.description.blocks, newBlock] }
+    const updatedContent: RichText = section.content
+      ? { blocks: [...section.content.blocks, newBlock] }
       : { blocks: [newBlock] };
-    onUpdate({ ...section, description: updatedDescription });
+    onUpdate({ ...section, content: updatedContent });
   };
 
   const updateBlock = (index: number, updatedBlock: Block) => {
-    if (section.description) {
-      const updatedBlocks = [...section.description.blocks];
+    if (section.content) {
+      const updatedBlocks = [...section.content.blocks];
       updatedBlocks[index] = updatedBlock;
-      onUpdate({ ...section, description: { blocks: updatedBlocks } });
+      onUpdate({ ...section, content: { blocks: updatedBlocks } });
     }
   };
 
   const deleteBlock = (index: number) => {
-    if (section.description) {
-      const updatedBlocks = section.description.blocks.filter((_, i) => i !== index);
-      onUpdate({ ...section, description: { blocks: updatedBlocks } });
+    if (section.content) {
+      const updatedBlocks = section.content.blocks.filter((_, i) => i !== index);
+      onUpdate({ ...section, content: { blocks: updatedBlocks } });
     }
   };
 
   const addSubsection = () => {
-    const newSubsection: Section = { title: "New Subsection", description: { blocks: [] } };
+    const newSubsection: Section = { title: "New Subsection", content: { blocks: [] } };
     const updatedSections = section.sections ? [...section.sections, newSubsection] : [newSubsection];
     onUpdate({ ...section, sections: updatedSections });
   };
@@ -124,7 +85,7 @@ const ChapterSection = ({ section, depth = 1, onUpdate, onDelete }: { section: S
         <HeadingTag className="font-bold mt-2 text-lg">{section.title}</HeadingTag>
         <Button text="Delete Section" onClick={onDelete} styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1" />
       </div>
-      {section.description && section.description.blocks.map((block, index) => (
+      {section.content && section.content.blocks.map((block, index) => (
         <div key={index}>
           {renderBlock(block, () => deleteBlock(index))}
           <input
@@ -161,44 +122,62 @@ const ChapterSection = ({ section, depth = 1, onUpdate, onDelete }: { section: S
   );
 };
 
+const ChapterComponent = ({ chapter, onUpdate, onDelete }: { chapter: Chapter, onUpdate: (updatedChapter: Chapter) => void, onDelete: () => void }) => {
+  const addSection = () => {
+    const newSection: Section = { title: "New Section", content: { blocks: [] } };
+    const updatedSections = [...chapter.sections, newSection];
+    onUpdate({ ...chapter, sections: updatedSections });
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold">{chapter.title}</h2>
+        <Button text="Delete Chapter" onClick={onDelete} styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1" />
+      </div>
+      {chapter.imageUrl && (
+        <img src={chapter.imageUrl} alt={chapter.title || 'Chapter image'} className="w-full h-32 object-cover rounded-t-lg mb-2" />
+      )}
+      {chapter.description && chapter.description.blocks.map((block, index) => (
+        <div key={index}>{renderBlock(block, () => {})}</div>
+      ))}
+      {chapter.sections.map((section, index) => (
+        <ChapterSection
+          key={index}
+          section={section}
+          onUpdate={(updatedSection) => {
+            const updatedSections = [...chapter.sections];
+            updatedSections[index] = updatedSection;
+            onUpdate({ ...chapter, sections: updatedSections });
+          }}
+          onDelete={() => {
+            const updatedSections = chapter.sections.filter((_, i) => i !== index);
+            onUpdate({ ...chapter, sections: updatedSections });
+          }}
+        />
+      ))}
+      <AddBlockButton onAdd={addSection} text="Add Section" />
+    </div>
+  );
+};
+
 export default function HomeContent() {
   const [chapters, setChapters] = useState<Chapter[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
   const { error } = useLoadChapters(dbName, storeName, dbVersion);
   const scrollPositionRef = useRef(0);
 
   useEffect(() => {
     const loadChapters = async () => {
-      setLoading(true);
-      setLoadError(null);
-      try {
-        const request = indexedDB.open(dbName, dbVersion);
-        request.onerror = (event) => {
-          console.error("Database error:", event.target.error);
-          setLoadError("Failed to open database");
+      const request = indexedDB.open(dbName, dbVersion);
+      request.onsuccess = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        const transaction = db.transaction(storeName, "readonly");
+        const objectStore = transaction.objectStore(storeName);
+        const getAll = objectStore.getAll();
+        getAll.onsuccess = () => {
+          setChapters(getAll.result);
         };
-        request.onsuccess = (event) => {
-          const db = (event.target as IDBOpenDBRequest).result;
-          const transaction = db.transaction(storeName, "readonly");
-          const objectStore = transaction.objectStore(storeName);
-          const getAll = objectStore.getAll();
-          getAll.onerror = (event) => {
-            console.error("Error fetching chapters:", event.target.error);
-            setLoadError("Failed to fetch chapters");
-          };
-          getAll.onsuccess = () => {
-            const chapters = getAll.result;
-            console.log("Chapters loaded:", chapters);
-            setChapters(chapters);
-          };
-        };
-      } catch (error) {
-        console.error("Error in loadChapters:", error);
-        setLoadError("An unexpected error occurred");
-      } finally {
-        setLoading(false);
-      }
+      };
     };
 
     loadChapters();
@@ -334,7 +313,6 @@ export default function HomeContent() {
         <title>Resource Roadmap Editor</title>
       </Head>
       <main className="flex flex-col items-center justify-start my-10 p-4 mx-auto max-w-screen-lg">
-
         <div className="bg-gray-800 text-white w-full rounded-lg p-8 mb-10">
           <h1 className="text-3xl font-bold mb-4">Resource Roadmap</h1>
           <p className="mb-4">Welcome to Your Local Resource Publication Creator!</p>
@@ -349,6 +327,7 @@ export default function HomeContent() {
             onClick={handlePrint}
           />
         </div>
+        
         <div className="w-full flex-col justify-between mb-10">
           <h2 className="font-bold text-2xl w-3/5 text-left mb-4">Chapters</h2>
           <div className="flex flex-col sm:flex-row justify-between w-full">
@@ -367,24 +346,16 @@ export default function HomeContent() {
           </div>
         </div>
         
-        {loading ? (
-          <p>Loading chapters...</p>
-        ) : loadError ? (
-          <p className="text-red-500">Error: {loadError}</p>
-        ) : chapters.length === 0 ? (
-          <p>No chapters found. Try adding a new chapter or generating example chapters.</p>
-        ) : (
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-            {chapters.map(chapter => (
-              <ChapterComponent
-                key={chapter.id || chapter.index}
-                chapter={chapter}
-                onUpdate={updateChapter}
-                onDelete={() => deleteChapter(chapter.id || chapter.index)}
-              />
-            ))}
-          </div>
-        )}
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+          {chapters.map(chapter => (
+            <ChapterComponent
+              key={chapter.id}
+              chapter={chapter}
+              onUpdate={updateChapter}
+              onDelete={() => deleteChapter(chapter.id)}
+            />
+          ))}
+        </div>
         
         <Footer />
       </main>
