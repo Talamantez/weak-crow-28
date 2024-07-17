@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "preact/hooks";
-
+import { useState, useEffect, useRef } from "preact/hooks";
 import { Head } from "$fresh/runtime.ts";
 import Footer from "../components/Footer.tsx";
 import Button from "../components/Button.tsx";
@@ -8,6 +7,7 @@ import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, storeName, dbVersion } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
+import { PdfPreview } from "./PdfPreview.tsx";
 
 import { Chapter, Section, Content, RichText, Block, BlockType } from "./types.ts";
 
@@ -257,6 +257,7 @@ export default function HomeContent() {
       const objectStore = transaction.objectStore(storeName);
       objectStore.put(updatedChapter);
       setChapters(chapters.map(ch => ch.id === updatedChapter.id ? updatedChapter : ch));
+      // globalThis.location.reload();
     };
   };
 
@@ -333,60 +334,67 @@ export default function HomeContent() {
       <Head>
         <title>Resource Roadmap Editor</title>
       </Head>
-      <main className="flex flex-col items-center justify-start my-10 p-4 mx-auto max-w-screen-lg">
-
-        <div className="bg-gray-800 text-white w-full rounded-lg p-8 mb-10">
-          <h1 className="text-3xl font-bold mb-4">Resource Roadmap</h1>
-          <p className="mb-4">Welcome to Your Local Resource Publication Creator!</p>
-          <Button
-            text="Generate Example Chapters"
-            styles="bg-white text-gray-800 rounded px-4 py-2 mb-2 w-full"
-            onClick={handleGenerate}
-          />
-          <Button
-            text="Print Your Roadmap"
-            styles="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 w-full"
-            onClick={handlePrint}
-          />
-        </div>
-        <div className="w-full flex-col justify-between mb-10">
-          <h2 className="font-bold text-2xl w-3/5 text-left mb-4">Chapters</h2>
-          <div className="flex flex-col sm:flex-row justify-between w-full">
+      <main className="flex flex-row items-start justify-between my-10 p-4 mx-auto max-w-screen-xl">
+        <div className="flex-grow mr-4">
+          <div className="bg-gray-800 text-white w-full rounded-lg p-8 mb-10">
+            <h1 className="text-3xl font-bold mb-4">Resource Roadmap</h1>
+            <p className="mb-4">Welcome to Your Local Resource Publication Creator!</p>
             <Button
-              text="Add New Chapter"
-              onClick={addNewChapter}
-              styles="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 rounded-md py-2 px-4 text-white transition-colors focus:outline-none outline-none"
-              icon={IconPlus}
+              text="Generate Example Chapters"
+              styles="bg-white text-gray-800 rounded px-4 py-2 mb-2 w-full"
+              onClick={handleGenerate}
             />
             <Button
-              text="Delete All Chapters"
-              onClick={clearAllChapters}
-              styles="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
-              icon={IconX}
+              text="Print Your Roadmap"
+              styles="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 w-full"
+              onClick={handlePrint}
             />
           </div>
-        </div>
-        
-        {loading ? (
-          <p>Loading chapters...</p>
-        ) : loadError ? (
-          <p className="text-red-500">Error: {loadError}</p>
-        ) : chapters.length === 0 ? (
-          <p>No chapters found. Try adding a new chapter or generating example chapters.</p>
-        ) : (
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-            {chapters.map(chapter => (
-              <ChapterComponent
-                key={chapter.id || chapter.index}
-                chapter={chapter}
-                onUpdate={updateChapter}
-                onDelete={() => deleteChapter(chapter.id || chapter.index)}
+          
+          <div className="w-full flex-col justify-between mb-10">
+            <h2 className="font-bold text-2xl w-3/5 text-left mb-4">Chapters</h2>
+            <div className="flex flex-col sm:flex-row justify-between w-full">
+              <Button
+                text="Add New Chapter"
+                onClick={addNewChapter}
+                styles="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 rounded-md py-2 px-4 text-white transition-colors focus:outline-none outline-none"
+                icon={IconPlus}
               />
-            ))}
+              <Button
+                text="Delete All Chapters"
+                onClick={clearAllChapters}
+                styles="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
+                icon={IconX}
+              />
+            </div>
           </div>
-        )}
+          
+          {loading ? (
+            <p>Loading chapters...</p>
+          ) : loadError ? (
+            <p className="text-red-500">Error: {loadError}</p>
+          ) : chapters.length === 0 ? (
+            <p>No chapters found. Try adding a new chapter or generating example chapters.</p>
+          ) : (
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+              {chapters.map(chapter => (
+                <ChapterComponent
+                  key={chapter.id || chapter.index}
+                  chapter={chapter}
+                  onUpdate={updateChapter}
+                  onDelete={() => deleteChapter(chapter.id || chapter.index)}
+                />
+              ))}
+            </div>
+          )}
+          
+          <Footer />
+        </div>
         
-        <Footer />
+        <div className="w-1/3 sticky top-0">
+          <h2 className="font-bold text-2xl mb-4">PDF Preview</h2>
+          <PdfPreview chapters={chapters} />
+        </div>
       </main>
     </div>
   );

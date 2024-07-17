@@ -8,7 +8,6 @@ import {
 import { decode } from "https://deno.land/std@0.152.0/encoding/base64.ts";
 import { Handlers } from "https://deno.land/x/fresh@1.6.8/server.ts";
 import { coverImageUrl } from "../../data/coverImageUrl.js";
-import { CHAR_0 } from "https://deno.land/std@0.140.0/path/_constants.ts";
 
 // Define types
 type BlockType = "paragraph" | "header" | "unordered-list-item";
