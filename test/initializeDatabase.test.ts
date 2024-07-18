@@ -1,13 +1,14 @@
 // initializeDatabase.test.ts
 import { initializeDatabase } from "../islands/initializeDatabase.tsx";
+import { VERSION_STORE_NAME } from "../islands/versionManagement.ts";
 import "https://deno.land/x/indexeddb@v1.1.0/polyfill.ts";
-import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
+import { dbName, dbVersion, storeName  } from "../util/dbInfo.ts";
 import { assert } from "https://deno.land/std@0.224.0/assert/assert.ts";
 
 Deno.test({
   name: "initializeDatabase should create the database and object store",
   async fn() {
-    await initializeDatabase(indexedDB, dbName, dbVersion, storeName);
+    await initializeDatabase(indexedDB, dbName, dbVersion, storeName, VERSION_STORE_NAME);
 
     const request = indexedDB.open(dbName, dbVersion);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {

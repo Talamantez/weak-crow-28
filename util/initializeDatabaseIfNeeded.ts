@@ -2,13 +2,16 @@ import { openDatabase } from './openDatabase.ts';
 import { checkDatabaseInitialized } from './checkDatabaseInitialized.ts';
 import { initializeDatabase } from '../islands/initializeDatabase.tsx';
 
+// Import the VERSION_STORE_NAME from your versionManagement.ts file
+import { VERSION_STORE_NAME } from '../islands/versionManagement.ts';
+
 export const initializeDatabaseIfNeeded = (
     indexedDB: IDBFactory, dbName: string, dbVersion: number, storeName: string
   ): Promise<IDBDatabase> => {
     return openDatabase(indexedDB, dbName, dbVersion)
       .then((db: IDBDatabase) => {
         return checkDatabaseInitialized(db, storeName).then((isInitialized : boolean) => {
-          if (isInitialized) {
+          if (isInitialized && db.objectStoreNames.contains(VERSION_STORE_NAME)) {
             return db;
           } else {
             db.close();
@@ -17,6 +20,7 @@ export const initializeDatabaseIfNeeded = (
               dbName,
               dbVersion,
               storeName,
+              VERSION_STORE_NAME
             );
           }
         });

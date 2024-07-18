@@ -1,49 +1,33 @@
 export const initializeDatabase = (
-  indexedDB: IDBFactory = globalThis.indexedDB,
+  indexedDB: IDBFactory,
   dbName: string,
   dbVersion: number,
   storeName: string,
-) => {
-  return new Promise<IDBDatabase>((resolve, reject) => {
-    // Delete the existing database
-    const deleteRequest = indexedDB.deleteDatabase(dbName);
-    deleteRequest.onerror = () => {
-      reject(new Error("Error deleting database"));
+  versionStoreName: string
+): Promise<IDBDatabase> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(dbName, dbVersion);
+
+    request.onerror = (event) => {
+      reject("Error opening database");
     };
-    deleteRequest.onsuccess = () => {
-      // Open the database with the desired version number
-      const request = indexedDB.open(dbName, dbVersion);
-      request.onerror = function (event: Event) {
-        const request = event.target as IDBOpenDBRequest;
-        if (event.target !== null) {
-          console.error("Error opening database:", request.error);
-          reject(request.error);
-        } else {
-          console.error("Error opening database: event.target is null");
-          reject(new Error("Error opening database: event.target is null"));
-        }
-      };
-      request.onupgradeneeded = function (event: IDBVersionChangeEvent) {
-        const request = event.target as IDBOpenDBRequest;
-        const db = request.result;
-        if (db instanceof IDBDatabase) {
-          if (!db.objectStoreNames.contains(storeName)) {
-            const objectStore = db.createObjectStore(storeName, {
-              keyPath: "title",
-            });
-            objectStore.createIndex("titleIndex", "title", { unique: true });
-          }
-        } else {
-          console.error(
-            "Error upgrading database: db is not an instance of IDBDatabase",
-          );
-        }
-      };
-      request.onsuccess = function (event: Event) {
-        const request = event.target as IDBOpenDBRequest;
-        const db = request.result;
-        resolve(db);
-      };
+
+    request.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      resolve(db);
+    };
+
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      
+      if (!db.objectStoreNames.contains(storeName)) {
+        db.createObjectStore(storeName, { keyPath: "index" });
+      }
+
+      // Create the new object store for versions if it doesn't exist
+      if (!db.objectStoreNames.contains(versionStoreName)) {
+        db.createObjectStore(versionStoreName, { keyPath: "id" });
+      }
     };
   });
 };

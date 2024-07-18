@@ -31,3 +31,10 @@ export interface Chapter {
 export type ResourceRoadmap = {
   chapters: Chapter[];
 };
+
+export interface RoadmapVersion {
+  id: string;
+  name: string;
+  date: string;
+  chapters: Chapter[];
+}

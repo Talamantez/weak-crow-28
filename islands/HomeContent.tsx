@@ -16,6 +16,15 @@ import { PdfPreview } from "./PdfPreview.tsx";
 import NewChapterModal from "./NewChapterModal.tsx";
 import ConfirmationModal from "./ConfirmationModal.tsx";
 
+import { VersionManagementModal } from "./VersionManagementModal.tsx";
+import {
+  deleteVersion,
+  loadVersion,
+  loadVersions,
+  RoadmapVersion,
+  saveVersion,
+} from "./versionManagement.ts";
+
 import {
   Block,
   BlockType,
@@ -731,6 +740,8 @@ const ChapterSection = ({
 };
 
 export default function HomeContent() {
+  const [versions, setVersions] = useState<RoadmapVersion[]>([]);
+  const [isVersionModalOpen, setIsVersionModalOpen] = useState(false);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -899,6 +910,27 @@ export default function HomeContent() {
     window.scrollTo(0, scrollPositionRef.current);
   }, [chapters]);
 
+  useEffect(() => {
+    loadVersions().then(setVersions);
+  }, []);
+
+  const handleSaveVersion = async (name: string) => {
+    await saveVersion(name, chapters);
+    setVersions(await loadVersions());
+  };
+
+  const handleLoadVersion = async (id: string) => {
+    const version = await loadVersion(id);
+    if (version) {
+      setChapters(version.chapters);
+    }
+  };
+
+  const handleDeleteVersion = async (id: string) => {
+    await deleteVersion(id);
+    setVersions(await loadVersions());
+  };
+
   const handlePrint = async () => {
     try {
       const includedChapters = chapters.filter((chapter) => chapter.isIncluded);
@@ -1030,6 +1062,11 @@ export default function HomeContent() {
               styles="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 w-full"
               onClick={handlePrint}
             />
+            <Button
+              text="Manage Versions"
+              onClick={() => setIsVersionModalOpen(true)}
+              styles="bg-purple-500 hover:bg-purple-600 text-white rounded px-4 py-2"
+            />
           </div>
 
           <div className="w-full flex-col justify-between mb-10">
@@ -1125,6 +1162,14 @@ export default function HomeContent() {
         onClose={() => setIsConfirmModalOpen(false)}
         onConfirm={confirmAction}
         message={confirmMessage}
+      />
+      <VersionManagementModal
+        isOpen={isVersionModalOpen}
+        onClose={() => setIsVersionModalOpen(false)}
+        onSave={handleSaveVersion}
+        onLoad={handleLoadVersion}
+        onDelete={handleDeleteVersion}
+        versions={versions}
       />
     </div>
   );
