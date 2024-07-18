@@ -518,7 +518,7 @@ export default function HomeContent() {
             ? (
               <p>
                 No chapters found. Try adding a new chapter or generating
-                example chapters.
+                example chapters. 
               </p>
             )
             : (
@@ -547,6 +547,7 @@ export default function HomeContent() {
         onClose={() => setIsModalOpen(false)}
         onSave={() => {
           setIsModalOpen(false);
+          window.location.reload();
         }}
       />
     </div>

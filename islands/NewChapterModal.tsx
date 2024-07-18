@@ -32,7 +32,7 @@ const NewChapterModal = ({ isOpen, onClose, onSave }) => {
   };
 
   const handleSubmit = async (e: Event) => {
-    alert("Running handleSubmit");
+    // alert("Running handleSubmit");
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
@@ -44,7 +44,7 @@ const NewChapterModal = ({ isOpen, onClose, onSave }) => {
     }
 
     try {
-      alert("Running try block");
+      // alert("Running try block");
       const db = await new Promise<IDBDatabase>((resolve, reject) => {
         const request = indexedDB.open(dbName, dbVersion);
         request.onerror = () => reject(request.error);
@@ -60,7 +60,7 @@ const NewChapterModal = ({ isOpen, onClose, onSave }) => {
         countRequest.onsuccess = () => resolve(countRequest.result);
         countRequest.onerror = () => reject(countRequest.error);
       });
-      alert("Initializing new chapter object")
+      // alert("Initializing new chapter object")
       const newChapter = {
         index: count.toString(), // Use the current count as the new index
         title,
@@ -69,14 +69,14 @@ const NewChapterModal = ({ isOpen, onClose, onSave }) => {
         imageUrl,
       };
 
-      alert("Initialize Add Request Promise")
+      // alert("Initialize Add Request Promise")
 
       await new Promise<void>((resolve, reject) => {
-        alert("Running Promise")
+        // alert("Running Promise")
         const addRequest = objectStore.add(newChapter);
         addRequest.onerror = (event) => {
-          alert("Promise errorer out")
-          alert(event.target.error)
+          // alert("Promise errorer out")
+          // alert(event.target.error)
           console.error("Error details:", event.target.error);
           reject(event.target.error);
         };
