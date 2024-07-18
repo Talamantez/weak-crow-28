@@ -99,8 +99,20 @@ const ChapterComponent = (
   const [activeBlock, setActiveBlock] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [title, setTitle] = useState(chapter.title);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [description, setDescription] = useState(chapter.description);
+
+  const handleTitleChange = (e: Event) => {
+    const newTitle = (e.target as HTMLInputElement).value;
+    setTitle(newTitle);
+  };
+
+  const handleTitleSave = () => {
+    onUpdate({ ...chapter, title });
+    setIsEditingTitle(false);
+  };
 
   useEffect(() => {
     setDescription(chapter.description);
@@ -111,8 +123,8 @@ const ChapterComponent = (
   };
 
   const toggleIsEditingDescription = () => {
-    setIsEditingDescription(!isEditingDescription)
-  }
+    setIsEditingDescription(!isEditingDescription);
+  };
 
   const handleDeleteClick = () => {
     setIsConfirmModalOpen(true);
@@ -167,9 +179,54 @@ const ChapterComponent = (
           >
             {chapter.isIncluded && <IconCheck class="w-4 h-4 text-white" />}
           </button>
-          <h2 class="text-xl font-bold bg-purple-200 text-purple-800 p-2 rounded">
-            {chapter.title}
-          </h2>
+          {isEditingTitle
+            ? (
+              <div>
+                <div class="flex items-center">
+                  <h2 class="text-xl font-bold bg-purple-200 text-purple-800 p-2 rounded mr-2">
+                    {chapter.title}
+                  </h2>
+                  <Button
+                    text=""
+                    onClick={() => setIsEditingTitle(true)}
+                    styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
+                    icon={IconEdit}
+                  />
+                </div>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={handleTitleChange}
+                  class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
+                />
+                <Button
+                  text="Save"
+                  onClick={handleTitleSave}
+                  styles="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-2 mr-2"
+                />
+                <Button
+                  text="Cancel"
+                  onClick={() => {
+                    setIsEditingTitle(false);
+                    setTitle(chapter.title);
+                  }}
+                  styles="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-2"
+                />
+              </div>
+            )
+            : (
+              <div class="flex items-center">
+                <h2 class="text-xl font-bold p-2 rounded mr-2">
+                  {chapter.title}
+                </h2>
+                <Button
+                  text=""
+                  onClick={() => setIsEditingTitle(true)}
+                  styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
+                  icon={IconEdit}
+                />
+              </div>
+            )}
         </div>
         <div class="flex items-center">
           <Button
@@ -192,17 +249,17 @@ const ChapterComponent = (
             {isEditingDescription
               ? (
                 <div>
-                <div class="flex items-center">
-                  <p class="flex-grow bg-purple-200 text-purple-800 p-2 rounded mr-2">
-                    {chapter.description}
-                  </p>
-                  <Button
-                    text=""
-                    onClick={() => toggleIsEditingDescription()}
-                    styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                    icon={IconEdit}
-                  />
-                </div>
+                  <div class="flex items-center">
+                    <p class="flex-grow bg-purple-200 text-purple-800 p-2 rounded mr-2">
+                      {chapter.description}
+                    </p>
+                    <Button
+                      text=""
+                      onClick={() => toggleIsEditingDescription()}
+                      styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
+                      icon={IconEdit}
+                    />
+                  </div>
                   <input
                     type="text"
                     value={description}
