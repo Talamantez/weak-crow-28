@@ -96,8 +96,14 @@ const ChapterComponent = (
   },
 ) => {
   const [activeBlock, setActiveBlock] = useState(null);
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [description, setDescription] = useState(chapter.description);
+
+  useEffect(() => {
+    setDescription(chapter.description);
+  }, [chapter.description]);
 
   const toggleInclude = () => {
     onUpdate({ ...chapter, isIncluded: !chapter.isIncluded });
@@ -119,6 +125,23 @@ const ChapterComponent = (
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
   };
+
+  const handleDescriptionChange = (e: Event) => {
+    const newDescription = (e.target as HTMLTextAreaElement).value;
+    setDescription(newDescription);
+  };
+
+  const handleDescriptionBlur = () => {
+    if (description !== chapter.description) {
+      onUpdate({ ...chapter, description });
+    }
+  };
+
+  const handleDescriptionSave = () => {
+    onUpdate({ ...chapter, description });
+    setIsEditingDescription(false);
+  };
+
 
   return (
     <div class="bg-white rounded-lg shadow-md p-4 mb-4 border-2 border-green-500">
@@ -161,9 +184,13 @@ const ChapterComponent = (
               class="w-full h-32 object-cover rounded-t-lg mb-2"
             />
           )}
-          <p class="mb-4 bg-purple-200 text-purple-800 p-2 rounded">
-            {chapter.description}
-          </p>
+          <textarea
+            value={description}
+            onChange={handleDescriptionChange}
+            onBlur={handleDescriptionBlur}
+            class="w-full p-2 mb-4 bg-purple-200 text-purple-800 rounded resize-vertical"
+            rows="10"
+          />
           {chapter.sections.map((section, index) => (
             <ChapterSection
               key={index}
