@@ -272,6 +272,31 @@ const ChapterComponent = (
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [description, setDescription] = useState(chapter.description);
 
+  const handleImageUpload = async (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const formData = new FormData();
+      formData.append("image", file);
+
+      try {
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (response.ok) {
+          const { url } = await response.json();
+          onUpdate({ ...chapter, imageUrl: url });
+        } else {
+          console.error("Failed to upload image");
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+  };
+
   const handleTitleChange = (e: Event) => {
     const newTitle = (e.target as HTMLInputElement).value;
     setTitle(newTitle);
@@ -410,13 +435,41 @@ const ChapterComponent = (
       </div>
       {!isCollapsed && (
         <>
-          {chapter.imageUrl && (
-            <img
-              src={chapter.imageUrl}
-              alt={chapter.title || "Chapter image"}
-              class="w-full h-32 object-cover rounded-t-lg mb-2"
+          <div class="mb-4">
+            {chapter.imageUrl
+              ? (
+                <div class="relative">
+                  <img
+                    src={chapter.imageUrl}
+                    alt={chapter.title || "Chapter image"}
+                    class="w-full h-32 object-cover rounded-t-lg mb-2"
+                  />
+                  <Button
+                    text="Change Image"
+                    onClick={() =>
+                      document.getElementById(`imageUpload-${chapter.index}`)
+                        ?.click()}
+                    styles="absolute bottom-2 right-2 bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1"
+                  />
+                </div>
+              )
+              : (
+                <Button
+                  text="Add Cover Image"
+                  onClick={() =>
+                    document.getElementById(`imageUpload-${chapter.index}`)
+                      ?.click()}
+                  styles="w-full bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 mb-2"
+                />
+              )}
+            <input
+              id={`imageUpload-${chapter.index}`}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              class="hidden"
             />
-          )}
+          </div>
           <div class="mb-4">
             {isEditingDescription
               ? (
