@@ -426,35 +426,6 @@ export default function HomeContent() {
     };
   };
 
-  const addNewChapter = (newChapter: Chapter) => {
-    const request = indexedDB.open(dbName, dbVersion);
-    request.onerror = (event) => {
-      console.error("Database error:", event.target.error);
-      setLoadError("Failed to open database");
-    };
-    request.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      const transaction = db.transaction(storeName, "readwrite");
-      const objectStore = transaction.objectStore(storeName);
-
-      const addRequest = objectStore.add(newChapter);
-
-      addRequest.onerror = (event) => {
-        console.error("Error adding new chapter:", event.target.error);
-        setLoadError("Failed to add new chapter");
-      };
-
-      addRequest.onsuccess = () => {
-        console.log("New chapter added successfully");
-        setChapters((prevChapters) => [...prevChapters, newChapter]);
-      };
-
-      transaction.oncomplete = () => {
-        db.close();
-      };
-    };
-  };
-
   const clearAllChapters = () => {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(dbName, dbVersion);
