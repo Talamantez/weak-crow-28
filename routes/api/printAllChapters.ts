@@ -528,7 +528,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     isHeader: boolean = false,
     startY: number,
     indent: number = 0,
-    depth: number = 0,
+    depth: number = 0
   ): { page: PDFPage; y: number } {
     const { width } = page.getSize();
     let font;
@@ -554,7 +554,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       text,
       width - 2 * margin - indent,
       fontSize,
-      font,
+      font
     );
     const lineHeight = fontSize * lineSpacing;
     let y = startY;
@@ -582,6 +582,16 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       y -= 10; // Reduced space after header
     }
 
+    if (isHeader && depth !== 0) {
+      page.drawLine({
+        start: { x: margin + indent, y },
+        end: { x: width - margin, y },
+        thickness: 0.5,
+        color: colors.secondary,
+      });
+      // y -= 10; // Reduced space after header
+    }
+
     return { page, y };
   }
   function convertPlainTextToRichText(text: string): RichText {
@@ -601,6 +611,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     richText: RichText | string,
     startY: number,
     indent: number = 0,
+    depth: number
   ): { page: PDFPage; y: number } {
     let y = startY;
 
@@ -627,6 +638,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
               false,
               y,
               indent,
+              depth
             );
           } else if (block.type === "header") {
             result = drawWrappedText(
@@ -637,6 +649,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
               true,
               y,
               indent,
+              depth
             );
           } else if (block.type === "unordered-list-item") {
             result = drawWrappedText(
@@ -647,13 +660,14 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
               false,
               y,
               indent + 10,
+              depth
             );
           } else {
             console.warn(`Unsupported block type: ${block.type}`);
             continue;
           }
           page = result.page;
-          y = result.y; // Reduced space between blocks
+          y = result.y - 10; // Reduced space between blocks
         }
       }
     } else {
@@ -702,6 +716,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       true,
       y,
       indent,
+      depth
     );
     page = result.page;
     y = result.y - titleFontSize * lineSpacing; // Reduced space after title
@@ -710,12 +725,12 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     if (section.description || section.content) {
       addNewPage(30); // Reduced space requirement
       if (section.description) {
-        result = drawRichText(page, section.description, y, indent);
+        result = drawRichText(page, section.description, y, indent, depth);
         page = result.page;
         y = result.y - 20; // Reduced space after description
       }
       if (section.content) {
-        result = drawRichText(page, section.content, y, indent);
+        result = drawRichText(page, section.content, y, indent, depth);
         page = result.page;
         y = result.y - 20; // Reduced space after content
       }
@@ -852,25 +867,14 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       titleFontSize,
       true,
       true,
-      y,
+      y
     );
     currentPage = result.page;
     y = result.y - titleFontSize; // Add extra space after title
 
-    // Draw line under the title
-    // const { width } = currentPage.getSize();
-    // currentPage.drawLine({
-    //   start: { x: margin, y: y + titleFontSize },
-    //   end: { x: width - margin, y: y + titleFontSize },
-    //   thickness: 1,
-    //   color: colors.secondary,
-    // });
-
-    // y -= 20; // Add some space after the line
-
     // Draw chapter description
     if (chapter.description) {
-      result = drawRichText(currentPage, chapter.description, y);
+      result = drawRichText(currentPage, chapter.description, y, 0,0);
       currentPage = result.page;
       y = result.y - 20; // Add extra space after description
     }
