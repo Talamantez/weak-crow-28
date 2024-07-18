@@ -8,6 +8,7 @@ import IconArrowsSort from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/arrow
 import IconChevronDown from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-down.tsx";
 import IconChevronUp from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-up.tsx";
 import IconCheck from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/check.tsx";
+import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
@@ -109,6 +110,10 @@ const ChapterComponent = (
     onUpdate({ ...chapter, isIncluded: !chapter.isIncluded });
   };
 
+  const toggleIsEditingDescription = () => {
+    setIsEditingDescription(!isEditingDescription)
+  }
+
   const handleDeleteClick = () => {
     setIsConfirmModalOpen(true);
   };
@@ -183,29 +188,55 @@ const ChapterComponent = (
               class="w-full h-32 object-cover rounded-t-lg mb-2"
             />
           )}
-          <p class="flex-grow bg-purple-200 text-purple-800 p-2 rounded mr-2">
-            {chapter.description}
-          </p>
-          <div>
-            <input
-              type="text"
-              value={description}
-              onChange={handleDescriptionChange}
-              class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
-            />
-            <Button
-              text="Save"
-              onClick={handleDescriptionSave}
-              styles="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-2 mr-2"
-            />
-            <Button
-              text="Cancel"
-              onClick={() => {
-                setIsEditingDescription(false);
-                setDescription(chapter.description);
-              }}
-              styles="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-2"
-            />
+          <div class="mb-4">
+            {isEditingDescription
+              ? (
+                <div>
+                <div class="flex items-center">
+                  <p class="flex-grow bg-purple-200 text-purple-800 p-2 rounded mr-2">
+                    {chapter.description}
+                  </p>
+                  <Button
+                    text=""
+                    onClick={() => toggleIsEditingDescription()}
+                    styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
+                    icon={IconEdit}
+                  />
+                </div>
+                  <input
+                    type="text"
+                    value={description}
+                    onChange={handleDescriptionChange}
+                    class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
+                  />
+                  <Button
+                    text="Save"
+                    onClick={handleDescriptionSave}
+                    styles="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-2 mr-2"
+                  />
+                  <Button
+                    text="Cancel"
+                    onClick={() => {
+                      setIsEditingDescription(false);
+                      setDescription(chapter.description);
+                    }}
+                    styles="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-2"
+                  />
+                </div>
+              )
+              : (
+                <div class="flex items-center">
+                  <p class="flex-grow p-2 rounded mr-2">
+                    {chapter.description}
+                  </p>
+                  <Button
+                    text=""
+                    onClick={() => setIsEditingDescription(true)}
+                    styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
+                    icon={IconEdit}
+                  />
+                </div>
+              )}
           </div>
           {chapter.sections.map((section, index) => (
             <ChapterSection
