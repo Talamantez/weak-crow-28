@@ -4,6 +4,7 @@ import Footer from "../components/Footer.tsx";
 import Button from "../components/Button.tsx";
 import IconPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/plus.tsx";
 import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
+import IconArrowsSort from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/arrows-sort.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
@@ -279,6 +280,73 @@ export default function HomeContent() {
   const { error } = useLoadChapters(dbName, storeName, dbVersion);
   const scrollPositionRef = useRef(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isReordering, setIsReordering] = useState(false);
+  const [draggedChapter, setDraggedChapter] = useState(null);
+
+  const onDragStart = (e: DragEvent, chapterId: string) => {
+    setDraggedChapter(chapterId);
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", chapterId);
+    }
+  };
+
+  const onDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = "move";
+    }
+  };
+
+  const onDrop = (e: DragEvent, targetChapterId: string) => {
+    e.preventDefault();
+    const sourceChapterId = draggedChapter;
+    if (sourceChapterId !== targetChapterId) {
+      setChapters((prevChapters) => {
+        const newChapters = [...prevChapters];
+        const sourceIndex = newChapters.findIndex((ch) =>
+          ch.index === sourceChapterId
+        );
+        const targetIndex = newChapters.findIndex((ch) =>
+          ch.index === targetChapterId
+        );
+        const [removed] = newChapters.splice(sourceIndex, 1);
+        newChapters.splice(targetIndex, 0, removed);
+        return newChapters;
+      });
+      updateChapterOrder(chapters);
+    }
+    setDraggedChapter(null);
+  };
+
+  const updateChapterOrder = async (newChapters) => {
+    try {
+      const db = await new Promise<IDBDatabase>((resolve, reject) => {
+        const request = indexedDB.open(dbName, dbVersion);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+      });
+
+      const tx = db.transaction(storeName, "readwrite");
+      const store = tx.objectStore(storeName);
+
+      for (let i = 0; i < newChapters.length; i++) {
+        const chapter = newChapters[i];
+        chapter.index = i.toString();
+        await store.put(chapter);
+      }
+
+      await new Promise((resolve, reject) => {
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+      });
+
+      db.close();
+    } catch (error) {
+      console.error("Error updating chapter order:", error);
+      // Handle error (e.g., show an error message to the user)
+    }
+  };
 
   const loadChapters = async () => {
     setLoading(true);
@@ -408,9 +476,10 @@ export default function HomeContent() {
       objectStore.put(updatedChapter);
 
       setChapters((prevChapters) =>
-        prevChapters.map((ch) =>
-          ch.id === updatedChapter.id ? { ...updatedChapter } : ch
-        )
+        prevChapters.map((ch) => {
+          alert(ch.index);
+          return ch.index === updatedChapter.index ? { ...updatedChapter } : ch;
+        })
       );
     };
   };
@@ -422,7 +491,7 @@ export default function HomeContent() {
       const transaction = db.transaction(storeName, "readwrite");
       const objectStore = transaction.objectStore(storeName);
       objectStore.delete(chapterId);
-      setChapters(chapters.filter((ch) => ch.id !== chapterId));
+      setChapters(chapters.filter((ch) => ch.index !== chapterId));
     };
   };
 
@@ -502,6 +571,12 @@ export default function HomeContent() {
                 icon={IconPlus}
               />
               <Button
+                text={isReordering ? "Save Order" : "Reorder Chapters"}
+                onClick={() => setIsReordering(!isReordering)}
+                styles="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
+                icon={IconArrowsSort}
+              />
+              <Button
                 text="Delete All Chapters"
                 onClick={clearAllChapters}
                 styles="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
@@ -518,18 +593,40 @@ export default function HomeContent() {
             ? (
               <p>
                 No chapters found. Try adding a new chapter or generating
-                example chapters. 
+                example chapters.
               </p>
             )
             : (
-              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div
+                className={`w-full grid grid-cols-1 md:grid-cols-2 gap-4 ${
+                  isReordering ? "cursor-move" : ""
+                }`}
+              >
                 {chapters.map((chapter) => (
-                  <ChapterComponent
-                    key={chapter.id || chapter.index}
-                    chapter={chapter}
-                    onUpdate={updateChapter}
-                    onDelete={() => deleteChapter(chapter.id || chapter.index)}
-                  />
+                  <div
+                    key={chapter.index}
+                    draggable={isReordering}
+                    onDragStart={(e) =>
+                      isReordering && onDragStart(e, chapter.index)}
+                    onDragOver={(e) => isReordering && onDragOver(e)}
+                    onDrop={(e) => isReordering && onDrop(e, chapter.index)}
+                    className={`relative ${
+                      isReordering
+                        ? "border-2 border-dashed border-gray-400 p-2"
+                        : ""
+                    }`}
+                  >
+                    {isReordering && (
+                      <div className="absolute top-0 left-0 right-0 bg-gray-200 text-center text-sm py-1">
+                        Drag to reorder
+                      </div>
+                    )}
+                    <ChapterComponent
+                      chapter={chapter}
+                      onUpdate={updateChapter}
+                      onDelete={() => deleteChapter(chapter.index)}
+                    />
+                  </div>
                 ))}
               </div>
             )}
