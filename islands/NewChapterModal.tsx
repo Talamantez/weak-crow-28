@@ -67,6 +67,7 @@ const NewChapterModal = ({ isOpen, onClose, onSave }) => {
         description, // Store description as a string
         sections: [],
         imageUrl,
+        isIncluded: true,
       };
 
       // alert("Initialize Add Request Promise")

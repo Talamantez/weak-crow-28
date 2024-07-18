@@ -78,6 +78,7 @@ export const generateChaptersFromJSON = async (dbName: string, storeName: string
         description: chapter.description.blocks[0].text,
         sections: chapter.sections,
         imageUrl: chapter.imageUrl,
+        isIncluded: true,
       };
       await new Promise<void>((resolve, reject) => {
         const request = objectStore.add(chapterData);

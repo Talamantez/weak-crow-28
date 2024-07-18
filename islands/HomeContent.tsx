@@ -7,6 +7,7 @@ import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import IconArrowsSort from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/arrows-sort.tsx";
 import IconChevronDown from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-down.tsx";
 import IconChevronUp from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-up.tsx";
+import IconCheck from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/check.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
@@ -95,8 +96,12 @@ const ChapterComponent = (
   },
 ) => {
   const [activeBlock, setActiveBlock] = useState(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  const toggleInclude = () => {
+    onUpdate({ ...chapter, isIncluded: !chapter.isIncluded });
+  };
 
   const handleDeleteClick = () => {
     setIsConfirmModalOpen(true);
@@ -125,6 +130,16 @@ const ChapterComponent = (
             styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 mr-2"
             icon={isCollapsed ? IconChevronDown : IconChevronUp}
           />
+          <button
+            onClick={toggleInclude}
+            class={`mr-2 w-6 h-6 flex items-center justify-center border-2 rounded ${
+              chapter.isIncluded
+                ? "bg-blue-500 border-blue-500"
+                : "border-gray-400"
+            }`}
+          >
+            {chapter.isIncluded && <IconCheck class="w-4 h-4 text-white" />}
+          </button>
           <h2 class="text-xl font-bold bg-purple-200 text-purple-800 p-2 rounded">
             {chapter.title}
           </h2>
@@ -477,12 +492,13 @@ export default function HomeContent() {
 
   const handlePrint = async () => {
     try {
+      const includedChapters = chapters.filter((chapter) => chapter.isIncluded);
       const response = await fetch("/api/generate-pdf", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(chapters),
+        body: JSON.stringify(includedChapters),
       });
 
       if (response.ok) {
