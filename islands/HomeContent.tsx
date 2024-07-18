@@ -122,6 +122,9 @@ const ChapterComponent = (
     onUpdate({ ...chapter, isIncluded: !chapter.isIncluded });
   };
 
+  const toggleIsEditingTitle = () => {
+    setIsEditingTitle(!isEditingTitle);
+  };
   const toggleIsEditingDescription = () => {
     setIsEditingDescription(!isEditingDescription);
   };
@@ -188,7 +191,7 @@ const ChapterComponent = (
                   </h2>
                   <Button
                     text=""
-                    onClick={() => setIsEditingTitle(true)}
+                    onClick={() => toggleIsEditingTitle()}
                     styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
                     icon={IconEdit}
                   />
@@ -221,7 +224,7 @@ const ChapterComponent = (
                 </h2>
                 <Button
                   text=""
-                  onClick={() => setIsEditingTitle(true)}
+                  onClick={() => toggleIsEditingTitle()}
                   styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
                   icon={IconEdit}
                 />
