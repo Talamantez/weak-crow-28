@@ -142,7 +142,6 @@ const ChapterComponent = (
     setIsEditingDescription(false);
   };
 
-
   return (
     <div class="bg-white rounded-lg shadow-md p-4 mb-4 border-2 border-green-500">
       <div class="flex items-center justify-between mb-4">
@@ -184,13 +183,30 @@ const ChapterComponent = (
               class="w-full h-32 object-cover rounded-t-lg mb-2"
             />
           )}
-          <textarea
-            value={description}
-            onChange={handleDescriptionChange}
-            onBlur={handleDescriptionBlur}
-            class="w-full p-2 mb-4 bg-purple-200 text-purple-800 rounded resize-vertical"
-            rows="10"
-          />
+          <p class="flex-grow bg-purple-200 text-purple-800 p-2 rounded mr-2">
+            {chapter.description}
+          </p>
+          <div>
+            <input
+              type="text"
+              value={description}
+              onChange={handleDescriptionChange}
+              class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
+            />
+            <Button
+              text="Save"
+              onClick={handleDescriptionSave}
+              styles="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-2 mr-2"
+            />
+            <Button
+              text="Cancel"
+              onClick={() => {
+                setIsEditingDescription(false);
+                setDescription(chapter.description);
+              }}
+              styles="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-2"
+            />
+          </div>
           {chapter.sections.map((section, index) => (
             <ChapterSection
               key={index}
