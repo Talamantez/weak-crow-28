@@ -5,11 +5,14 @@ import Button from "../components/Button.tsx";
 import IconPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/plus.tsx";
 import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import IconArrowsSort from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/arrows-sort.tsx";
+import IconChevronDown from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-down.tsx";
+import IconChevronUp from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-up.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
 import { PdfPreview } from "./PdfPreview.tsx";
 import NewChapterModal from "./NewChapterModal.tsx";
+import ConfirmationModal from "./ConfirmationModal.tsx";
 
 import {
   Block,
@@ -92,6 +95,12 @@ const ChapterComponent = (
   },
 ) => {
   const [activeBlock, setActiveBlock] = useState(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  const handleDeleteClick = () => {
+    setIsConfirmModalOpen(true);
+  };
 
   const addSection = () => {
     const newSection: Section = {
@@ -102,48 +111,72 @@ const ChapterComponent = (
     onUpdate({ ...chapter, sections: updatedSections });
   };
 
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   return (
     <div class="bg-white rounded-lg shadow-md p-4 mb-4 border-2 border-green-500">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-bold bg-purple-200 text-purple-800 p-2 rounded">
-          {chapter.title}
-        </h2>
-        <Button
-          text="Delete Chapter"
-          onClick={onDelete}
-          styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1"
-        />
+        <div class="flex items-center">
+          <Button
+            text=""
+            onClick={toggleCollapse}
+            styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 mr-2"
+            icon={isCollapsed ? IconChevronDown : IconChevronUp}
+          />
+          <h2 class="text-xl font-bold bg-purple-200 text-purple-800 p-2 rounded">
+            {chapter.title}
+          </h2>
+        </div>
+        <div class="flex items-center">
+          <Button
+            text="Delete Chapter"
+            onClick={handleDeleteClick}
+            styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1"
+          />
+        </div>
       </div>
-      {chapter.imageUrl && (
-        <img
-          src={chapter.imageUrl}
-          alt={chapter.title || "Chapter image"}
-          class="w-full h-32 object-cover rounded-t-lg mb-2"
-        />
+      {!isCollapsed && (
+        <>
+          {chapter.imageUrl && (
+            <img
+              src={chapter.imageUrl}
+              alt={chapter.title || "Chapter image"}
+              class="w-full h-32 object-cover rounded-t-lg mb-2"
+            />
+          )}
+          <p class="mb-4 bg-purple-200 text-purple-800 p-2 rounded">
+            {chapter.description}
+          </p>
+          {chapter.sections.map((section, index) => (
+            <ChapterSection
+              key={index}
+              section={section}
+              onUpdate={(updatedSection) => {
+                const updatedSections = [...chapter.sections];
+                updatedSections[index] = updatedSection;
+                onUpdate({ ...chapter, sections: updatedSections });
+              }}
+              onDelete={() => {
+                const updatedSections = chapter.sections.filter((_, i) =>
+                  i !== index
+                );
+                onUpdate({ ...chapter, sections: updatedSections });
+              }}
+              activeBlock={activeBlock}
+              setActiveBlock={setActiveBlock}
+            />
+          ))}
+          <AddBlockButton onAdd={addSection} text="Add Section" />
+        </>
       )}
-      <p class="mb-4 bg-purple-200 text-purple-800 p-2 rounded">
-        {chapter.description}
-      </p>
-      {chapter.sections.map((section, index) => (
-        <ChapterSection
-          key={index}
-          section={section}
-          onUpdate={(updatedSection) => {
-            const updatedSections = [...chapter.sections];
-            updatedSections[index] = updatedSection;
-            onUpdate({ ...chapter, sections: updatedSections });
-          }}
-          onDelete={() => {
-            const updatedSections = chapter.sections.filter((_, i) =>
-              i !== index
-            );
-            onUpdate({ ...chapter, sections: updatedSections });
-          }}
-          activeBlock={activeBlock}
-          setActiveBlock={setActiveBlock}
-        />
-      ))}
-      <AddBlockButton onAdd={addSection} text="Add Section" />
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={onDelete}
+        message={`Are you sure you want to delete the chapter "${chapter.title}"? This action cannot be undone.`}
+      />
     </div>
   );
 };
@@ -282,6 +315,22 @@ export default function HomeContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReordering, setIsReordering] = useState(false);
   const [draggedChapter, setDraggedChapter] = useState(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
+  const [confirmMessage, setConfirmMessage] = useState("");
+
+  const showConfirmModal = (message: string, action: () => void) => {
+    setConfirmMessage(message);
+    setConfirmAction(() => action);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleDeleteAllChapters = () => {
+    showConfirmModal(
+      "Are you sure you want to delete all chapters? This action cannot be undone.",
+      clearAllChapters,
+    );
+  };
 
   const onDragStart = (e: DragEvent, chapterId: string) => {
     setDraggedChapter(chapterId);
@@ -477,7 +526,6 @@ export default function HomeContent() {
 
       setChapters((prevChapters) =>
         prevChapters.map((ch) => {
-          alert(ch.index);
           return ch.index === updatedChapter.index ? { ...updatedChapter } : ch;
         })
       );
@@ -578,7 +626,7 @@ export default function HomeContent() {
               />
               <Button
                 text="Delete All Chapters"
-                onClick={clearAllChapters}
+                onClick={handleDeleteAllChapters}
                 styles="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
                 icon={IconX}
               />
@@ -646,6 +694,12 @@ export default function HomeContent() {
           setIsModalOpen(false);
           window.location.reload();
         }}
+      />
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={confirmAction}
+        message={confirmMessage}
       />
     </div>
   );
