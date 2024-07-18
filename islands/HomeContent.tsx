@@ -1,37 +1,72 @@
-import { useState, useEffect, useRef } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
+import { memo } from "preact/compat";
 import { Head } from "$fresh/runtime.ts";
 import Footer from "../components/Footer.tsx";
 import Button from "../components/Button.tsx";
 import IconPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/plus.tsx";
 import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
-import { dbName, storeName, dbVersion } from "../util/dbInfo.ts";
+import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
 import { PdfPreview } from "./PdfPreview.tsx";
 
-import { Chapter, Section, Content, RichText, Block, BlockType } from "./types.ts";
+import {
+  Block,
+  BlockType,
+  Chapter,
+  Content,
+  RichText,
+  Section,
+} from "./types.ts";
 
-const renderBlock = (block: Block, onDelete: () => void) => {
+const RenderBlock = ({ block, onDelete, isActive, setActiveBlock }) => {
+  const baseClasses = "mb-2 p-2 rounded transition-all duration-300";
+  const activeClasses = isActive ? "border-4 border-yellow-400 shadow-lg" : "";
+  const displayClasses = "bg-purple-200 text-purple-800"; // Dramatic color for debugging
+
   switch (block.type) {
     case "paragraph":
       return (
-        <div className="flex items-center">
-          <p className="mb-2 flex-grow">{block.text}</p>
-          <Button text="Delete" onClick={onDelete} styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2" />
+        <div
+          class={`flex items-center ${baseClasses} ${activeClasses}`}
+          onClick={() => setActiveBlock(block.id)}
+        >
+          <p class={`flex-grow ${displayClasses}`}>{block.text}</p>
+          <Button
+            text="Delete"
+            onClick={onDelete}
+            styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2"
+          />
         </div>
       );
     case "header":
       return (
-        <div className="flex items-center">
-          <h3 className="text-xl font-bold mb-2 flex-grow">{block.text}</h3>
-          <Button text="Delete" onClick={onDelete} styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2" />
+        <div
+          class={`flex items-center ${baseClasses} ${activeClasses}`}
+          onClick={() => setActiveBlock(block.id)}
+        >
+          <h3 class={`text-xl font-bold flex-grow ${displayClasses}`}>
+            {block.text}
+          </h3>
+          <Button
+            text="Delete"
+            onClick={onDelete}
+            styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2"
+          />
         </div>
       );
     case "unordered-list-item":
       return (
-        <div className="flex items-center">
-          <li className="flex-grow">{block.text}</li>
-          <Button text="Delete" onClick={onDelete} styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2" />
+        <div
+          class={`flex items-center ${baseClasses} ${activeClasses}`}
+          onClick={() => setActiveBlock(block.id)}
+        >
+          <li class={`flex-grow ${displayClasses}`}>{block.text}</li>
+          <Button
+            text="Delete"
+            onClick={onDelete}
+            styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2"
+          />
         </div>
       );
     default:
@@ -48,23 +83,47 @@ const AddBlockButton = ({ onAdd, text }) => (
   />
 );
 
-const ChapterComponent = ({ chapter, onUpdate, onDelete }: { chapter: Chapter, onUpdate: (updatedChapter: Chapter) => void, onDelete: () => void }) => {
+const ChapterComponent = (
+  { chapter, onUpdate, onDelete }: {
+    chapter: Chapter;
+    onUpdate: (updatedChapter: Chapter) => void;
+    onDelete: () => void;
+  },
+) => {
+  const [activeBlock, setActiveBlock] = useState(null);
+
   const addSection = () => {
-    const newSection: Section = { title: "New Section", description: { blocks: [] } };
+    const newSection: Section = {
+      title: "New Section",
+      description: { blocks: [] },
+    };
     const updatedSections = [...chapter.sections, newSection];
     onUpdate({ ...chapter, sections: updatedSections });
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">{chapter.title}</h2>
-        <Button text="Delete Chapter" onClick={onDelete} styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1" />
+    <div class="bg-white rounded-lg shadow-md p-4 mb-4 border-2 border-green-500">
+      {/* Added border for debugging */}
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold bg-purple-200 text-purple-800 p-2 rounded">
+          {chapter.title}
+        </h2>
+        <Button
+          text="Delete Chapter"
+          onClick={onDelete}
+          styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1"
+        />
       </div>
       {chapter.imageUrl && (
-        <img src={chapter.imageUrl} alt={chapter.title || 'Chapter image'} className="w-full h-32 object-cover rounded-t-lg mb-2" />
+        <img
+          src={chapter.imageUrl}
+          alt={chapter.title || "Chapter image"}
+          class="w-full h-32 object-cover rounded-t-lg mb-2"
+        />
       )}
-      <p className="mb-4">{chapter.description}</p>
+      <p class="mb-4 bg-purple-200 text-purple-800 p-2 rounded">
+        {chapter.description}
+      </p>
       {chapter.sections.map((section, index) => (
         <ChapterSection
           key={index}
@@ -75,19 +134,38 @@ const ChapterComponent = ({ chapter, onUpdate, onDelete }: { chapter: Chapter, o
             onUpdate({ ...chapter, sections: updatedSections });
           }}
           onDelete={() => {
-            const updatedSections = chapter.sections.filter((_, i) => i !== index);
+            const updatedSections = chapter.sections.filter((_, i) =>
+              i !== index
+            );
             onUpdate({ ...chapter, sections: updatedSections });
           }}
+          activeBlock={activeBlock}
+          setActiveBlock={setActiveBlock}
         />
       ))}
       <AddBlockButton onAdd={addSection} text="Add Section" />
     </div>
   );
 };
-
 // Update the ChapterSection component
-const ChapterSection = ({ section, depth = 1, onUpdate, onDelete }: { section: Section, depth?: number, onUpdate: (updatedSection: Section) => void, onDelete: () => void }) => {
-  const HeadingTag = `h${Math.min(depth + 2, 6)}` as keyof JSX.IntrinsicElements;
+const ChapterSection = ({
+  section,
+  depth = 1,
+  onUpdate,
+  onDelete,
+  activeBlock,
+  setActiveBlock,
+}: {
+  section: Section;
+  depth?: number;
+  onUpdate: (updatedSection: Section) => void;
+  onDelete: () => void;
+  activeBlock: string | null;
+  setActiveBlock: (id: string | null) => void;
+}) => {
+  const HeadingTag = `h${
+    Math.min(depth + 2, 6)
+  }` as keyof JSX.IntrinsicElements;
 
   const addBlock = (type: string) => {
     const newBlock: Block = { type, text: "" };
@@ -107,38 +185,69 @@ const ChapterSection = ({ section, depth = 1, onUpdate, onDelete }: { section: S
 
   const deleteBlock = (index: number) => {
     if (section.description) {
-      const updatedBlocks = section.description.blocks.filter((_, i) => i !== index);
+      const updatedBlocks = section.description.blocks.filter((_, i) =>
+        i !== index
+      );
       onUpdate({ ...section, description: { blocks: updatedBlocks } });
     }
   };
 
   const addSubsection = () => {
-    const newSubsection: Section = { title: "New Subsection", description: { blocks: [] } };
-    const updatedSections = section.sections ? [...section.sections, newSubsection] : [newSubsection];
+    const newSubsection: Section = {
+      title: "New Subsection",
+      description: { blocks: [] },
+    };
+    const updatedSections = section.sections
+      ? [...section.sections, newSubsection]
+      : [newSubsection];
     onUpdate({ ...section, sections: updatedSections });
   };
 
   return (
-    <div className={`ml-${depth * 4} border-l-2 border-gray-200 pl-4 my-4`}>
-      <div className="flex items-center justify-between">
-        <HeadingTag className="font-bold mt-2 text-lg">{section.title}</HeadingTag>
-        <Button text="Delete Section" onClick={onDelete} styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1" />
+    <div class={`ml-${depth * 4} border-l-2 border-blue-500 pl-4 my-4`}>
+      {/* Changed border color for visibility */}
+      <div class="flex items-center justify-between">
+        <HeadingTag class="font-bold mt-2 text-lg bg-purple-200 text-purple-800 p-2 rounded">
+          {section.title}
+        </HeadingTag>
+        <Button
+          text="Delete Section"
+          onClick={onDelete}
+          styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1"
+        />
       </div>
-      {section.description && section.description.blocks.map((block, index) => (
-        <div key={index}>
-          {renderBlock(block, () => deleteBlock(index))}
-          <input
-            type="text"
-            value={block.text}
-            onChange={(e) => updateBlock(index, { ...block, text: e.target.value })}
-            className="w-full p-2 border rounded mb-2"
-          />
-        </div>
-      ))}
-      <div className="flex flex-wrap">
-        <AddBlockButton onAdd={() => addBlock("paragraph")} text="Add Paragraph" />
+      {section.description &&
+        section.description.blocks.map((block, index) => (
+          <div key={index}>
+            <RenderBlock
+              block={block}
+              onDelete={() => deleteBlock(index)}
+              isActive={activeBlock === block.id}
+              setActiveBlock={setActiveBlock}
+            />
+            <input
+              type="text"
+              value={block.text}
+              onChange={(e) =>
+                updateBlock(index, {
+                  ...block,
+                  text: (e.target as HTMLInputElement).value,
+                })}
+              class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
+              onFocus={() => setActiveBlock(block.id)}
+            />
+          </div>
+        ))}
+      <div class="flex flex-wrap">
+        <AddBlockButton
+          onAdd={() => addBlock("paragraph")}
+          text="Add Paragraph"
+        />
         <AddBlockButton onAdd={() => addBlock("header")} text="Add Header" />
-        <AddBlockButton onAdd={() => addBlock("unordered-list-item")} text="Add List Item" />
+        <AddBlockButton
+          onAdd={() => addBlock("unordered-list-item")}
+          text="Add List Item"
+        />
         <AddBlockButton onAdd={addSubsection} text="Add Subsection" />
       </div>
       {section.sections?.map((subSection, index) => (
@@ -152,9 +261,13 @@ const ChapterSection = ({ section, depth = 1, onUpdate, onDelete }: { section: S
             onUpdate({ ...section, sections: updatedSections });
           }}
           onDelete={() => {
-            const updatedSections = (section.sections || []).filter((_, i) => i !== index);
+            const updatedSections = (section.sections || []).filter((_, i) =>
+              i !== index
+            );
             onUpdate({ ...section, sections: updatedSections });
           }}
+          activeBlock={activeBlock}
+          setActiveBlock={setActiveBlock}
         />
       ))}
     </div>
@@ -256,8 +369,12 @@ export default function HomeContent() {
       const transaction = db.transaction(storeName, "readwrite");
       const objectStore = transaction.objectStore(storeName);
       objectStore.put(updatedChapter);
-      setChapters(chapters.map(ch => ch.id === updatedChapter.id ? updatedChapter : ch));
-      // globalThis.location.reload();
+
+      setChapters((prevChapters) =>
+        prevChapters.map((ch) =>
+          ch.id === updatedChapter.id ? { ...updatedChapter } : ch
+        )
+      );
     };
   };
 
@@ -268,7 +385,7 @@ export default function HomeContent() {
       const transaction = db.transaction(storeName, "readwrite");
       const objectStore = transaction.objectStore(storeName);
       objectStore.delete(chapterId);
-      setChapters(chapters.filter(ch => ch.id !== chapterId));
+      setChapters(chapters.filter((ch) => ch.id !== chapterId));
     };
   };
 
@@ -277,7 +394,7 @@ export default function HomeContent() {
       id: Date.now().toString(),
       title: "New Chapter",
       sections: [],
-      description: { blocks: [] }
+      description: { blocks: [] },
     };
     const request = indexedDB.open(dbName, dbVersion);
     request.onsuccess = (event) => {
@@ -338,7 +455,9 @@ export default function HomeContent() {
         <div className="flex-grow mr-4">
           <div className="bg-gray-800 text-white w-full rounded-lg p-8 mb-10">
             <h1 className="text-3xl font-bold mb-4">Resource Roadmap</h1>
-            <p className="mb-4">Welcome to Your Local Resource Publication Creator!</p>
+            <p className="mb-4">
+              Welcome to Your Local Resource Publication Creator!
+            </p>
             <Button
               text="Generate Example Chapters"
               styles="bg-white text-gray-800 rounded px-4 py-2 mb-2 w-full"
@@ -350,9 +469,11 @@ export default function HomeContent() {
               onClick={handlePrint}
             />
           </div>
-          
+
           <div className="w-full flex-col justify-between mb-10">
-            <h2 className="font-bold text-2xl w-3/5 text-left mb-4">Chapters</h2>
+            <h2 className="font-bold text-2xl w-3/5 text-left mb-4">
+              Chapters
+            </h2>
             <div className="flex flex-col sm:flex-row justify-between w-full">
               <Button
                 text="Add New Chapter"
@@ -368,29 +489,34 @@ export default function HomeContent() {
               />
             </div>
           </div>
-          
-          {loading ? (
-            <p>Loading chapters...</p>
-          ) : loadError ? (
-            <p className="text-red-500">Error: {loadError}</p>
-          ) : chapters.length === 0 ? (
-            <p>No chapters found. Try adding a new chapter or generating example chapters.</p>
-          ) : (
-            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-              {chapters.map(chapter => (
-                <ChapterComponent
-                  key={chapter.id || chapter.index}
-                  chapter={chapter}
-                  onUpdate={updateChapter}
-                  onDelete={() => deleteChapter(chapter.id || chapter.index)}
-                />
-              ))}
-            </div>
-          )}
-          
+
+          {loading
+            ? <p>Loading chapters...</p>
+            : loadError
+            ? <p className="text-red-500">Error: {loadError}</p>
+            : chapters.length === 0
+            ? (
+              <p>
+                No chapters found. Try adding a new chapter or generating
+                example chapters.
+              </p>
+            )
+            : (
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+                {chapters.map((chapter) => (
+                  <ChapterComponent
+                    key={chapter.id || chapter.index}
+                    chapter={chapter}
+                    onUpdate={updateChapter}
+                    onDelete={() => deleteChapter(chapter.id || chapter.index)}
+                  />
+                ))}
+              </div>
+            )}
+
           <Footer />
         </div>
-        
+
         <div className="w-1/3 sticky top-0">
           <h2 className="font-bold text-2xl mb-4">PDF Preview</h2>
           <PdfPreview chapters={chapters} />
