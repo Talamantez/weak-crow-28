@@ -80,7 +80,6 @@ const RenderBlock = (
                   styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2"
                 />
               </div>
-              HI
               <input
                 type="text"
                 value={block.text}
@@ -147,7 +146,6 @@ const RenderBlock = (
                   styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2"
                 />
               </div>
-              HI
               <input
                 type="text"
                 value={block.text}
@@ -214,7 +212,6 @@ const RenderBlock = (
                   styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2"
                 />
               </div>
-              HI
               <input
                 type="text"
                 value={block.text}
