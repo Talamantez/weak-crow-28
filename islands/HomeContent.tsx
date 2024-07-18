@@ -274,7 +274,7 @@ const ChapterComponent = (
   },
 ) => {
   const [activeBlock, setActiveBlock] = useState(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState(chapter.title);
@@ -1065,7 +1065,7 @@ export default function HomeContent() {
             <Button
               text="Manage Versions"
               onClick={() => setIsVersionModalOpen(true)}
-              styles="bg-purple-500 hover:bg-purple-600 text-white rounded px-4 py-2"
+              styles="bg-purple-500 hover:bg-purple-600 text-white rounded px-4 py-2 my-2"
             />
           </div>
 
@@ -1108,7 +1108,7 @@ export default function HomeContent() {
             )
             : (
               <div
-                className={`w-full grid grid-cols-1 md:grid-cols-2 gap-4 ${
+                className={`w-full grid grid-cols-1 lg:grid-cols-2 gap-4 ${
                   isReordering ? "cursor-move" : ""
                 }`}
               >
