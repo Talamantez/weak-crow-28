@@ -45,8 +45,13 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+  const timesRomanBoldFont = await pdfDoc.embedFont(
+    StandardFonts.TimesRomanBold,
+  );
 
   const margin = 50;
+  const lineSpacing = 1.3;
+
   let pageCount = 0;
   let contentStartPage = 0;
   const pageToContentMap = new Map();
@@ -522,44 +527,61 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     isBold: boolean = false,
     isHeader: boolean = false,
     startY: number,
+    indent: number = 0,
+    depth: number = 0,
   ): { page: PDFPage; y: number } {
-    // console.log("\n");
-    // console.log("Drawing wrapped text for text: " + text);
-    // console.log("n");
-
-    // console.log(page)
     const { width } = page.getSize();
-    const font = isHeader
-      ? timesRomanFont
-      : isBold
-      ? helveticaBoldFont
-      : helveticaFont;
-    const lines = splitTextIntoLines(text, width - 2 * margin, fontSize, font);
-    const lineHeight = fontSize * 1.4;
+    let font;
+    let textColor;
+
+    if (isHeader) {
+      if (depth === 0) {
+        font = timesRomanBoldFont;
+        textColor = colors.primary;
+      } else if (depth === 1) {
+        font = helveticaBoldFont;
+        textColor = colors.text;
+      } else {
+        font = helveticaFont;
+        textColor = rgb(0.4, 0.4, 0.4); // Lighter gray for deeper headings
+      }
+    } else {
+      font = isBold ? helveticaBoldFont : helveticaFont;
+      textColor = colors.text;
+    }
+
+    const lines = splitTextIntoLines(
+      text,
+      width - 2 * margin - indent,
+      fontSize,
+      font,
+    );
+    const lineHeight = fontSize * lineSpacing;
     let y = startY;
-  
+
     lines.forEach((line, index) => {
       page.drawText(line, {
-        x: margin,
+        x: margin + indent,
         y: y - lineHeight * index,
         size: fontSize,
         font: font,
-        color: isHeader ? colors.primary : colors.text,
+        color: textColor,
       });
     });
-  
+
     y -= lineHeight * lines.length;
-  
-    if (isHeader) {
+
+    // Only draw the line for chapter headings (depth === 0)
+    if (isHeader && depth === 0) {
       page.drawLine({
-        start: { x: margin, y: y - 5 },
-        end: { x: width - margin, y: y - 5 },
+        start: { x: margin + indent, y },
+        end: { x: width - margin, y },
         thickness: 0.5,
         color: colors.secondary,
       });
-      y -= 10; // Extra space after header
+      y -= 10; // Reduced space after header
     }
-  
+
     return { page, y };
   }
   function convertPlainTextToRichText(text: string): RichText {
@@ -577,15 +599,18 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   function drawRichText(
     page: PDFPage,
     richText: RichText | string,
-    startY: number
+    startY: number,
+    indent: number = 0,
   ): { page: PDFPage; y: number } {
     let y = startY;
-  
+
     if (typeof richText === "string") {
       richText = convertPlainTextToRichText(richText);
     }
-  
-    if (richText && typeof richText === "object" && Array.isArray(richText.blocks)) {
+
+    if (
+      richText && typeof richText === "object" && Array.isArray(richText.blocks)
+    ) {
       for (const block of richText.blocks) {
         if (block.type) {
           let result;
@@ -594,23 +619,49 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
             y = page.getHeight() - margin;
           }
           if (block.type === "paragraph") {
-            result = drawWrappedText(page, block.text, 11, false, false, y);
+            result = drawWrappedText(
+              page,
+              block.text,
+              11,
+              false,
+              false,
+              y,
+              indent,
+            );
           } else if (block.type === "header") {
-            result = drawWrappedText(page, block.text, 16, true, true, y);
+            result = drawWrappedText(
+              page,
+              block.text,
+              14,
+              true,
+              true,
+              y,
+              indent,
+            );
           } else if (block.type === "unordered-list-item") {
-            result = drawWrappedText(page, `• ${block.text}`, 11, false, false, y);
+            result = drawWrappedText(
+              page,
+              `• ${block.text}`,
+              11,
+              false,
+              false,
+              y,
+              indent + 10,
+            );
           } else {
             console.warn(`Unsupported block type: ${block.type}`);
             continue;
           }
           page = result.page;
-          y = result.y - 20; // Add some space between blocks
+          y = result.y; // Reduced space between blocks
         }
       }
     } else {
-      console.warn("Invalid input for drawRichText. Expected RichText object or string.");
+      console.warn(
+        "Invalid input for drawRichText. Expected RichText object or string.",
+      );
     }
-  
+
     return { page, y };
   }
 
@@ -637,8 +688,11 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     const indent = depth * 20; // Increase indentation for nested subsections
     const titleFontSize = Math.max(18 - depth * 2, 12); // Decrease font size for deeper subsections, but not below 12
 
-    addNewPage(titleFontSize * 2 + 40); // Ensure enough space for title and some content
+    addNewPage(titleFontSize * lineSpacing + 10);
 
+    // Draw section title with appropriate font and indentation
+    // let titleFont = depth === 0 ? timesRomanBoldFont : helveticaBoldFont;
+    let titleFont = depth === 0 ? timesRomanFont : helveticaBoldFont;
     // Draw section title
     let result = drawWrappedText(
       page,
@@ -647,32 +701,33 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       true,
       true,
       y,
+      indent,
     );
     page = result.page;
-    y = result.y - 60; // Add space after title
+    y = result.y - titleFontSize * lineSpacing; // Reduced space after title
 
     // Draw section description or content
     if (section.description || section.content) {
-      addNewPage(100);
+      addNewPage(30); // Reduced space requirement
       if (section.description) {
-        result = drawRichText(page, section.description, y);
+        result = drawRichText(page, section.description, y, indent);
         page = result.page;
-        y = result.y - 80;
+        y = result.y - 20; // Reduced space after description
       }
       if (section.content) {
-        result = drawRichText(page, section.content, y);
+        result = drawRichText(page, section.content, y, indent);
         page = result.page;
-        y = result.y - 80;
+        y = result.y - 20; // Reduced space after content
       }
     }
 
     // Draw subsections
     if (section.sections) {
       for (const subSection of section.sections) {
-        addNewPage(100);
+        addNewPage(50); // Reduced space requirement
         result = drawSection(page, subSection, depth + 1, y, addNewPage);
         page = result.page;
-        y = result.y - 20;
+        y = result.y; // Reduced space between subsections
       }
     }
 
@@ -800,33 +855,32 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       y,
     );
     currentPage = result.page;
-    y = result.y - titleFontSize * 2; // Add extra space after title
+    y = result.y - titleFontSize; // Add extra space after title
 
     // Draw line under the title
-    const { width } = currentPage.getSize();
-    currentPage.drawLine({
-      start: { x: margin, y: y + titleFontSize },
-      end: { x: width - margin, y: y + titleFontSize },
-      thickness: 1,
-      color: colors.secondary,
-    });
+    // const { width } = currentPage.getSize();
+    // currentPage.drawLine({
+    //   start: { x: margin, y: y + titleFontSize },
+    //   end: { x: width - margin, y: y + titleFontSize },
+    //   thickness: 1,
+    //   color: colors.secondary,
+    // });
 
-    y -= 20; // Add some space after the line
+    // y -= 20; // Add some space after the line
 
     // Draw chapter description
     if (chapter.description) {
-      addNewPage(100); // Ensure there's enough space for the description
       result = drawRichText(currentPage, chapter.description, y);
       currentPage = result.page;
-      y = result.y - 100; // Add extra space after description
+      y = result.y - 20; // Add extra space after description
     }
 
     // Draw sections
     for (const section of chapter.sections) {
-      addNewPage(100); // Ensure there's enough space for each section
+      addNewPage(30); // Ensure there's enough space for each section
       result = drawSection(currentPage, section, 0, y, addNewPage);
       currentPage = result.page;
-      y = result.y - 30; // Add extra space between sections
+      y = result.y - 20; // Add extra space between sections
     }
 
     return pages;
