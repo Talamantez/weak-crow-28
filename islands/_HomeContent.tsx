@@ -8,6 +8,7 @@ import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
 import { PdfPreview } from "./PdfPreview.tsx";
+import NewChapterModal from "./NewChapterModal.tsx";
 
 import {
   Block,
@@ -21,7 +22,7 @@ import {
 const RenderBlock = ({ block, onDelete, isActive, setActiveBlock }) => {
   const baseClasses = "mb-2 p-2 rounded transition-all duration-300";
   const activeClasses = isActive ? "border-4 border-yellow-400 shadow-lg" : "";
-  const displayClasses = "bg-purple-200 text-purple-800"; // Dramatic color for debugging
+  const displayClasses = "bg-purple-200 text-purple-800";
 
   switch (block.type) {
     case "paragraph":
@@ -102,7 +103,6 @@ const ChapterComponent = (
 
   return (
     <div class="bg-white rounded-lg shadow-md p-4 mb-4 border-2 border-green-500">
-      {/* Added border for debugging */}
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-bold bg-purple-200 text-purple-800 p-2 rounded">
           {chapter.title}
@@ -146,7 +146,7 @@ const ChapterComponent = (
     </div>
   );
 };
-// Update the ChapterSection component
+
 const ChapterSection = ({
   section,
   depth = 1,
@@ -204,7 +204,6 @@ const ChapterSection = ({
 
   return (
     <div class={`ml-${depth * 4} border-l-2 border-blue-500 pl-4 my-4`}>
-      {/* Changed border color for visibility */}
       <div class="flex items-center justify-between">
         <HeadingTag class="font-bold mt-2 text-lg bg-purple-200 text-purple-800 p-2 rounded">
           {section.title}
@@ -279,41 +278,80 @@ export default function HomeContent() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const { error } = useLoadChapters(dbName, storeName, dbVersion);
   const scrollPositionRef = useRef(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const loadChapters = async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const request = indexedDB.open(dbName, dbVersion);
+      request.onerror = (event) => {
+        console.error("Database error:", event.target.error);
+        setLoadError("Failed to open database");
+      };
+      request.onsuccess = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        const transaction = db.transaction(storeName, "readonly");
+        const objectStore = transaction.objectStore(storeName);
+        const getAll = objectStore.getAll();
+        getAll.onerror = (event) => {
+          console.error("Error fetching chapters:", event.target.error);
+          setLoadError("Failed to fetch chapters");
+        };
+        getAll.onsuccess = () => {
+          const chapters = getAll.result;
+          console.log("Chapters loaded:", chapters);
+          setChapters(chapters);
+        };
+      };
+    } catch (error) {
+      console.error("Error in loadChapters:", error);
+      setLoadError("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadChapters = async () => {
-      setLoading(true);
-      setLoadError(null);
-      try {
-        const request = indexedDB.open(dbName, dbVersion);
-        request.onerror = (event) => {
-          console.error("Database error:", event.target.error);
-          setLoadError("Failed to open database");
-        };
-        request.onsuccess = (event) => {
-          const db = (event.target as IDBOpenDBRequest).result;
-          const transaction = db.transaction(storeName, "readonly");
-          const objectStore = transaction.objectStore(storeName);
-          const getAll = objectStore.getAll();
-          getAll.onerror = (event) => {
-            console.error("Error fetching chapters:", event.target.error);
-            setLoadError("Failed to fetch chapters");
-          };
-          getAll.onsuccess = () => {
-            const chapters = getAll.result;
-            console.log("Chapters loaded:", chapters);
-            setChapters(chapters);
-          };
-        };
-      } catch (error) {
-        console.error("Error in loadChapters:", error);
-        setLoadError("An unexpected error occurred");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadChapters();
+  }, []);
+
+  useEffect(() => {
+    const dbOpenRequest = indexedDB.open(dbName, dbVersion);
+    dbOpenRequest.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      db.onversionchange = () => {
+        db.close();
+        alert("Database is outdated, please reload the page.");
+      };
+      const objectStore = db.transaction(storeName).objectStore(storeName);
+      const countRequest = objectStore.count();
+      countRequest.onsuccess = () => {
+        const currentCount = countRequest.result;
+        db.close();
+
+        const checkForChanges = setInterval(() => {
+          const newRequest = indexedDB.open(dbName, dbVersion);
+          newRequest.onsuccess = (event) => {
+            const newDb = (event.target as IDBOpenDBRequest).result;
+            const newObjectStore = newDb.transaction(storeName).objectStore(
+              storeName,
+            );
+            const newCountRequest = newObjectStore.count();
+            newCountRequest.onsuccess = () => {
+              if (newCountRequest.result !== currentCount) {
+                console.log("Database changed, reloading chapters");
+                loadChapters();
+                clearInterval(checkForChanges);
+              }
+              newDb.close();
+            };
+          };
+        }, 1000); // Check every second
+
+        return () => clearInterval(checkForChanges);
+      };
+    };
   }, []);
 
   useEffect(() => {
@@ -368,10 +406,12 @@ export default function HomeContent() {
       const transaction = db.transaction(storeName, "readwrite");
       const objectStore = transaction.objectStore(storeName);
       objectStore.put(updatedChapter);
-      setChapters(
-        chapters.map((ch) => ch.id === updatedChapter.id ? updatedChapter : ch),
+
+      setChapters((prevChapters) =>
+        prevChapters.map((ch) =>
+          ch.id === updatedChapter.id ? { ...updatedChapter } : ch
+        )
       );
-      // globalThis.location.reload();
     };
   };
 
@@ -386,20 +426,32 @@ export default function HomeContent() {
     };
   };
 
-  const addNewChapter = () => {
-    const newChapter: Chapter = {
-      id: Date.now().toString(),
-      title: "New Chapter",
-      sections: [],
-      description: { blocks: [] },
-    };
+  const addNewChapter = (newChapter: Chapter) => {
     const request = indexedDB.open(dbName, dbVersion);
+    request.onerror = (event) => {
+      console.error("Database error:", event.target.error);
+      setLoadError("Failed to open database");
+    };
     request.onsuccess = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       const transaction = db.transaction(storeName, "readwrite");
       const objectStore = transaction.objectStore(storeName);
-      objectStore.add(newChapter);
-      setChapters([...chapters, newChapter]);
+
+      const addRequest = objectStore.add(newChapter);
+
+      addRequest.onerror = (event) => {
+        console.error("Error adding new chapter:", event.target.error);
+        setLoadError("Failed to add new chapter");
+      };
+
+      addRequest.onsuccess = () => {
+        console.log("New chapter added successfully");
+        setChapters((prevChapters) => [...prevChapters, newChapter]);
+      };
+
+      transaction.oncomplete = () => {
+        db.close();
+      };
     };
   };
 
@@ -474,7 +526,7 @@ export default function HomeContent() {
             <div className="flex flex-col sm:flex-row justify-between w-full">
               <Button
                 text="Add New Chapter"
-                onClick={addNewChapter}
+                onClick={() => setIsModalOpen(true)}
                 styles="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 rounded-md py-2 px-4 text-white transition-colors focus:outline-none outline-none"
                 icon={IconPlus}
               />
@@ -519,6 +571,14 @@ export default function HomeContent() {
           <PdfPreview chapters={chapters} />
         </div>
       </main>
+      <NewChapterModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={(newChapter) => {
+          addNewChapter(newChapter);
+          setIsModalOpen(false);
+        }}
+      />
     </div>
   );
 }

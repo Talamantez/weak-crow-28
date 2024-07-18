@@ -133,7 +133,9 @@ const ChapterComponent = (
             onUpdate({ ...chapter, sections: updatedSections });
           }}
           onDelete={() => {
-            const updatedSections = chapter.sections.filter((_, i) => i !== index);
+            const updatedSections = chapter.sections.filter((_, i) =>
+              i !== index
+            );
             onUpdate({ ...chapter, sections: updatedSections });
           }}
           activeBlock={activeBlock}
@@ -160,7 +162,9 @@ const ChapterSection = ({
   activeBlock: string | null;
   setActiveBlock: (id: string | null) => void;
 }) => {
-  const HeadingTag = `h${Math.min(depth + 2, 6)}` as keyof JSX.IntrinsicElements;
+  const HeadingTag = `h${
+    Math.min(depth + 2, 6)
+  }` as keyof JSX.IntrinsicElements;
 
   const addBlock = (type: string) => {
     const newBlock: Block = { type, text: "" };
@@ -180,7 +184,9 @@ const ChapterSection = ({
 
   const deleteBlock = (index: number) => {
     if (section.description) {
-      const updatedBlocks = section.description.blocks.filter((_, i) => i !== index);
+      const updatedBlocks = section.description.blocks.filter((_, i) =>
+        i !== index
+      );
       onUpdate({ ...section, description: { blocks: updatedBlocks } });
     }
   };
@@ -253,7 +259,9 @@ const ChapterSection = ({
             onUpdate({ ...section, sections: updatedSections });
           }}
           onDelete={() => {
-            const updatedSections = (section.sections || []).filter((_, i) => i !== index);
+            const updatedSections = (section.sections || []).filter((_, i) =>
+              i !== index
+            );
             onUpdate({ ...section, sections: updatedSections });
           }}
           activeBlock={activeBlock}
@@ -321,12 +329,14 @@ export default function HomeContent() {
       countRequest.onsuccess = () => {
         const currentCount = countRequest.result;
         db.close();
-        
+
         const checkForChanges = setInterval(() => {
           const newRequest = indexedDB.open(dbName, dbVersion);
           newRequest.onsuccess = (event) => {
             const newDb = (event.target as IDBOpenDBRequest).result;
-            const newObjectStore = newDb.transaction(storeName).objectStore(storeName);
+            const newObjectStore = newDb.transaction(storeName).objectStore(
+              storeName,
+            );
             const newCountRequest = newObjectStore.count();
             newCountRequest.onsuccess = () => {
               if (newCountRequest.result !== currentCount) {
@@ -417,53 +427,32 @@ export default function HomeContent() {
   };
 
   const addNewChapter = (newChapter: Chapter) => {
-    alert("addNewChapter");
-    return new Promise<void>((resolve, reject) => {
-      const request = indexedDB.open(dbName, dbVersion);
-      request.onerror = (event) => {
-        console.error("Database error:", event.target.error);
-        setLoadError("Failed to open database");
-        reject(event.target.error);
-      };
-      request.onsuccess = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-        const transaction = db.transaction(storeName, "readwrite");
-        const objectStore = transaction.objectStore(storeName);
-        
-        const addRequest = objectStore.add(newChapter);
-        
-        addRequest.onerror = (event) => {
-          console.error("Error adding new chapter:", event.target.error);
-          setLoadError("Failed to add new chapter");
-          reject(event.target.error);
-        };
-        
-        addRequest.onsuccess = () => {
-          console.log("New chapter added successfully to IndexedDB");
-          setChapters(prevChapters => {
-            const updatedChapters = [...prevChapters, newChapter];
-            console.log("Updated chapters:", updatedChapters);
-            return updatedChapters;
-          });
-          resolve();
-        };
-        
-        transaction.oncomplete = () => {
-          db.close();
-        };
-      };
-    });
-  };
+    const request = indexedDB.open(dbName, dbVersion);
+    request.onerror = (event) => {
+      console.error("Database error:", event.target.error);
+      setLoadError("Failed to open database");
+    };
+    request.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const objectStore = transaction.objectStore(storeName);
 
-  const handleAddNewChapter = async (newChapter: Chapter) => {
-    try {
-      await addNewChapter(newChapter);
-      console.log("Chapter added successfully");
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Failed to add new chapter:", error);
-      setLoadError("Failed to add new chapter");
-    }
+      const addRequest = objectStore.add(newChapter);
+
+      addRequest.onerror = (event) => {
+        console.error("Error adding new chapter:", event.target.error);
+        setLoadError("Failed to add new chapter");
+      };
+
+      addRequest.onsuccess = () => {
+        console.log("New chapter added successfully");
+        setChapters((prevChapters) => [...prevChapters, newChapter]);
+      };
+
+      transaction.oncomplete = () => {
+        db.close();
+      };
+    };
   };
 
   const clearAllChapters = () => {
@@ -586,7 +575,7 @@ export default function HomeContent() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={(newChapter) => {
-          console.log("New chapter saved:", newChapter);
+          addNewChapter(newChapter);
           setIsModalOpen(false);
         }}
       />
