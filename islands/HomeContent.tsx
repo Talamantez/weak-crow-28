@@ -29,7 +29,8 @@ const RenderBlock = (
   { block, onDelete, isActive, setActiveBlock, updateBlock, myIndex },
 ) => {
   const [isEditingBlock, setIsEditingBlock] = useState(false);
-  const [tempText, setTempText] = useState(block.text);
+  let newValue = block.text;
+
   const toggleIsEditingBlock = () => {
     setIsEditingBlock(!isEditingBlock);
   };
@@ -37,22 +38,21 @@ const RenderBlock = (
   const handleSaveBlock = () => {
     updateBlock(myIndex, {
       ...block,
-      text: tempText,
+      text: newValue,
     });
     setIsEditingBlock(false);
   };
 
   const handleCancelEdit = () => {
-    setTempText(block.text);
     setIsEditingBlock(false);
   };
 
   const handleChange = (e) => {
-    setTempText((e.target as HTMLInputElement).value);
+    // setTempText((e.target as HTMLInputElement).value);
+    newValue = (e.target as HTMLInputElement).value;
   };
 
   const baseClasses = "mb-2 p-2 rounded";
-  const activeClasses = isActive ? "" : "";
   const isEditingClasses = "bg-purple-200 text-purple-800";
 
   if (!block.type) {
@@ -65,7 +65,6 @@ const RenderBlock = (
             <div>
               <div
                 class={`flex items-center ${baseClasses}`}
-                onClick={() => setActiveBlock(block.id)}
               >
                 <p class={`flex-grow ${isEditingClasses}`}>{block.text}</p>
                 <Button
@@ -102,8 +101,7 @@ const RenderBlock = (
           )
           : ((
             <div
-              class={`flex items-center ${baseClasses} ${activeClasses}`}
-              onClick={() => setActiveBlock(block.id)}
+              class={`flex items-center ${baseClasses}`}
             >
               <p class={`flex-grow`}>{block.text}</p>
               <Button
@@ -128,8 +126,7 @@ const RenderBlock = (
           ? (
             <div>
               <div
-                class={`flex items-center ${baseClasses} ${activeClasses}`}
-                onClick={() => setActiveBlock(block.id)}
+                class={`flex items-center ${baseClasses}`}
               >
                 <h3 class={`text-xl font-bold flex-grow ${isEditingClasses}`}>
                   {block.text}
@@ -151,7 +148,6 @@ const RenderBlock = (
                 value={block.text}
                 onChange={(e) => handleChange(e)}
                 class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
-                onFocus={() => setActiveBlock(block.id)}
               />
 
               <Button
@@ -168,8 +164,7 @@ const RenderBlock = (
           )
           : ((
             <div
-              class={`flex items-center ${baseClasses} ${activeClasses}`}
-              onClick={() => setActiveBlock(block.id)}
+              class={`flex items-center ${baseClasses}`}
             >
               <h3 class={`text-xl font-bold flex-grow`}>
                 {block.text}
@@ -196,8 +191,7 @@ const RenderBlock = (
           ? (
             <div>
               <div
-                class={`flex items-center ${baseClasses} ${activeClasses}`}
-                onClick={() => setActiveBlock(block.id)}
+                class={`flex items-center ${baseClasses}`}
               >
                 <li class={`flex-grow ${isEditingClasses}`}>{block.text}</li>
                 <Button
@@ -217,7 +211,6 @@ const RenderBlock = (
                 value={block.text}
                 onChange={(e) => handleChange(e)}
                 class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
-                onFocus={() => setActiveBlock(block.id)}
               />
 
               <Button
@@ -234,8 +227,7 @@ const RenderBlock = (
           )
           : ((
             <div
-              class={`flex items-center ${baseClasses} ${activeClasses}`}
-              onClick={() => setActiveBlock(block.id)}
+              class={`flex items-center ${baseClasses}`}
             >
               <li class={`flex-grow`}>{block.text}</li>
               <Button
