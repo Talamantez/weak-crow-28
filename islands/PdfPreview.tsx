@@ -1,51 +1,23 @@
-import { useEffect, useState } from "preact/hooks";
+import { Chapter } from "./types.ts";
 
-interface PdfPreviewProps {
-  chapters: Chapter[];
-}
-
-export const PdfPreview = ({ chapters }: PdfPreviewProps) => {
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    const generatePdfPreview = async () => {
-      try {
-        const response = await fetch("/api/generate-pdf-preview", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(chapters),
-        });
-
-        if (response.ok) {
-          const blob = await response.blob();
-          const url = URL.createObjectURL(blob);
-          setPdfUrl(url);
-        } else {
-          console.error("Failed to generate PDF preview");
-        }
-      } catch (error) {
-        console.error("Error generating PDF preview:", error);
-      }
-    };
-
-    generatePdfPreview();
-
-    return () => {
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-      }
-    };
-  }, [chapters]);
-
-  if (!pdfUrl) {
-    return <div>Loading PDF preview...</div>;
-  }
-
+export function PdfPreview({ chapters }: { chapters: Chapter[] }) {
+  console.log("previewing chapters")
+  console.log(chapters)
   return (
-    <div className="pdf-preview h-screen overflow-y-auto border-l border-gray-200">
-      <iframe src={pdfUrl} className="w-full h-full" />
+    <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-4 max-h-screen overflow-y-auto">
+      {chapters.map((chapter) => (
+        <div key={chapter.index} className="mb-6">
+          <h3 className="text-xl font-semibold mb-2">{chapter.title}</h3>
+          {chapter.imageUrl && (
+            <img
+              src={chapter.imageUrl}
+              alt={chapter.title}
+              className="w-full h-32 object-cover rounded-lg mb-2"
+            />
+          )}
+          <p className="text-sm mb-2">{chapter.description}</p>
+        </div>
+      ))}
     </div>
   );
-};
+}

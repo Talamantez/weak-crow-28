@@ -1109,7 +1109,7 @@ export default function HomeContent() {
 
         <div className="w-1/3 sticky top-0">
           <h2 className="font-bold text-2xl mb-4">PDF Preview</h2>
-          <PdfPreview chapters={chapters} />
+          <PdfPreview chapters={chapters.filter((ch) => ch.isIncluded)} />
         </div>
       </main>
       <NewChapterModal

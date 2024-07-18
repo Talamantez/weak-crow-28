@@ -528,7 +528,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     isHeader: boolean = false,
     startY: number,
     indent: number = 0,
-    depth: number = 0
+    depth: number = 0,
   ): { page: PDFPage; y: number } {
     const { width } = page.getSize();
     let font;
@@ -554,7 +554,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       text,
       width - 2 * margin - indent,
       fontSize,
-      font
+      font,
     );
     const lineHeight = fontSize * lineSpacing;
     let y = startY;
@@ -611,7 +611,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     richText: RichText | string,
     startY: number,
     indent: number = 0,
-    depth: number
+    depth: number,
   ): { page: PDFPage; y: number } {
     let y = startY;
 
@@ -638,7 +638,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
               false,
               y,
               indent,
-              depth
+              depth,
             );
           } else if (block.type === "header") {
             result = drawWrappedText(
@@ -649,7 +649,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
               true,
               y,
               indent,
-              depth
+              depth,
             );
           } else if (block.type === "unordered-list-item") {
             result = drawWrappedText(
@@ -660,7 +660,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
               false,
               y,
               indent + 10,
-              depth
+              depth,
             );
           } else {
             console.warn(`Unsupported block type: ${block.type}`);
@@ -716,7 +716,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       true,
       y,
       indent,
-      depth
+      depth,
     );
     page = result.page;
     y = result.y - titleFontSize * lineSpacing; // Reduced space after title
@@ -867,14 +867,16 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       titleFontSize,
       true,
       true,
-      y
+      y,
+      0,
+      0
     );
     currentPage = result.page;
     y = result.y - titleFontSize; // Add extra space after title
 
     // Draw chapter description
     if (chapter.description) {
-      result = drawRichText(currentPage, chapter.description, y, 0,0);
+      result = drawRichText(currentPage, chapter.description, y, 0, 0);
       currentPage = result.page;
       y = result.y - 20; // Add extra space after description
     }
