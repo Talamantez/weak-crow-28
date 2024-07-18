@@ -545,8 +545,7 @@ export default function HomeContent() {
       <NewChapterModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSave={(newChapter) => {
-          addNewChapter(newChapter);
+        onSave={() => {
           setIsModalOpen(false);
         }}
       />
