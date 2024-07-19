@@ -973,19 +973,40 @@ export default function HomeContent() {
 
   const updateChapter = (updatedChapter: Chapter) => {
     scrollPositionRef.current = window.pageYOffset;
+    console.log("Updating chapter:", updatedChapter);
 
     const request = indexedDB.open(dbName, dbVersion);
     request.onsuccess = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       const transaction = db.transaction(storeName, "readwrite");
       const objectStore = transaction.objectStore(storeName);
-      objectStore.put(updatedChapter);
 
-      setChapters((prevChapters) =>
-        prevChapters.map((ch) => {
-          return ch.index === updatedChapter.index ? { ...updatedChapter } : ch;
-        })
-      );
+      console.log("Deleting old chapter:", updatedChapter.index);
+      const deleteRequest = objectStore.delete(updatedChapter.index);
+      deleteRequest.onsuccess = () => {
+        console.log("Old chapter deleted successfully");
+        console.log("Adding updated chapter:", updatedChapter);
+        const addRequest = objectStore.add(updatedChapter);
+        addRequest.onsuccess = () => {
+          console.log("Updated chapter added successfully");
+          setChapters((prevChapters) => {
+            const updatedChapters = prevChapters.map((ch) =>
+              ch.index === updatedChapter.index ? updatedChapter : ch
+            );
+            console.log("Updated chapters state:", updatedChapters);
+            return updatedChapters;
+          });
+        };
+        addRequest.onerror = (error) => {
+          console.error("Error adding updated chapter:", error);
+        };
+      };
+      deleteRequest.onerror = (error) => {
+        console.error("Error deleting old chapter:", error);
+      };
+    };
+    request.onerror = (error) => {
+      console.error("Error opening IndexedDB:", error);
     };
   };
 
