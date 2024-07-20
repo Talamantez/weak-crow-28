@@ -436,7 +436,7 @@ const ChapterComponent = (
         </div>
         <div class="flex items-center">
           <Button
-            text="Delete&nbsp;Chapter"
+            text="Delete Chapter"
             onClick={handleDeleteClick}
             styles="bg-red-500 hover:bg-red-600 text-white rounded mx-2 px-2 py-1"
           />
