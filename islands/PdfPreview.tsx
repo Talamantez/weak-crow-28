@@ -5,7 +5,7 @@ export function PdfPreview({ chapters }: { chapters: Chapter[] }) {
   console.log(chapters);
   return (
     <div
-      className="bg-white border border-gray-300 rounded-lg shadow-lg p-4 max-h-screen overflow-y-auto"
+      class="bg-white border border-gray-300 rounded-lg shadow-lg p-4 max-h-screen overflow-y-auto"
       style={{
         boxShadow: "0 0 10px rgba(0,0,0,0.1)",
         background:
@@ -13,16 +13,16 @@ export function PdfPreview({ chapters }: { chapters: Chapter[] }) {
       }}
     >
       {chapters.map((chapter) => (
-        <div key={chapter.index} className="mb-6">
-          <h3 className="text-xl font-semibold mb-2">{chapter.title}</h3>
+        <div key={chapter.index} class="mb-6">
+          <h3 class="text-xl font-semibold mb-2">{chapter.title}</h3>
           {chapter.imageUrl && (
             <img
               src={chapter.imageUrl}
               alt={chapter.title}
-              className="w-full h-32 object-cover rounded-lg mb-2"
+              class="w-full h-32 object-cover rounded-lg mb-2"
             />
           )}
-          <p className="text-sm mb-2">{chapter.description}</p>
+          <p class="text-sm mb-2">{chapter.description}</p>
         </div>
       ))}
     </div>

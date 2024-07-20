@@ -50,14 +50,14 @@ export default function ClickToEdit(
             autoFocus
             rows={rows || 10}
             cols={cols || 80}
-            className="text-left self-start p-1"
+            class="text-left self-start p-1"
           />
         )
         : (
           <div
             tabIndex={0}
             onFocus={handleFocus}
-            className="text-left w-full break-words"
+            class="text-left w-full break-words"
           >
             {inputText}
           </div>

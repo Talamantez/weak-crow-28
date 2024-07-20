@@ -9,11 +9,11 @@ export const Task = ({ task }) => {
 
   return (
     <>
-      <div className="p-6 mx-auto bg-white rounded-xl shadow-lg flex items-center space-x-4">
+      <div class="p-6 mx-auto bg-white rounded-xl shadow-lg flex items-center space-x-4">
         <div>
-          <div className="text-xl font-medium text-black">{task.title}</div>
-          <p className="text-slate-500">{task.contact}</p>
-          <p className="text-x1 font-small text-black">{task.description}</p>
+          <div class="text-xl font-medium text-black">{task.title}</div>
+          <p class="text-slate-500">{task.contact}</p>
+          <p class="text-x1 font-small text-black">{task.description}</p>
         </div>
       </div>
       <div>

@@ -97,35 +97,35 @@ const NewChapterModal = ({ isOpen, onClose, onSave }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4">Add New Chapter</h2>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-8 w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-4">Add New Chapter</h2>
+        {error && <p class="text-red-500 mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="title" className="block mb-2">Title</label>
+          <div class="mb-4">
+            <label htmlFor="title" class="block mb-2">Title</label>
             <input
               type="text"
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 border rounded"
+              class="w-full p-2 border rounded"
               required
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="description" className="block mb-2">Description</label>
+          <div class="mb-4">
+            <label htmlFor="description" class="block mb-2">Description</label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-2 border rounded"
+              class="w-full p-2 border rounded"
               rows="3"
               required
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="coverImage" className="block mb-2">Cover Image</label>
+          <div class="mb-4">
+            <label htmlFor="coverImage" class="block mb-2">Cover Image</label>
             {uploading ? (
               <Loader />
             ) : (
@@ -134,20 +134,20 @@ const NewChapterModal = ({ isOpen, onClose, onSave }) => {
                   <input type="file" name="image" accept="image/*" required />
                   <button
                     type="submit"
-                    className="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 mt-2"
+                    class="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 mt-2"
                   >
                     Upload and Preview Image
                   </button>
                 </form>
                 {imageUrl && (
-                  <div className="mt-2">
-                    <img className="max-h-32 object-cover" src={imageUrl} alt="Uploaded" />
+                  <div class="mt-2">
+                    <img class="max-h-32 object-cover" src={imageUrl} alt="Uploaded" />
                   </div>
                 )}
               </div>
             )}
           </div>
-          <div className="flex justify-end">
+          <div class="flex justify-end">
             <Button
               text="Cancel"
               onClick={onClose}

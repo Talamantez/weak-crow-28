@@ -20,7 +20,7 @@ export default function Button({ text, icon:Icon, onClick, styles }: ButtonProps
   return (
     <button class={styles} onClick={onClick}>
             {Icon &&
-      <Icon size={20} className="ml-2" />
+      <Icon size={20} class="ml-2" />
       }
       <span>{text}</span>
     </button>

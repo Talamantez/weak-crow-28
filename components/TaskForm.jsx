@@ -30,7 +30,7 @@ export default function TaskForm(){
     return (
         <>
             <div></div>
-            <form className="task-form" onSubmit={handleSubmit}>
+            <form class="task-form" onSubmit={handleSubmit}>
                 <input
                     type="text"
                     placeholder="Enter a Title"
