@@ -42,23 +42,23 @@ const EditableText = (
 
   if (isEditing) {
     return (
-      <div className="flex items-center">
+      <div class="flex items-center">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-grow px-2 py-1 mr-2 border rounded"
+          class="flex-grow px-2 py-1 mr-2 border rounded"
           style={{ borderColor: colors.border, color: colors.text }}
         />
         <button
           onClick={handleSave}
-          className="p-1 mr-1 rounded-full"
+          class="p-1 mr-1 rounded-full"
           style={{ backgroundColor: colors.success, color: "white" }}
         >
           <IconCheck size={16} />
         </button>
         <button
           onClick={handleCancel}
-          className="p-1 rounded-full"
+          class="p-1 rounded-full"
           style={{ backgroundColor: colors.danger, color: "white" }}
         >
           <IconX size={16} />
@@ -68,11 +68,11 @@ const EditableText = (
   }
 
   return (
-    <div className="flex items-center group">
-      <span className="flex-grow">{value}</span>
+    <div class="flex items-center group">
+      <span class="flex-grow">{value}</span>
       <button
         onClick={() => setIsEditing(true)}
-        className="p-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        class="p-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
         style={{ color: colors.accent }}
       >
         <IconEdit size={16} />
@@ -102,13 +102,13 @@ const Section = (
 
   return (
     <div
-      className="mb-4 pl-4"
+      class="mb-4 pl-4"
       style={{ borderLeft: `2px solid ${colors.border}` }}
     >
-      <div className="flex items-center mb-2">
+      <div class="flex items-center mb-2">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="mr-2 text-sm"
+          class="mr-2 text-sm"
           style={{ color: colors.muted }}
         >
           {isExpanded ? "▼" : "►"}
@@ -123,7 +123,7 @@ const Section = (
         />
         <button
           onClick={onDelete}
-          className="p-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          class="p-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
           style={{ color: colors.danger }}
         >
           <IconTrash size={16} />
@@ -131,7 +131,7 @@ const Section = (
       </div>
       {isExpanded && (
         <>
-          <div className="mb-2 pl-4">
+          <div class="mb-2 pl-4">
             <EditableText
               value={section.content}
               onSave={(newContent) =>
@@ -162,10 +162,10 @@ const Section = (
           ))}
           <button
             onClick={handleAddSubsection}
-            className="flex items-center mt-2 text-sm"
+            class="flex items-center mt-2 text-sm"
             style={{ color: colors.accent }}
           >
-            <IconPlus size={14} className="mr-1" /> Add Subsection
+            <IconPlus size={14} class="mr-1" /> Add Subsection
           </button>
         </>
       )}
@@ -178,11 +178,11 @@ const ChapterEditor = (
 ) => {
   return (
     <div
-      className="p-6 rounded-lg shadow-lg"
+      class="p-6 rounded-lg shadow-lg"
       style={{ backgroundColor: colors.background }}
     >
       <h2
-        className="text-2xl font-semibold mb-4"
+        class="text-2xl font-semibold mb-4"
         style={{ color: colors.text }}
       >
         <EditableText
@@ -218,10 +218,10 @@ const ChapterEditor = (
           };
           onUpdate({ ...chapter, sections: [...chapter.sections, newSection] });
         }}
-        className="flex items-center mt-4 text-sm"
+        class="flex items-center mt-4 text-sm"
         style={{ color: colors.accent }}
       >
-        <IconPlus size={14} className="mr-1" /> Add Section
+        <IconPlus size={14} class="mr-1" /> Add Section
       </button>
     </div>
   );

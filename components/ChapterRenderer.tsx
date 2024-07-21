@@ -24,11 +24,11 @@ const ChapterSection = ({ section, depth = 1 }) => {
   };
   
   const Chapter = ({ chapter }) => (
-    <div className="mb-8">
-      <h2 className="text-2xl font-bold">{chapter.title}</h2>
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold">{chapter.title}</h2>
       <p>{chapter.description.blocks[0].text}</p>
       {chapter.imageUrl && (
-        <img src={chapter.imageUrl} alt={chapter.title} className="my-4 max-w-full h-auto" />
+        <img src={chapter.imageUrl} alt={chapter.title} class="my-4 max-w-full h-auto" />
       )}
       {chapter.sections.map((section, index) => (
         <ChapterSection key={index} section={section} />
@@ -37,7 +37,7 @@ const ChapterSection = ({ section, depth = 1 }) => {
   );
   
   const ChapterRenderer = ({ chapters }) => (
-    <div className="p-4">
+    <div class="p-4">
       {chapters.map((chapter, index) => (
         <Chapter key={index} chapter={chapter} />
       ))}

@@ -436,7 +436,7 @@ const ChapterComponent = (
         </div>
         <div class="flex items-center">
           <Button
-            text="Delete&nbsp;Chapter"
+            text="Delete Chapter"
             onClick={handleDeleteClick}
             styles="bg-red-500 hover:bg-red-600 text-white rounded mx-2 px-2 py-1"
           />
@@ -1066,11 +1066,11 @@ export default function HomeContent() {
       <Head>
         <title>Resource Roadmap Editor</title>
       </Head>
-      <main className="flex flex-row items-start justify-between my-10 p-4 mx-auto max-w-screen-xl">
-        <div className="flex-grow mr-4">
-          <div className="bg-gray-800 text-white w-full rounded-lg p-8 mb-10">
-            <h1 className="text-3xl font-bold mb-4">Resource Roadmap</h1>
-            <p className="mb-4">
+      <main class="flex flex-row items-start justify-between my-10 p-4 mx-auto max-w-screen-xl">
+        <div class="flex-grow mr-4">
+          <div class="bg-gray-800 text-white w-full rounded-lg p-8 mb-10">
+            <h1 class="text-3xl font-bold mb-4">Resource Roadmap</h1>
+            <p class="mb-4">
               Welcome to Your Local Resource Publication Creator!
             </p>
             <Button
@@ -1090,11 +1090,11 @@ export default function HomeContent() {
             />
           </div>
 
-          <div className="w-full flex-col justify-between mb-10">
-            <h2 className="font-bold text-2xl w-3/5 text-left mb-4">
+          <div class="w-full flex-col justify-between mb-10">
+            <h2 class="font-bold text-2xl w-3/5 text-left mb-4">
               Chapters
             </h2>
-            <div className="flex flex-col sm:flex-row justify-between w-full">
+            <div class="flex flex-col sm:flex-row justify-between w-full">
               <Button
                 text="Add New Chapter"
                 onClick={() => setIsModalOpen(true)}
@@ -1119,7 +1119,7 @@ export default function HomeContent() {
           {loading
             ? <p>Loading chapters...</p>
             : loadError
-            ? <p className="text-red-500">Error: {loadError}</p>
+            ? <p class="text-red-500">Error: {loadError}</p>
             : chapters.length === 0
             ? (
               <p>
@@ -1129,7 +1129,7 @@ export default function HomeContent() {
             )
             : (
               <div
-                className={`w-full grid grid-cols-1 lg:grid-cols-2 gap-4 ${
+                class={`w-full grid grid-cols-1 lg:grid-cols-2 gap-4 ${
                   isReordering ? "cursor-move" : ""
                 }`}
               >
@@ -1141,14 +1141,14 @@ export default function HomeContent() {
                       isReordering && onDragStart(e, chapter.index)}
                     onDragOver={(e) => isReordering && onDragOver(e)}
                     onDrop={(e) => isReordering && onDrop(e, chapter.index)}
-                    className={`relative ${
+                    class={`relative ${
                       isReordering
                         ? "border-2 border-dashed border-gray-400 p-2"
                         : ""
                     }`}
                   >
                     {isReordering && (
-                      <div className="absolute top-0 left-0 right-0 bg-gray-200 text-center text-sm py-1">
+                      <div class="absolute top-0 left-0 right-0 bg-gray-200 text-center text-sm py-1">
                         Drag to reorder
                       </div>
                     )}
@@ -1165,8 +1165,8 @@ export default function HomeContent() {
           <Footer />
         </div>
 
-        <div className="w-1/3 sticky top-0">
-          <h2 className="font-bold text-2xl mb-4">PDF Preview</h2>
+        <div class="w-1/3 sticky top-0 hidden lg:block">
+          <h2 class="font-bold text-2xl mb-4">PDF Preview</h2>
           <PdfPreview chapters={chapters.filter((ch) => ch.isIncluded)} />
         </div>
       </main>

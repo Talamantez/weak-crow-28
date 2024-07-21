@@ -53,14 +53,14 @@ export default function ClickToEdit(
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             autoFocus
-            className="text-left self-start p-1"
+            class="text-left self-start p-1"
           />
         )
         : (
           <div
             tabIndex={0}
             onFocus={handleFocus}
-            className="text-left w-full"
+            class="text-left w-full"
           >
             {inputText}
           </div>
