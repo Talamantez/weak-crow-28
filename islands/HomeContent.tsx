@@ -1106,32 +1106,34 @@ export default function HomeContent() {
                   isReordering ? "cursor-move" : ""
                 }`}
               >
-                {chapters.map((chapter) => (
-                  <div
-                    key={chapter.index}
-                    draggable={isReordering}
-                    onDragStart={(e) =>
-                      isReordering && onDragStart(e, chapter.index)}
-                    onDragOver={(e) => isReordering && onDragOver(e)}
-                    onDrop={(e) => isReordering && onDrop(e, chapter.index)}
-                    class={`relative ${
-                      isReordering
-                        ? "border-2 border-dashed border-gray-400 p-2"
-                        : ""
-                    }`}
-                  >
-                    {isReordering && (
-                      <div class="absolute top-0 left-0 right-0 bg-gray-200 text-center text-sm py-1">
-                        Drag to reorder
-                      </div>
-                    )}
-                    <ChapterComponent
-                      chapter={chapter}
-                      onUpdate={updateChapter}
-                      onDelete={() => deleteChapter(chapter.index)}
-                    />
-                  </div>
-                ))}
+                {[...chapters]
+                  .sort((a, b) => a.index - b.index)
+                  .map((chapter) => (
+                    <div
+                      key={chapter.index}
+                      draggable={isReordering}
+                      onDragStart={(e) =>
+                        isReordering && onDragStart(e, chapter.index)}
+                      onDragOver={(e) => isReordering && onDragOver(e)}
+                      onDrop={(e) => isReordering && onDrop(e, chapter.index)}
+                      className={`relative ${
+                        isReordering
+                          ? "border-2 border-dashed border-gray-400 p-2"
+                          : ""
+                      }`}
+                    >
+                      {isReordering && (
+                        <div className="absolute top-0 left-0 right-0 bg-gray-200 text-center text-sm py-1">
+                          Drag to reorder
+                        </div>
+                      )}
+                      <ChapterComponent
+                        chapter={chapter}
+                        onUpdate={updateChapter}
+                        onDelete={() => deleteChapter(chapter.index)}
+                      />
+                    </div>
+                  ))}
               </div>
             )}
 
