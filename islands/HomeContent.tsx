@@ -425,12 +425,6 @@ const ChapterComponent = (
                 <h2 class="text-xl font-bold p-2 rounded mr-2">
                   {chapter.title}
                 </h2>
-                <Button
-                  text=""
-                  onClick={() => toggleIsEditingTitle()}
-                  styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                  icon={IconEdit}
-                />
               </div>
             )}
         </div>
