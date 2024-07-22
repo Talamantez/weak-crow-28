@@ -979,11 +979,12 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
 
 export const handler: Handlers = {
   async POST(req) {
+    console.log("Received request to generate PDF");
     const requestBody = await req.json();
     const chapters: Chapter[] = requestBody;
 
     const data: Data = {
-      Chapters: chapters,
+      Chapters: chapters.sort((a, b) => a.index - b.index)
     };
 
     try {

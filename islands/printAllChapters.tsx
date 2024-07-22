@@ -1,7 +1,6 @@
 import { dbName } from "../util/dbInfo.ts";
 
 export function printAllChapters(): Promise<void> {  const storeName = "Chapters";
-
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(dbName);
 
@@ -20,7 +19,6 @@ export function printAllChapters(): Promise<void> {  const storeName = "Chapters
       getAllRequest.onsuccess = function (event: Event) {
         const chapters = event.target.result;
         const sortedChapters = chapters.sort((a, b) => a.index - b.index);
-        console.log("Chapters:", sortedChapters)
 
         fetch("/api/printAllChapters", {
           method: "POST",
