@@ -6,9 +6,6 @@ interface Chapter {
 }
 
 export function PdfPreview({ chapters }: { chapters: Chapter[] }) {
-  console.log("previewing chapters");
-  console.log(chapters);
-
   return (
     <div
       className="bg-white border border-gray-300 rounded-lg shadow-lg p-4 max-h-screen overflow-y-auto"

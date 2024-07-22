@@ -748,6 +748,20 @@ export default function HomeContent() {
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmMessage, setConfirmMessage] = useState("");
 
+  // Function to handle scrolling
+  const handleScroll = () => {
+    globalThis.scrollTo({
+      top: scrollPositionRef.current,
+      behavior: "smooth"
+    })
+  }
+
+  // Update scroll position and trigger scroll
+  const updateScrollPosition = () => {
+    scrollPositionRef.current = globalThis.pageYOffset;
+    handleScroll();
+  };
+
   const showConfirmModal = (message: string, action: () => void) => {
     setConfirmMessage(message);
     setConfirmAction(() => action);
@@ -776,7 +790,7 @@ export default function HomeContent() {
     }
   };
 
-  const onDrop = (e: DragEvent, targetChapterId: string) => {
+  const onDrop = async(e: DragEvent, targetChapterId: string) => {
     e.preventDefault();
     const sourceChapterId = draggedChapter;
     if (sourceChapterId !== targetChapterId) {
@@ -792,9 +806,14 @@ export default function HomeContent() {
         newChapters.splice(targetIndex, 0, removed);
         return newChapters;
       });
-      updateChapterOrder(chapters);
+      updateScrollPosition();
+      await updateChapterOrder(chapters).then(() => {
+        console.log("Chapter order updated successfully");
+        console.log("Chapters:", chapters);
+
+      });
+      setDraggedChapter(null);
     }
-    setDraggedChapter(null);
   };
 
   const updateChapterOrder = async (newChapters) => {
@@ -861,6 +880,10 @@ export default function HomeContent() {
   useEffect(() => {
     loadChapters();
   }, []);
+
+  useEffect(() => {
+    handleScroll();
+  }, [chapters]);
 
   useEffect(() => {
     const dbOpenRequest = indexedDB.open(dbName, dbVersion);
@@ -966,7 +989,7 @@ export default function HomeContent() {
   };
 
   const updateChapter = (updatedChapter: Chapter) => {
-    scrollPositionRef.current = window.pageYOffset;
+    updateScrollPosition();
 
     const request = indexedDB.open(dbName, dbVersion);
     request.onsuccess = (event) => {
@@ -984,6 +1007,7 @@ export default function HomeContent() {
   };
 
   const deleteChapter = (chapterId: string) => {
+    updateScrollPosition();
     const request = indexedDB.open(dbName, dbVersion);
     request.onsuccess = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
@@ -995,6 +1019,7 @@ export default function HomeContent() {
   };
 
   const clearAllChapters = () => {
+    updateScrollPosition();
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(dbName, dbVersion);
 
