@@ -744,6 +744,7 @@ export default function HomeContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReordering, setIsReordering] = useState(false);
   const [draggedChapter, setDraggedChapter] = useState(null);
+  const [dropTarget, setDropTarget] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmMessage, setConfirmMessage] = useState("");
@@ -752,9 +753,9 @@ export default function HomeContent() {
   const handleScroll = () => {
     globalThis.scrollTo({
       top: scrollPositionRef.current,
-      behavior: "smooth"
-    })
-  }
+      behavior: "smooth",
+    });
+  };
 
   // Update scroll position and trigger scroll
   const updateScrollPosition = () => {
@@ -781,16 +782,25 @@ export default function HomeContent() {
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", chapterId);
     }
-  };
-
-  const onDragOver = (e: DragEvent) => {
-    e.preventDefault();
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = "move";
+    if (e.target) {
+      e.target.style.opacity = "0.5";
     }
   };
 
-  const onDrop = async(e: DragEvent, targetChapterId: string) => {
+  const onDragOver = (e: DragEvent, targetChapterId) => {
+    e.preventDefault();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = "move";
+      setDropTarget(targetChapterId);
+    }
+  };
+
+  const onDragLeave = (e: DragEvent) => {
+    e.preventDefault();
+    setDropTarget(null);
+  };
+
+  const onDrop = async (e: DragEvent, targetChapterId: string) => {
     e.preventDefault();
     const sourceChapterId = draggedChapter;
     if (sourceChapterId !== targetChapterId) {
@@ -810,10 +820,19 @@ export default function HomeContent() {
       await updateChapterOrder(chapters).then(() => {
         console.log("Chapter order updated successfully");
         console.log("Chapters:", chapters);
-
       });
       setDraggedChapter(null);
+      setDropTarget(null);
     }
+  };
+
+  const onDragEnd = (e: DragEvent) => {
+    e.preventDefault();
+    if (e.target) {
+      e.target.style.opacity = "1";
+    }
+    // setDraggedChapter(null);
+    // setDropTarget(null);
   };
 
   const updateChapterOrder = async (newChapters) => {
@@ -1140,15 +1159,21 @@ export default function HomeContent() {
                       onDragStart={(e) =>
                         isReordering && onDragStart(e, chapter.index)}
                       onDragOver={(e) => isReordering && onDragOver(e)}
+                      onDragEnd={(e) => onDragEnd(e)}
                       onDrop={(e) => isReordering && onDrop(e, chapter.index)}
-                      className={`relative ${
+                      class={`relative transition-all duration-300 ${
                         isReordering
                           ? "border-2 border-dashed border-gray-400 p-2"
+                          : ""
+                      } ${draggedChapter === chapter.index ? "opacity-50" : ""}
+              ${
+                        dropTarget === chapter.index
+                          ? "border-4 border-blue-500"
                           : ""
                       }`}
                     >
                       {isReordering && (
-                        <div className="absolute top-0 left-0 right-0 bg-gray-200 text-center text-sm py-1">
+                        <div class="absolute top-0 left-0 right-0 bg-gray-200 text-center text-sm py-1">
                           Drag to reorder
                         </div>
                       )}
