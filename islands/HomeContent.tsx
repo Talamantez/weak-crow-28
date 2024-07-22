@@ -792,6 +792,7 @@ export default function HomeContent() {
     if (e.dataTransfer) {
       e.dataTransfer.dropEffect = "move";
       setDropTarget(targetChapterId);
+      console.log("Drop target:", targetChapterId);
     }
   };
 
@@ -1146,7 +1147,7 @@ export default function HomeContent() {
             )
             : (
               <div
-                class={`w-full grid grid-cols-1 lg:grid-cols-2 gap-4 ${
+                class={`w-full grid grid-cols-1 lg:grid-cols-1 gap-4 ${
                   isReordering ? "cursor-move" : ""
                 }`}
               >
@@ -1158,7 +1159,7 @@ export default function HomeContent() {
                       draggable={isReordering}
                       onDragStart={(e) =>
                         isReordering && onDragStart(e, chapter.index)}
-                      onDragOver={(e) => isReordering && onDragOver(e)}
+                      onDragOver={(e) => isReordering && onDragOver(e, chapter.index)}
                       onDragEnd={(e) => onDragEnd(e)}
                       onDrop={(e) => isReordering && onDrop(e, chapter.index)}
                       class={`relative transition-all duration-300 ${
