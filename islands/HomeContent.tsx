@@ -23,16 +23,13 @@ import {
   loadVersions,
   RoadmapVersion,
   saveVersion,
-} from "./versionManagement.ts";
+} from "../util/versionManagement.ts";
 
 import {
   Block,
-  BlockType,
   Chapter,
-  Content,
-  RichText,
   Section,
-} from "./types.ts";
+} from "../util/types.ts";
 
 const RenderBlock = (
   { block, onDelete, isActive, setActiveBlock, updateBlock, myIndex },
