@@ -1,8 +1,8 @@
 import {
   safeSessionStorageSetItem
-} from "./safeSessionStorageSetItem.ts";
-import { safeSessionStorageRemoveItem } from "./safeSessionStorageRemoveItem.ts";
-import { safeSessionStorageGetItem } from "./safeSessionStorageGetItem.ts";
+} from "../util/safeSessionStorageSetItem.ts";
+import { safeSessionStorageRemoveItem } from "../util/safeSessionStorageRemoveItem.ts";
+import { safeSessionStorageGetItem } from "../util/safeSessionStorageGetItem.ts";
 
 export function updateChapterTitle(newText: string, chapterTitle: string) {
   if (newText.trim() === "") return window.location.reload();

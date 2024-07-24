@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import Button from "../components/Button.tsx";
+import Button from "./Button.tsx";
 import { exportVersionToJSON, RoadmapVersion } from "../util/versionManagement.ts";
 interface VersionManagementModalProps {
     isOpen: boolean;

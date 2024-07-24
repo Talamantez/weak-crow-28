@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { Section } from "./SectionData.ts";
+import { Section } from "../util/SectionData.ts";
 
 export interface AddSubSectionProps {
   isActive: boolean;

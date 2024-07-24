@@ -1,5 +1,5 @@
-import { Section } from "./SectionData.ts";
-import { dbName, storeName } from "./dbInfo.ts";
+import { Section } from "../util/SectionData.ts";
+import { dbName, storeName } from "../util/dbInfo.ts";
 
 export function updateSubSection(
   newText: string,
