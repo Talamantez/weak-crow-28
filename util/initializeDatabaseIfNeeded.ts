@@ -1,9 +1,9 @@
 import { openDatabase } from './openDatabase.ts';
 import { checkDatabaseInitialized } from './checkDatabaseInitialized.ts';
-import { initializeDatabase } from '../islands/initializeDatabase.tsx';
+import { initializeDatabase } from './initializeDatabase.ts';
 
 // Import the VERSION_STORE_NAME from your versionManagement.ts file
-import { VERSION_STORE_NAME } from '../islands/versionManagement.ts';
+import { VERSION_STORE_NAME } from './versionManagement.ts';
 
 export const initializeDatabaseIfNeeded = (
     indexedDB: IDBFactory, dbName: string, dbVersion: number, storeName: string

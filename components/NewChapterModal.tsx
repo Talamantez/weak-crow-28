@@ -1,6 +1,6 @@
 import { useState } from "preact/hooks";
-import Button from "../components/Button.tsx";
-import Loader from "../components/Loader.tsx";
+import Button from "./Button.tsx";
+import Loader from "./Loader.tsx";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 
 const NewChapterModal = ({ isOpen, onClose, onSave }) => {

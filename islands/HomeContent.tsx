@@ -12,11 +12,11 @@ import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
-import { PdfPreview } from "./PdfPreview.tsx";
-import NewChapterModal from "./NewChapterModal.tsx";
-import ConfirmationModal from "./ConfirmationModal.tsx";
+import { PdfPreview } from "../components/PdfPreview.tsx";
+import NewChapterModal from "../components/NewChapterModal.tsx";
+import ConfirmationModal from "../components/ConfirmationModal.tsx";
 
-import { VersionManagementModal } from "./VersionManagementModal.tsx";
+import { VersionManagementModal } from "../components/VersionManagementModal.tsx";
 import {
   deleteVersion,
   loadVersion,
