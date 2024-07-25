@@ -364,20 +364,6 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     return _coverPage;
   }
 
-  function addPageNumber() {
-    if (pageCount >= contentStartPage) {
-      const pageNumberText = `Page ${pageCount - contentStartPage + 1}`;
-      const textWidth = helveticaFont.widthOfTextAtSize(pageNumberText, 10);
-      page.drawText(pageNumberText, {
-        x: width - margin - textWidth,
-        y: margin / 2,
-        size: 10,
-        font: helveticaFont,
-        color: colors.secondary,
-      });
-    }
-  }
-
   function addNewPageIfNeeded(
     currentY: number,
     requiredSpace: number,
@@ -400,7 +386,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         color: colors.background,
       });
 
-      console.log(`New page added. New y: ${newY}, Page count: ${pageCount}`);
+      // console.log(`New page added. New y: ${newY}, Page count: ${pageCount}`);
       return { newPage: true, y: newY };
     }
 
@@ -651,9 +637,10 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     page = result.page;
     y = result.y - titleFontSize * lineSpacing; // Reduced space after title
 
+    addNewPage(30); // Reduced space requirement
+
     // Draw section description or content
     if (section.description || section.content) {
-      addNewPage(30); // Reduced space requirement
       if (section.description) {
         result = drawRichText(page, section.description, y, indent, depth);
         page = result.page;
@@ -672,7 +659,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         addNewPage(50); // Reduced space requirement
         result = drawSection(page, subSection, depth + 1, y, addNewPage);
         page = result.page;
-        y = result.y; // Reduced space between subsections
+        y = result.y + 20; // Reduced space between subsections
       }
     }
 
@@ -692,7 +679,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     pdfDoc: PDFDocument,
     tocEntries: any[],
   ): PDFPage[] {
-    console.log("Starting to draw Table of Contents");
+    // console.log("Starting to draw Table of Contents");
     let pages: PDFPage[] = [];
     let page = pdfDoc.addPage();
     pages.push(page);
@@ -713,7 +700,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     y = titleResult.y - 40; // Reduced space after title
 
     for (const entry of tocEntries) {
-      console.log(`Processing TOC entry: ${entry.title}`);
+      // console.log(`Processing TOC entry: ${entry.title}`);
       const fontSize = entry.level === 0 ? 14 : 12;
       const numberFontSize = 12;
       const indent = entry.level * 20;
@@ -738,7 +725,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
           pages.push(page);
           ({ width, height } = page.getSize());
           pageNumber++;
-          console.log(`New page started for TOC. New y: ${y}`);
+          // console.log(`New page started for TOC. New y: ${y}`);
         }
 
         // Draw the text
@@ -762,7 +749,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         }
 
         y -= fontSize * 1.5;
-        console.log(`After drawing line. New y: ${y}`);
+        // console.log(`After drawing line. New y: ${y}`);
       }
 
       y -= fontSize * 0.5; // Add a small gap between entries
@@ -782,9 +769,9 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       });
     });
 
-    console.log(
-      `Finished drawing Table of Contents. Total pages: ${pages.length}`,
-    );
+    // console.log(
+    //   `Finished drawing Table of Contents. Total pages: ${pages.length}`,
+    // );
     return pages;
   }
 
@@ -913,9 +900,9 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   // Update contentStartPage to account for multiple TOC pages
   contentStartPage = insertIndex;
 
-  console.log(
-    `TOC inserted. It spans ${tocPages.length} pages. Content starts at page ${contentStartPage}`,
-  );
+  // console.log(
+  //   `TOC inserted. It spans ${tocPages.length} pages. Content starts at page ${contentStartPage}`,
+  // );
 
   // Update page numbers for content pages
   // Subtract tocPages.length to account and the TOC pages
