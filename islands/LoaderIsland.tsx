@@ -27,8 +27,7 @@ export default function LoaderIsland() {
 
   return (
     <div>
-      {loading ? <Loader message={`We're getting things ready for you.
-        Thanks for your patience...`} /> : <HomeContent />}
+      {loading ? <Loader message={`We're setting up your editor...`} /> : <HomeContent />}
     </div>
   );
 }
