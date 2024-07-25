@@ -8,6 +8,7 @@ import {
 import { decode } from "https://deno.land/std@0.152.0/encoding/base64.ts";
 import { Handlers } from "https://deno.land/x/fresh@1.6.8/server.ts";
 import { coverImageUrl } from "../../data/coverImageUrl.js";
+import { bold } from "https://deno.land/std@0.216.0/fmt/colors.ts";
 
 // Define types
 type BlockType = "paragraph" | "header" | "unordered-list-item";
@@ -679,7 +680,6 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     pdfDoc: PDFDocument,
     tocEntries: any[],
   ): PDFPage[] {
-    // console.log("Starting to draw Table of Contents");
     let pages: PDFPage[] = [];
     let page = pdfDoc.addPage();
     pages.push(page);
@@ -700,17 +700,18 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     y = titleResult.y - 40; // Reduced space after title
 
     for (const entry of tocEntries) {
-      // console.log(`Processing TOC entry: ${entry.title}`);
       const fontSize = entry.level === 0 ? 14 : 12;
       const numberFontSize = 12;
       const indent = entry.level * 20;
       const text = entry.title;
 
       const font = entry.level === 0 ? helveticaBoldFont : helveticaFont;
-      const pageNumWidth = helveticaFont.widthOfTextAtSize(
-        entry.pageNumber.toString(),
-        numberFontSize,
-      );
+      const pageNumWidth = entry.level === 0
+        ? helveticaFont.widthOfTextAtSize(
+          entry.pageNumber.toString(),
+          numberFontSize,
+        )
+        : 0;
       const availableWidth = maxWidth - indent - pageNumWidth - 20;
 
       const wrappedLines = wrapText(text, availableWidth, font, fontSize);
@@ -725,7 +726,6 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
           pages.push(page);
           ({ width, height } = page.getSize());
           pageNumber++;
-          // console.log(`New page started for TOC. New y: ${y}`);
         }
 
         // Draw the text
@@ -737,19 +737,18 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
           color: colors.text,
         });
 
-        // Draw the page number only for the last line
-        if (i === wrappedLines.length - 1) {
+        // Draw the page number only for the last line of level 0 entries
+        if (i === wrappedLines.length - 1 && entry.level === 0) {
           page.drawText(entry.pageNumber.toString(), {
             x: width - margin - pageNumWidth,
             y,
             size: numberFontSize,
-            font: helveticaFont,
+            font: helveticaBoldFont,
             color: colors.text,
           });
         }
 
         y -= fontSize * 1.5;
-        // console.log(`After drawing line. New y: ${y}`);
       }
 
       y -= fontSize * 0.5; // Add a small gap between entries
@@ -769,12 +768,8 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       });
     });
 
-    // console.log(
-    //   `Finished drawing Table of Contents. Total pages: ${pages.length}`,
-    // );
     return pages;
   }
-
   // Create an array to hold all pages
   const pages: PDFPage[] = [];
 
