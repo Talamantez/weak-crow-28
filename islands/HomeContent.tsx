@@ -775,10 +775,8 @@ export default function HomeContent() {
     });
   };
 
-  // Update scroll position and trigger scroll
   const updateScrollPosition = () => {
-    scrollPositionRef.current = globalThis.pageYOffset;
-    handleScroll();
+    scrollPositionRef.current = window.pageYOffset;
   };
 
   const showConfirmModal = (message: string, action: () => void) => {
@@ -812,6 +810,7 @@ export default function HomeContent() {
 
   const onDrop = (e: DragEvent, targetChapterId: string) => {
     e.preventDefault();
+    updateScrollPosition();
     const sourceChapterId = e.dataTransfer?.getData("text/plain");
 
     if (sourceChapterId && sourceChapterId !== targetChapterId) {
@@ -847,12 +846,17 @@ export default function HomeContent() {
   };
 
   useEffect(() => {
+    window.scrollTo(0, scrollPositionRef.current);
+  }, [chapters]);
+
+  useEffect(() => {
     if (!isReordering) {
       updateChapterOrder(chapters);
     }
   }, [chapters, isReordering]);
 
   const updateChapterOrder = async (newChapters) => {
+    updateScrollPosition();
     try {
       const db = await new Promise<IDBDatabase>((resolve, reject) => {
         const request = indexedDB.open(dbName, dbVersion);
@@ -877,7 +881,6 @@ export default function HomeContent() {
       db.close();
     } catch (error) {
       console.error("Error updating chapter order:", error);
-      // Handle error (e.g., show an error message to the user)
     }
   };
 
