@@ -299,47 +299,29 @@ const ChapterComponent = (
       return;
     }
 
-    const formData = new FormData();
-    formData.append("image", file);
-
-    Logger.info(`[${functionId}] Sending upload request to /api/upload`);
-
     try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      Logger.info(
-        `[${functionId}] Upload response received. Status: ${response.status}`,
-      );
-
-      if (response.ok) {
-        const { url } = await response.json();
-        Logger.info(`[${functionId}] Image uploaded successfully. URL: ${url}`);
-        onUpdate({ ...chapter, imageUrl: url });
-      } else {
-        const errorText = await response.text();
-        Logger.error(
-          `[${functionId}] Failed to upload image. Status: ${response.status}, Error: ${errorText}`,
-        );
-        // Consider showing an error message to the user
-      }
+      const base64String = await convertToBase64(file);
+      Logger.info(`[${functionId}] Image converted to base64 successfully`);
+      onUpdate({ ...chapter, imageUrl: base64String });
     } catch (error) {
-      Logger.error(`[${functionId}] Error uploading image:`, {
+      Logger.error(`[${functionId}] Error processing image:`, {
         message: error.message,
         name: error.name,
         stack: error.stack,
-        // For fetch errors
-        type: error.type,
-        // If it's a Response object
-        status: error.status,
-        statusText: error.statusText,
       });
       // Consider showing an error message to the user
     }
 
     Logger.info(`[${functionId}] handleImageUpload completed`);
+  };
+
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   const handleTitleChange = (e: Event) => {
