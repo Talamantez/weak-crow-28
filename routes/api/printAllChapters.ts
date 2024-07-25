@@ -679,18 +679,6 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     return { page, y };
   }
 
-  function addNewSectionPageIfNeeded(
-    currentPage: PDFPage,
-    requiredSpace: number,
-    y: number,
-    margin: number,
-  ): PDFPage {
-    if (y - requiredSpace < margin) {
-      return pdfDoc.addPage();
-    }
-    return currentPage;
-  }
-
   function drawSection(
     page: PDFPage,
     section: Section,
@@ -706,7 +694,6 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
 
     // Draw section title with appropriate font and indentation
     // let titleFont = depth === 0 ? timesRomanBoldFont : helveticaBoldFont;
-    let titleFont = depth === 0 ? timesRomanFont : helveticaBoldFont;
     // Draw section title
     let result = drawWrappedText(
       page,
@@ -893,7 +880,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   }
 
   try {
-    for (const [index, chapter] of data.Chapters.entries()) {
+    for (const [_index, chapter] of data.Chapters.entries()) {
       // Generate chapter cover page
       const chapterCoverPage = await generateChapterCoverPage({
         ...chapter,

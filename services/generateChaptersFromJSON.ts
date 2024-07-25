@@ -4,6 +4,13 @@ import intro from "../data/chapters/Introduction.json" with { type: "json" };
 import overview from "../data/chapters/An Overview of Mental Health Conditions.json" with { type: "json" };
 import specific from "../data/chapters/Specific Mental Health Conditions.json" with { type: "json" };
 import treatment from "../data/chapters/Treatment and Recovery.json" with { type: "json" };
+import housing from "../data/chapters/Housing.json" with { type: "json" };
+import employment from "../data/chapters/Employment.json" with { type: "json" };
+import hipaa from "../data/chapters/Understanding HIPAA.json" with { type: "json" };
+import crisis from "../data/chapters/What to Do in a Crisis.json" with { type: "json" };
+import advocacy from "../data/chapters/Advocacy.json" with { type: "json" };
+import guardianship from "../data/chapters/Guardianship and Alternatives.json" with { type: "json" };
+
 
 const chapters = {
   Chapters: [
@@ -30,6 +37,42 @@ const chapters = {
       description: treatment.description,
       sections: treatment.sections,
       imageUrl: treatment.imageUrl,
+    },
+    {
+      title: crisis.title,
+      description: crisis.description,
+      sections: crisis.sections,
+      imageUrl: crisis.imageUrl,
+    },
+    {
+      title: employment.title,
+      description: employment.description,
+      sections: employment.sections,
+      imageUrl: employment.imageUrl,
+    },
+    {
+      title: housing.title,
+      description: housing.description,
+      sections: housing.sections,
+      imageUrl: housing.imageUrl,
+    },
+    {
+      title: guardianship.title,
+      description: guardianship.description,
+      sections: guardianship.sections,
+      imageUrl: guardianship.imageUrl,
+    },
+    {
+      title: hipaa.title,
+      description: hipaa.description,
+      sections: hipaa.sections,
+      imageUrl: hipaa.imageUrl,
+    },
+    {
+      title: advocacy.title,
+      description: advocacy.description,
+      sections: advocacy.sections,
+      imageUrl: advocacy.imageUrl,
     },
   ],
 };
