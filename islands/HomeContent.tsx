@@ -9,6 +9,7 @@ import IconChevronDown from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chev
 import IconChevronUp from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-up.tsx";
 import IconCheck from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/check.tsx";
 import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
+import IconSearch from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/search.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
@@ -767,6 +768,61 @@ export default function HomeContent() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmMessage, setConfirmMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<Chapter[]>([]);
+
+  const handleSearch = (event: Event) => {
+    const value = (event.target as HTMLInputElement).value;
+    setSearchTerm(value);
+
+    if (value.trim() === "") {
+      setSearchResults([]);
+      return;
+    }
+
+    const results = chapters.filter((chapter) =>
+      chapter.title.toLowerCase().includes(value.toLowerCase()) ||
+      chapter.description.toLowerCase().includes(value.toLowerCase()) ||
+      chapter.sections.some((section) =>
+        section.title.toLowerCase().includes(value.toLowerCase()) ||
+        section.description?.blocks.some((block) =>
+          block.text.toLowerCase().includes(value.toLowerCase())
+        )
+      )
+    );
+
+    setSearchResults(results);
+  };
+
+  const renderSearchResults = () => {
+    if (searchTerm.trim() === "") {
+      return null;
+    }
+
+    if (searchResults.length === 0) {
+      return <p>No results found</p>;
+    }
+
+    return (
+      <div class="mt-4">
+        <h3 class="text-lg font-semibold mb-2">Search Results:</h3>
+        {searchResults.map((chapter) => (
+          <div key={chapter.index} class="mb-4 p-4 bg-gray-100 rounded">
+            <h4 class="font-bold">{chapter.title}</h4>
+            <p>{chapter.description}</p>
+            {chapter.sections.map((section, index) => (
+              <div key={index} class="ml-4 mt-2">
+                <h5 class="font-semibold">{section.title}</h5>
+                {section.description?.blocks.map((block, blockIndex) => (
+                  <p key={blockIndex}>{block.text}</p>
+                ))}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   // Function to handle scrolling
   const handleScroll = () => {
@@ -1147,13 +1203,25 @@ export default function HomeContent() {
             <h2 class="font-bold text-2xl w-3/5 text-left mb-4">
               Chapters
             </h2>
-            <div class="flex flex-col sm:flex-row justify-between w-full">
+            <div class="flex flex-col sm:flex-row justify-between w-full mb-4">
+              <div class="relative flex-grow mr-2">
+                <input
+                  type="text"
+                  placeholder="Search chapters and sections..."
+                  value={searchTerm}
+                  onInput={handleSearch}
+                  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <IconSearch class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              </div>
               <Button
                 text="Add New Chapter"
                 onClick={() => setIsModalOpen(true)}
                 styles="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 rounded-md py-2 px-4 text-white transition-colors focus:outline-none outline-none"
                 icon={IconPlus}
               />
+            </div>
+            <div class="flex flex-col sm:flex-row justify-between w-full">
               {isReordering
                 ? (
                   <>
@@ -1188,6 +1256,7 @@ export default function HomeContent() {
             </div>
           </div>
 
+          {renderSearchResults()}
           {loading
             ? <p>Loading chapters...</p>
             : loadError
