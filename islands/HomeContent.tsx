@@ -440,7 +440,7 @@ const ChapterComponent = (
             )
             : (
               <div class="flex items-center">
-                <h2 class="text-base lg:text-lg font-bold p-2 rounded mr-2">
+                <h2 class="text-sm lg:text-lg font-bold p-2 rounded mr-2">
                   {chapter.title}
                 </h2>
               </div>
