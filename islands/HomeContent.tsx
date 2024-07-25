@@ -384,7 +384,7 @@ const ChapterComponent = (
   };
 
   return (
-    <div class="bg-white rounded-lg shadow-md p-4 mb-4 border-2 border-green-500">
+    <div class="">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center">
           <Button
