@@ -172,7 +172,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         y: y - textPadding - 8,
         width: lineWidth + 2 * textPadding,
         height: titleFontSize + 2 * textPadding,
-        color: colors.primary, // TODO: Make semi-transparent black
+        color: colors.primary,
         opacity: 1,
       });
 
@@ -614,16 +614,18 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     section: Section,
     depth: number,
     startY: number,
-    addNewPage: (space: number) => void,
+    addNewPage: () => PDFPage,
   ): { page: PDFPage; y: number } {
     let y = startY;
     const indent = depth * 20; // Increase indentation for nested subsections
     const titleFontSize = Math.max(18 - depth * 2, 12); // Decrease font size for deeper subsections, but not below 12
 
-    addNewPage(titleFontSize * lineSpacing + 10);
+    // Check if we need a new page for the section title
+    if (y - titleFontSize * lineSpacing < pageBottom) {
+      page = addNewPage();
+      y = page.getHeight() - margin;
+    }
 
-    // Draw section title with appropriate font and indentation
-    // let titleFont = depth === 0 ? timesRomanBoldFont : helveticaBoldFont;
     // Draw section title
     let result = drawWrappedText(
       page,
@@ -636,37 +638,38 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       depth,
     );
     page = result.page;
-    y = result.y - titleFontSize * lineSpacing; // Reduced space after title
-
-    addNewPage(30); // Reduced space requirement
+    y = result.y - titleFontSize * lineSpacing;
 
     // Draw section description or content
     if (section.description || section.content) {
       if (section.description) {
         result = drawRichText(page, section.description, y, indent, depth);
         page = result.page;
-        y = result.y - 20; // Reduced space after description
+        y = result.y - 20;
       }
       if (section.content) {
         result = drawRichText(page, section.content, y, indent, depth);
         page = result.page;
-        y = result.y - 20; // Reduced space after content
+        y = result.y - 20;
       }
     }
 
     // Draw subsections
     if (section.sections) {
       for (const subSection of section.sections) {
-        addNewPage(50); // Reduced space requirement
+        // Check if we need a new page before drawing the subsection
+        if (y - titleFontSize * lineSpacing < pageBottom) {
+          page = addNewPage();
+          y = page.getHeight() - margin;
+        }
         result = drawSection(page, subSection, depth + 1, y, addNewPage);
         page = result.page;
-        y = result.y; // Reduced space between subsections
+        y = result.y - 20; // Add some space between subsections
       }
     }
 
     return { page, y };
   }
-
   // Add calming background to first page
   page.drawRectangle({
     x: 0,
@@ -787,12 +790,10 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     pages.push(currentPage);
     let y = currentPage.getHeight() - margin;
 
-    const addNewPage = (requiredSpace: number): void => {
-      if (y - requiredSpace < margin) {
-        currentPage = pdfDoc.addPage();
-        pages.push(currentPage);
-        y = currentPage.getHeight() - margin;
-      }
+    const addNewPage = (): PDFPage => {
+      currentPage = pdfDoc.addPage();
+      pages.push(currentPage);
+      return currentPage;
     };
 
     // Draw chapter title
@@ -808,21 +809,20 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       0,
     );
     currentPage = result.page;
-    y = result.y - titleFontSize; // Add extra space after title
+    y = result.y - titleFontSize;
 
     // Draw chapter description
     if (chapter.description) {
       result = drawRichText(currentPage, chapter.description, y, 0, 0);
       currentPage = result.page;
-      y = result.y - 20; // Add extra space after description
+      y = result.y - 20;
     }
 
     // Draw sections
     for (const section of chapter.sections) {
-      addNewPage(30); // Ensure there's enough space for each section
       result = drawSection(currentPage, section, 0, y, addNewPage);
       currentPage = result.page;
-      y = result.y - 20; // Add extra space between sections
+      y = result.y - 20;
     }
 
     return pages;
