@@ -320,7 +320,7 @@ const ChapterComponent = (
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
+      reader.onerror = (error) => reject(error);
     });
   };
 
@@ -761,7 +761,7 @@ export default function HomeContent() {
   const scrollPositionRef = useRef(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReordering, setIsReordering] = useState(false);
-  const [draggedChapter, setDraggedChapter] = useState(null);
+  const [draggedChapter, setDraggedChapter] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
@@ -797,21 +797,12 @@ export default function HomeContent() {
   const onDragStart = (e: DragEvent, chapterId: string) => {
     setDraggedChapter(chapterId);
     if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", chapterId);
-    }
-    if (e.target) {
-      e.target.style.opacity = "0.5";
     }
   };
 
-  const onDragOver = (e: DragEvent, targetChapterId) => {
+  const onDragOver = (e: DragEvent) => {
     e.preventDefault();
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = "move";
-      setDropTarget(targetChapterId);
-      console.log("Drop target:", targetChapterId);
-    }
   };
 
   const onDragLeave = (e: DragEvent) => {
@@ -819,10 +810,11 @@ export default function HomeContent() {
     setDropTarget(null);
   };
 
-  const onDrop = async (e: DragEvent, targetChapterId: string) => {
+  const onDrop = (e: DragEvent, targetChapterId: string) => {
     e.preventDefault();
-    const sourceChapterId = draggedChapter;
-    if (sourceChapterId !== targetChapterId) {
+    const sourceChapterId = e.dataTransfer?.getData("text/plain");
+
+    if (sourceChapterId && sourceChapterId !== targetChapterId) {
       setChapters((prevChapters) => {
         const newChapters = [...prevChapters];
         const sourceIndex = newChapters.findIndex((ch) =>
@@ -831,28 +823,34 @@ export default function HomeContent() {
         const targetIndex = newChapters.findIndex((ch) =>
           ch.index === targetChapterId
         );
-        const [removed] = newChapters.splice(sourceIndex, 1);
-        newChapters.splice(targetIndex, 0, removed);
-        return newChapters;
+
+        if (sourceIndex !== -1 && targetIndex !== -1) {
+          const [removed] = newChapters.splice(sourceIndex, 1);
+          newChapters.splice(targetIndex, 0, removed);
+
+          // Update indices
+          return newChapters.map((ch, index) => ({
+            ...ch,
+            index: index.toString(),
+          }));
+        }
+
+        return prevChapters;
       });
-      updateScrollPosition();
-      await updateChapterOrder(chapters).then(() => {
-        console.log("Chapter order updated successfully");
-        console.log("Chapters:", chapters);
-      });
-      setDraggedChapter(null);
-      setDropTarget(null);
     }
+
+    setDraggedChapter(null);
   };
 
-  const onDragEnd = (e: DragEvent) => {
-    e.preventDefault();
-    if (e.target) {
-      e.target.style.opacity = "1";
-    }
-    // setDraggedChapter(null);
-    // setDropTarget(null);
+  const onDragEnd = () => {
+    setDraggedChapter(null);
   };
+
+  useEffect(() => {
+    if (!isReordering) {
+      updateChapterOrder(chapters);
+    }
+  }, [chapters, isReordering]);
 
   const updateChapterOrder = async (newChapters) => {
     try {
@@ -1169,41 +1167,33 @@ export default function HomeContent() {
                   isReordering ? "cursor-move" : ""
                 }`}
               >
-                {[...chapters]
-                  .sort((a, b) => a.index - b.index)
-                  .map((chapter) => (
-                    <div
-                      key={chapter.index}
-                      draggable={isReordering}
-                      onDragStart={(e) =>
-                        isReordering && onDragStart(e, chapter.index)}
-                      onDragOver={(e) =>
-                        isReordering && onDragOver(e, chapter.index)}
-                      onDragEnd={(e) => onDragEnd(e)}
-                      onDrop={(e) => isReordering && onDrop(e, chapter.index)}
-                      class={`relative transition-all duration-300 ${
-                        isReordering
-                          ? "border-2 border-dashed border-gray-400 p-4 pt-10"
-                          : ""
-                      } ${draggedChapter === chapter.index ? "opacity-50" : ""}
-              ${
-                        dropTarget === chapter.index
-                          ? "border-4 border-blue-500"
-                          : ""
-                      }`}
-                    >
-                      {isReordering && (
-                        <div class="absolute top-0 left-0 right-0 text-center text-sm">
-                          Drag to reorder
-                        </div>
-                      )}
-                      <ChapterComponent
-                        chapter={chapter}
-                        onUpdate={updateChapter}
-                        onDelete={() => deleteChapter(chapter.index)}
-                      />
-                    </div>
-                  ))}
+                {chapters.map((chapter) => (
+                  <div
+                    key={chapter.index}
+                    draggable={isReordering}
+                    onDragStart={(e) =>
+                      isReordering && onDragStart(e, chapter.index)}
+                    onDragOver={(e) => isReordering && onDragOver(e)}
+                    onDragEnd={onDragEnd}
+                    onDrop={(e) => isReordering && onDrop(e, chapter.index)}
+                    class={`relative transition-all duration-300 ${
+                      isReordering
+                        ? "border-2 border-dashed border-gray-400 p-4 pt-10"
+                        : ""
+                    } ${draggedChapter === chapter.index ? "opacity-50" : ""}`}
+                  >
+                    {isReordering && (
+                      <div class="absolute top-0 left-0 right-0 text-center text-sm">
+                        Drag to reorder
+                      </div>
+                    )}
+                    <ChapterComponent
+                      chapter={chapter}
+                      onUpdate={updateChapter}
+                      onDelete={() => deleteChapter(chapter.index)}
+                    />
+                  </div>
+                ))}
               </div>
             )}
 
