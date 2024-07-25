@@ -1,6 +1,11 @@
 // Loader.tsx
 
-export default function Loader() {
+interface LoaderProps {
+    message: string
+}
+
+
+export default function Loader( {message}:LoaderProps ){
   return (
     <div class="flex flex-col items-center justify-center h-screen">
       <div class="flex items-end gap-8">
@@ -31,7 +36,7 @@ export default function Loader() {
           </path>
         </svg>
       </div>
-      <p class="mt-4">Loading...</p>
+      <p class="mt-4">{message || "Loading..."}</p>
     </div>
   );
 }

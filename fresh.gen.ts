@@ -2,82 +2,32 @@
 // This file SHOULD be checked into source version control.
 // This file is automatically updated during development when running `dev.ts`.
 
-import * as $_chapter_ from "./routes/[chapter].tsx";
-import * as $_add_chapter from "./routes/_add-chapter.tsx";
-import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
 import * as $api_Data from "./routes/api/Data.ts";
 import * as $api_generate_pdf from "./routes/api/generate-pdf.ts";
 import * as $api_printAllChapters from "./routes/api/printAllChapters.ts";
-import * as $api_printChapter from "./routes/api/printChapter.ts";
-import * as $api_printChapterWithCover from "./routes/api/printChapterWithCover.ts";
-import * as $api_printChaptersV2 from "./routes/api/printChaptersV2.ts";
-import * as $api_sampleData from "./routes/api/sampleData.ts";
-import * as $api_upload from "./routes/api/upload.ts";
 import * as $index from "./routes/index.tsx";
-import * as $new_chapter from "./routes/new-chapter.tsx";
 import * as $AddChapter from "./islands/AddChapter.tsx";
-import * as $ChapterEditor from "./islands/ChapterEditor.tsx";
-import * as $ChapterView from "./islands/ChapterView.tsx";
-import * as $ConfirmationModal from "./islands/ConfirmationModal.tsx";
 import * as $HomeContent from "./islands/HomeContent.tsx";
-import * as $ImageChooser from "./islands/ImageChooser.tsx";
 import * as $LoaderIsland from "./islands/LoaderIsland.tsx";
-import * as $NewChapterModal from "./islands/NewChapterModal.tsx";
-import * as $PdfPreview from "./islands/PdfPreview.tsx";
 import * as $Sections from "./islands/Sections.tsx";
-import * as $VersionManagementModal from "./islands/VersionManagementModal.tsx";
-import * as $_Hero from "./islands/_Hero.tsx";
-import * as $_HomeContent from "./islands/_HomeContent.tsx";
-import * as $fetchChaptersFromIndexedDB from "./islands/fetchChaptersFromIndexedDB.tsx";
-import * as $generateIntroduction from "./islands/generateIntroduction.tsx";
-import * as $getDatabaseInfo from "./islands/getDatabaseInfo.tsx";
-import * as $initializeDatabase from "./islands/initializeDatabase.tsx";
 import * as $printAllChapters from "./islands/printAllChapters.tsx";
-import * as $renderImages from "./islands/renderImages.tsx";
-import * as $types from "./islands/types.ts";
-import * as $versionManagement from "./islands/versionManagement.ts";
 import { type Manifest } from "$fresh/server.ts";
 
 const manifest = {
   routes: {
-    "./routes/[chapter].tsx": $_chapter_,
-    "./routes/_add-chapter.tsx": $_add_chapter,
-    "./routes/_app.tsx": $_app,
     "./routes/_middleware.ts": $_middleware,
     "./routes/api/Data.ts": $api_Data,
     "./routes/api/generate-pdf.ts": $api_generate_pdf,
     "./routes/api/printAllChapters.ts": $api_printAllChapters,
-    "./routes/api/printChapter.ts": $api_printChapter,
-    "./routes/api/printChapterWithCover.ts": $api_printChapterWithCover,
-    "./routes/api/printChaptersV2.ts": $api_printChaptersV2,
-    "./routes/api/sampleData.ts": $api_sampleData,
-    "./routes/api/upload.ts": $api_upload,
     "./routes/index.tsx": $index,
-    "./routes/new-chapter.tsx": $new_chapter,
   },
   islands: {
     "./islands/AddChapter.tsx": $AddChapter,
-    "./islands/ChapterEditor.tsx": $ChapterEditor,
-    "./islands/ChapterView.tsx": $ChapterView,
-    "./islands/ConfirmationModal.tsx": $ConfirmationModal,
     "./islands/HomeContent.tsx": $HomeContent,
-    "./islands/ImageChooser.tsx": $ImageChooser,
     "./islands/LoaderIsland.tsx": $LoaderIsland,
-    "./islands/NewChapterModal.tsx": $NewChapterModal,
-    "./islands/PdfPreview.tsx": $PdfPreview,
     "./islands/Sections.tsx": $Sections,
-    "./islands/VersionManagementModal.tsx": $VersionManagementModal,
-    "./islands/_Hero.tsx": $_Hero,
-    "./islands/_HomeContent.tsx": $_HomeContent,
-    "./islands/fetchChaptersFromIndexedDB.tsx": $fetchChaptersFromIndexedDB,
-    "./islands/generateIntroduction.tsx": $generateIntroduction,
-    "./islands/getDatabaseInfo.tsx": $getDatabaseInfo,
-    "./islands/initializeDatabase.tsx": $initializeDatabase,
     "./islands/printAllChapters.tsx": $printAllChapters,
-    "./islands/renderImages.tsx": $renderImages,
-    "./islands/types.ts": $types,
-    "./islands/versionManagement.ts": $versionManagement,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;
