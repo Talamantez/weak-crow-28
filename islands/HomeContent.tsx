@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
+import { apply, tw } from "https://esm.sh/@twind/core@1.1.3";
 import { Head } from "$fresh/runtime.ts";
 import Footer from "../components/Footer.tsx";
 import Button from "../components/Button.tsx";
@@ -786,6 +787,7 @@ export default function HomeContent() {
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(
     new Set(),
   );
+  const [highlightedElement, setHighlightedElement] = useState(null);
 
   const handleSearch = (event: Event) => {
     const value = (event.target as HTMLInputElement).value;
@@ -810,6 +812,8 @@ export default function HomeContent() {
     setSearchResults(results);
   };
 
+  const highlightClass = apply`transition-colors duration-300 bg-yellow-200`;
+
   const renderSearchResults = () => {
     if (searchTerm.trim() === "") {
       return null;
@@ -830,7 +834,6 @@ export default function HomeContent() {
                 text="Edit Chapter"
                 onClick={() => {
                   toggleChapterExpansion(chapter.index);
-                  // Use setTimeout to ensure the chapter expands before scrolling
                   setTimeout(() => {
                     scrollToElement(`chapter-${chapter.index}`);
                   }, 100);
@@ -893,13 +896,12 @@ export default function HomeContent() {
   const scrollToElement = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      // Scroll the element to the top of the viewport
       element.scrollIntoView({ behavior: "smooth", block: "start" });
-      // Highlight the scrolled-to element temporarily
-      element.classList.add("bg-yellow-200");
-      setTimeout(() => element.classList.remove("bg-yellow-200"), 2000);
+      setHighlightedElement(id);
+      setTimeout(() => setHighlightedElement(null), 2000);
     }
   };
+
   const updateScrollPosition = () => {
     scrollPositionRef.current = window.pageYOffset;
   };
@@ -1346,17 +1348,21 @@ export default function HomeContent() {
                   <div
                     key={chapter.index}
                     id={`chapter-${chapter.index}`}
+                    class={`relative transition-all duration-300 ${
+                      highlightedElement === `chapter-${chapter.index}`
+                        ? highlightClass
+                        : ""
+                    } ${
+                      isReordering
+                        ? "border-2 border-dashed border-gray-400 p-4 pt-10"
+                        : ""
+                    } ${draggedChapter === chapter.index ? "opacity-50" : ""}`}
                     draggable={isReordering}
                     onDragStart={(e) =>
                       isReordering && onDragStart(e, chapter.index)}
                     onDragOver={(e) => isReordering && onDragOver(e)}
                     onDragEnd={onDragEnd}
                     onDrop={(e) => isReordering && onDrop(e, chapter.index)}
-                    class={`relative transition-all duration-300 ${
-                      isReordering
-                        ? "border-2 border-dashed border-gray-400 p-4 pt-10"
-                        : ""
-                    } ${draggedChapter === chapter.index ? "opacity-50" : ""}`}
                   >
                     {isReordering && (
                       <div class="absolute top-0 left-0 right-0 text-center text-sm">
