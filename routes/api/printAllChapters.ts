@@ -378,16 +378,19 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     }
   }
 
-  function addNewPageIfNeeded(currentY: number, requiredSpace: number): { newPage: boolean; y: number } {
-    console.log(`Current y: ${currentY}, Required space: ${requiredSpace}, Page bottom: ${pageBottom}`);
-    
+  function addNewPageIfNeeded(
+    currentY: number,
+    requiredSpace: number,
+  ): { newPage: boolean; y: number } {
+    // console.log(`Current y: ${currentY}, Required space: ${requiredSpace}, Page bottom: ${pageBottom}`);
+
     if (currentY - requiredSpace < pageBottom) {
-      console.log("Adding new page");
+      // console.log("Adding new page");
       page = pdfDoc.addPage();
       ({ width, height } = page.getSize());
       const newY = height - margin;
       pageCount++;
-      
+
       // Add calming background to new page
       page.drawRectangle({
         x: 0,
@@ -396,68 +399,13 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         height: height,
         color: colors.background,
       });
-      
+
       console.log(`New page added. New y: ${newY}, Page count: ${pageCount}`);
       return { newPage: true, y: newY };
     }
-    
-    console.log("No new page needed");
+
+    // console.log("No new page needed");
     return { newPage: false, y: currentY };
-  }
-
-  function selectPullQuote(text: string): string {
-    // Split the text into sentences
-    const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
-
-    // Filter and score sentences
-    const candidateQuotes = sentences
-      .filter((sentence) => sentence.length > 30 && sentence.length < 150) // Filter by length
-      .map((sentence) => ({
-        text: sentence.trim(),
-        score: scoreSentence(sentence),
-      }))
-      .sort((a, b) => b.score - a.score); // Sort by score, highest first
-
-    // Return the highest scored quote, or a default message if no suitable quote is found
-    return candidateQuotes.length > 0
-      ? candidateQuotes[0].text
-      : "Key information highlighted here.";
-  }
-
-  function scoreSentence(sentence: string): number {
-    let score = 0;
-
-    // Prefer sentences with quotation marks
-    if (
-      sentence.includes('"') ||
-      sentence.includes('"') ||
-      sentence.includes('"')
-    ) {
-      score += 3;
-    }
-
-    // Prefer sentences with important-sounding words
-    const importantWords = [
-      "key",
-      "important",
-      "significant",
-      "crucial",
-      "essential",
-      "vital",
-      "critical",
-    ];
-    importantWords.forEach((word) => {
-      if (sentence.toLowerCase().includes(word)) {
-        score += 2;
-      }
-    });
-
-    // Slightly prefer shorter sentences
-    if (sentence.length < 100) {
-      score += 1;
-    }
-
-    return score;
   }
 
   function splitTextIntoLines(
@@ -713,38 +661,57 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     color: colors.background,
   });
 
-  function drawTableOfContents(page: PDFPage, tocEntries: any[]) {
+  function drawTableOfContents(
+    pdfDoc: PDFDocument,
+    tocEntries: any[],
+  ): PDFPage[] {
     console.log("Starting to draw Table of Contents");
+    let pages: PDFPage[] = [];
+    let page = pdfDoc.addPage();
+    pages.push(page);
+    let { width, height } = page.getSize();
     let y = height - margin;
-  
+
     // Draw TOC title
-    const titleResult = drawWrappedText(page, "Table of Contents", 24, true, true, y);
+    const titleResult = drawWrappedText(
+      page,
+      "Table of Contents",
+      24,
+      true,
+      true,
+      y,
+    );
     page = titleResult.page;
     y = titleResult.y - 40; // Reduced space after title
-  
+
     for (const entry of tocEntries) {
       console.log(`Processing TOC entry: ${entry.title}`);
       const fontSize = entry.level === 0 ? 14 : 12;
       const numberFontSize = 12;
       const indent = entry.level * 20;
       const text = entry.title;
-  
+
       const font = entry.level === 0 ? helveticaBoldFont : helveticaFont;
-      const pageNumWidth = helveticaFont.widthOfTextAtSize(entry.pageNumber.toString(), numberFontSize);
+      const pageNumWidth = helveticaFont.widthOfTextAtSize(
+        entry.pageNumber.toString(),
+        numberFontSize,
+      );
       const availableWidth = maxWidth - indent - pageNumWidth - 20;
-  
+
       const wrappedLines = wrapText(text, availableWidth, font, fontSize);
-  
+
       for (let i = 0; i < wrappedLines.length; i++) {
         const line = wrappedLines[i];
-  
+
         const { newPage, y: newY } = addNewPageIfNeeded(y, fontSize * 1.5);
         y = newY;
         if (newPage) {
-          page = pdfDoc.getPage(pdfDoc.getPageCount() - 1);
+          page = pdfDoc.addPage();
+          pages.push(page);
+          ({ width, height } = page.getSize());
           console.log(`New page started for TOC. New y: ${y}`);
         }
-  
+
         // Draw the text
         page.drawText(line, {
           x: margin + indent,
@@ -753,7 +720,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
           font: font,
           color: colors.text,
         });
-  
+
         // Draw the page number only for the last line
         if (i === wrappedLines.length - 1) {
           page.drawText(entry.pageNumber.toString(), {
@@ -764,19 +731,20 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
             color: colors.text,
           });
         }
-  
+
         y -= fontSize * 1.5;
         console.log(`After drawing line. New y: ${y}`);
       }
-  
+
       y -= fontSize * 0.5; // Add a small gap between entries
     }
-  
-    // Ensure there's a page break after the Table of Contents
-    addNewPageIfNeeded(y, height);
-    console.log("Finished drawing Table of Contents");
+
+    console.log(
+      `Finished drawing Table of Contents. Total pages: ${pages.length}`,
+    );
+    return pages;
   }
-  
+
   // Create an array to hold all pages
   const pages: PDFPage[] = [];
 
@@ -887,16 +855,40 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
 
   // Generate and replace TOC
   const tocEntries = generateTableOfContents(data.Chapters);
-  const actualTocPage = pdfDoc.addPage();
-  drawTableOfContents(actualTocPage, tocEntries);
+  const tocPages = drawTableOfContents(pdfDoc, tocEntries);
 
-  // Replace the placeholder TOC with the actual one
-  // pdfDoc.removePage(2);
-  pdfDoc.removePage(1); // Remove placeholder
-  pdfDoc.insertPage(1, actualTocPage); // Insert actual TOC
+  // Remove the placeholder TOC
+  pdfDoc.removePage(1);
 
-  // pdfDoc.insertPage(0, pages[0]); // Insert cover page
+  // Insert all TOC pages
+  let insertIndex = 1;
+  for (const tocPage of tocPages) {
+    pdfDoc.insertPage(insertIndex, tocPage);
+    insertIndex++;
+  }
 
+  // Update contentStartPage to account for multiple TOC pages
+  contentStartPage = insertIndex;
+
+  console.log(
+    `TOC inserted. It spans ${tocPages.length} pages. Content starts at page ${contentStartPage}`,
+  );
+  // Update page numbers for content pages
+  for (let i = contentStartPage; i < pdfDoc.getPageCount(); i++) {
+    const page = pdfDoc.getPage(i);
+    const pageNumber = i - contentStartPage + 1;
+    const pageNumberText = `Page ${pageNumber}`;
+    const { width } = page.getSize();
+    const textWidth = helveticaFont.widthOfTextAtSize(pageNumberText, 10);
+
+    page.drawText(pageNumberText, {
+      x: width - margin - textWidth,
+      y: margin / 2,
+      size: 10,
+      font: helveticaFont,
+      color: colors.secondary,
+    });
+  }
   // Add all generated pages to the PDF document and add page numbers
   pages.forEach((page, index) => {
     pdfDoc.addPage(page);
