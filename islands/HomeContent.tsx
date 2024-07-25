@@ -758,6 +758,7 @@ export default function HomeContent() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const { error } = useLoadChapters(dbName, storeName, dbVersion);
+  const [originalOrder, setOriginalOrder] = useState<Chapter[]>([]);
   const scrollPositionRef = useRef(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReordering, setIsReordering] = useState(false);
@@ -777,6 +778,22 @@ export default function HomeContent() {
 
   const updateScrollPosition = () => {
     scrollPositionRef.current = window.pageYOffset;
+  };
+
+  const startReordering = () => {
+    setOriginalOrder([...chapters]);
+    setIsReordering(true);
+  };
+
+  const cancelReordering = () => {
+    setChapters(originalOrder);
+    setIsReordering(false);
+  };
+
+  const saveReordering = async () => {
+    updateScrollPosition();
+    await updateChapterOrder(chapters);
+    setIsReordering(false);
   };
 
   const showConfirmModal = (message: string, action: () => void) => {
@@ -840,7 +857,6 @@ export default function HomeContent() {
 
     setDraggedChapter(null);
   };
-
   const onDragEnd = () => {
     setDraggedChapter(null);
   };
@@ -856,7 +872,7 @@ export default function HomeContent() {
   }, [chapters, isReordering]);
 
   const updateChapterOrder = async (newChapters) => {
-    updateScrollPosition();
+    // updateScrollPosition();
     try {
       const db = await new Promise<IDBDatabase>((resolve, reject) => {
         const request = indexedDB.open(dbName, dbVersion);
@@ -1138,12 +1154,31 @@ export default function HomeContent() {
                 styles="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 rounded-md py-2 px-4 text-white transition-colors focus:outline-none outline-none"
                 icon={IconPlus}
               />
-              <Button
-                text={isReordering ? "Save Order" : "Reorder Chapters"}
-                onClick={() => setIsReordering(!isReordering)}
-                styles="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
-                icon={IconArrowsSort}
-              />
+              {isReordering
+                ? (
+                  <>
+                    <Button
+                      text="Save Order"
+                      onClick={saveReordering}
+                      styles="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
+                      icon={IconCheck}
+                    />
+                    <Button
+                      text="Cancel"
+                      onClick={cancelReordering}
+                      styles="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
+                      icon={IconX}
+                    />
+                  </>
+                )
+                : (
+                  <Button
+                    text="Reorder Chapters"
+                    onClick={startReordering}
+                    styles="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
+                    icon={IconArrowsSort}
+                  />
+                )}
               <Button
                 text="Delete All Chapters"
                 onClick={handleDeleteAllChapters}
