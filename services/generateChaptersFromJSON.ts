@@ -1,5 +1,3 @@
-// AI suggestion:  import Chapter from "../routes/[chapter].tsx";
-
 import intro from "../data/chapters/Introduction.json" with { type: "json" };
 import overview from "../data/chapters/An Overview of Mental Health Conditions.json" with { type: "json" };
 import specific from "../data/chapters/Specific Mental Health Conditions.json" with { type: "json" };
@@ -10,7 +8,6 @@ import hipaa from "../data/chapters/Understanding HIPAA.json" with { type: "json
 import crisis from "../data/chapters/What to Do in a Crisis.json" with { type: "json" };
 import advocacy from "../data/chapters/Advocacy.json" with { type: "json" };
 import guardianship from "../data/chapters/Guardianship and Alternatives.json" with { type: "json" };
-
 
 const chapters = {
   Chapters: [

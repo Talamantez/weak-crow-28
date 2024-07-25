@@ -15,6 +15,8 @@ import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.t
 import { PdfPreview } from "../components/PdfPreview.tsx";
 import NewChapterModal from "../components/NewChapterModal.tsx";
 import ConfirmationModal from "../components/ConfirmationModal.tsx";
+import { crypto } from "https://deno.land/std@0.177.0/crypto/mod.ts";
+import { Logger } from "../util/logger.ts";
 
 import { VersionManagementModal } from "../components/VersionManagementModal.tsx";
 import {
@@ -25,11 +27,7 @@ import {
   saveVersion,
 } from "../util/versionManagement.ts";
 
-import {
-  Block,
-  Chapter,
-  Section,
-} from "../util/types.ts";
+import { Block, Chapter, Section } from "../util/types.ts";
 
 const RenderBlock = (
   { block, onDelete, isActive, setActiveBlock, updateBlock, myIndex },
@@ -278,29 +276,70 @@ const ChapterComponent = (
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [description, setDescription] = useState(chapter.description);
 
-  const handleImageUpload = async (e: Event) => {
+  const handleImageUpload = async (e: Event): Promise<void> => {
+    const functionId = crypto.randomUUID();
+    Logger.info(`[${functionId}] handleImageUpload started`);
+
     const input = e.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      const formData = new FormData();
-      formData.append("image", file);
-
-      try {
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (response.ok) {
-          const { url } = await response.json();
-          onUpdate({ ...chapter, imageUrl: url });
-        } else {
-          console.error("Failed to upload image");
-        }
-      } catch (error) {
-        console.error("Error uploading image:", error);
-      }
+    if (!input.files || input.files.length === 0) {
+      Logger.warn(`[${functionId}] No file selected`);
+      return;
     }
+
+    const file = input.files[0];
+    Logger.info(
+      `[${functionId}] File selected: ${file.name}, size: ${file.size} bytes, type: ${file.type}`,
+    );
+
+    if (!file.type.startsWith("image/")) {
+      Logger.error(
+        `[${functionId}] Invalid file type: ${file.type}. Expected an image.`,
+      );
+      // Consider showing an error message to the user
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    Logger.info(`[${functionId}] Sending upload request to /api/upload`);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      Logger.info(
+        `[${functionId}] Upload response received. Status: ${response.status}`,
+      );
+
+      if (response.ok) {
+        const { url } = await response.json();
+        Logger.info(`[${functionId}] Image uploaded successfully. URL: ${url}`);
+        onUpdate({ ...chapter, imageUrl: url });
+      } else {
+        const errorText = await response.text();
+        Logger.error(
+          `[${functionId}] Failed to upload image. Status: ${response.status}, Error: ${errorText}`,
+        );
+        // Consider showing an error message to the user
+      }
+    } catch (error) {
+      Logger.error(`[${functionId}] Error uploading image:`, {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+        // For fetch errors
+        type: error.type,
+        // If it's a Response object
+        status: error.status,
+        statusText: error.statusText,
+      });
+      // Consider showing an error message to the user
+    }
+
+    Logger.info(`[${functionId}] handleImageUpload completed`);
   };
 
   const handleTitleChange = (e: Event) => {
@@ -1156,7 +1195,8 @@ export default function HomeContent() {
                       draggable={isReordering}
                       onDragStart={(e) =>
                         isReordering && onDragStart(e, chapter.index)}
-                      onDragOver={(e) => isReordering && onDragOver(e, chapter.index)}
+                      onDragOver={(e) =>
+                        isReordering && onDragOver(e, chapter.index)}
                       onDragEnd={(e) => onDragEnd(e)}
                       onDrop={(e) => isReordering && onDrop(e, chapter.index)}
                       class={`relative transition-all duration-300 ${

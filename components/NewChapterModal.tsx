@@ -3,48 +3,86 @@ import Button from "./Button.tsx";
 import Loader from "./Loader.tsx";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 
-const NewChapterModal = ({ isOpen, onClose, onSave }) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+const ImageUploader = ({ onImageUploaded }) => {
   const [uploading, setUploading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
   const handleImageUpload = async (e: Event) => {
     e.preventDefault();
     setUploading(true);
-    const imageForm = e.target as HTMLFormElement;
+    setError(null);
+    const form = e.target as HTMLFormElement;
+    const fileInput = form.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = fileInput.files[0];
 
-    try {
-      const imageFormData = new FormData(imageForm);
-      const resp = await fetch("/api/upload", {
-        method: "POST",
-        body: imageFormData,
-      });
-      const { url } = await resp.json();
-      setImageUrl(url);
-    } catch (error) {
-      setError(error.message);
+    if (file) {
+      try {
+        const base64String = await convertToBase64(file);
+        onImageUploaded(base64String);
+      } catch (error) {
+        console.error("Upload error:", error);
+        setError("Failed to encode image. Please try again.");
+      } finally {
+        setUploading(false);
+      }
+    } else {
+      setError("No file selected");
+      setUploading(false);
     }
-    setUploading(false);
-    imageForm.reset();
+  };
+
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  return (
+    <div>
+      {error && <p class="text-red-500 mb-2">{error}</p>}
+      {uploading ? (
+        <Loader />
+      ) : (
+        <form onSubmit={handleImageUpload}>
+          <input type="file" name="image" accept="image/*" required />
+          <button
+            type="submit"
+            class="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 mt-2"
+          >
+            Upload Image
+          </button>
+        </form>
+      )}
+    </div>
+  );
+};
+
+const NewChapterModal = ({ isOpen, onClose, onSave }) => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleImageUploaded = (base64String: string) => {
+    setImageUrl(base64String);
   };
 
   const handleSubmit = async (e: Event) => {
-    // alert("Running handleSubmit");
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
 
     if (title === "" || description === "" || !imageUrl) {
-      setError("Please fill in all fields.");
+      setError("Please fill in all fields and upload an image.");
       setIsSubmitting(false);
       return;
     }
 
     try {
-      // alert("Running try block");
       const db = await new Promise<IDBDatabase>((resolve, reject) => {
         const request = indexedDB.open(dbName, dbVersion);
         request.onerror = () => reject(request.error);
@@ -54,30 +92,24 @@ const NewChapterModal = ({ isOpen, onClose, onSave }) => {
       const transaction = db.transaction(storeName, "readwrite");
       const objectStore = transaction.objectStore(storeName);
 
-      // Get the current highest index
       const countRequest = objectStore.count();
       const count = await new Promise<number>((resolve, reject) => {
         countRequest.onsuccess = () => resolve(countRequest.result);
         countRequest.onerror = () => reject(countRequest.error);
       });
-      // alert("Initializing new chapter object")
+
       const newChapter = {
-        index: count.toString(), // Use the current count as the new index
+        index: count.toString(),
         title,
-        description, // Store description as a string
+        description,
         sections: [],
         imageUrl,
         isIncluded: true,
       };
 
-      // alert("Initialize Add Request Promise")
-
       await new Promise<void>((resolve, reject) => {
-        // alert("Running Promise")
         const addRequest = objectStore.add(newChapter);
         addRequest.onerror = (event) => {
-          // alert("Promise errorer out")
-          // alert(event.target.error)
           console.error("Error details:", event.target.error);
           reject(event.target.error);
         };
@@ -126,24 +158,10 @@ const NewChapterModal = ({ isOpen, onClose, onSave }) => {
           </div>
           <div class="mb-4">
             <label htmlFor="coverImage" class="block mb-2">Cover Image</label>
-            {uploading ? (
-              <Loader />
-            ) : (
-              <div>
-                <form onSubmit={handleImageUpload}>
-                  <input type="file" name="image" accept="image/*" required />
-                  <button
-                    type="submit"
-                    class="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 mt-2"
-                  >
-                    Upload and Preview Image
-                  </button>
-                </form>
-                {imageUrl && (
-                  <div class="mt-2">
-                    <img class="max-h-32 object-cover" src={imageUrl} alt="Uploaded" />
-                  </div>
-                )}
+            <ImageUploader onImageUploaded={handleImageUploaded} />
+            {imageUrl && (
+              <div class="mt-2">
+                <img class="max-h-32 object-cover" src={imageUrl} alt="Uploaded" />
               </div>
             )}
           </div>
