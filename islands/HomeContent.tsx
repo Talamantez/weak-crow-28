@@ -19,7 +19,7 @@ import NewChapterModal from "../components/NewChapterModal.tsx";
 import ConfirmationModal from "../components/ConfirmationModal.tsx";
 import { crypto } from "https://deno.land/std@0.177.0/crypto/mod.ts";
 import { Logger } from "../util/logger.ts";
-
+import { ChapterComponent } from "../components/ChapterComponent.tsx";
 import { VersionManagementModal } from "../components/VersionManagementModal.tsx";
 import {
   deleteVersion,
@@ -30,741 +30,6 @@ import {
 } from "../util/versionManagement.ts";
 
 import { Block, Chapter, Section } from "../util/types.ts";
-
-const RenderBlock = (
-  { block, onDelete, isActive, setActiveBlock, updateBlock, myIndex },
-) => {
-  const [isEditingBlock, setIsEditingBlock] = useState(false);
-  let newValue = block.text;
-
-  const toggleIsEditingBlock = () => {
-    setIsEditingBlock(!isEditingBlock);
-  };
-
-  const handleSaveBlock = () => {
-    updateBlock(myIndex, {
-      ...block,
-      text: newValue,
-    });
-    setIsEditingBlock(false);
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditingBlock(false);
-  };
-
-  const handleChange = (e) => {
-    // setTempText((e.target as HTMLInputElement).value);
-    newValue = (e.target as HTMLInputElement).value;
-  };
-
-  const baseClasses = "mb-2 p-2 rounded";
-  const isEditingClasses = "bg-purple-200 text-purple-800";
-
-  if (!block.type) {
-    return null;
-  } else if (block.type === "paragraph") {
-    return (
-      <>
-        {isEditingBlock
-          ? (
-            <div>
-              <div
-                class={`flex items-center ${baseClasses}`}
-              >
-                <p class={`flex-grow ${isEditingClasses}`}>{block.text}</p>
-                <Button
-                  text=""
-                  onClick={() => toggleIsEditingBlock()}
-                  styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                  icon={IconEdit}
-                />
-                <Button
-                  text="Delete"
-                  onClick={onDelete}
-                  styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2"
-                />
-              </div>
-              <input
-                type="text"
-                value={block.text}
-                onChange={(e) => handleChange(e)}
-                class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
-                onFocus={() => setActiveBlock(block.id)}
-              />
-
-              <Button
-                text="Save"
-                onClick={handleSaveBlock}
-                styles="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-2 mr-2"
-              />
-              <Button
-                text="Cancel"
-                onClick={handleCancelEdit}
-                styles="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-2"
-              />
-            </div>
-          )
-          : ((
-            <div
-              class={`flex items-center ${baseClasses}`}
-            >
-              <p class={`flex-grow`}>{block.text}</p>
-              <Button
-                text=""
-                onClick={() => toggleIsEditingBlock()}
-                styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                icon={IconEdit}
-              />
-              <Button
-                text="Delete"
-                onClick={onDelete}
-                styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2"
-              />
-            </div>
-          ))}
-      </>
-    );
-  } else if (block.type === "header") {
-    return (
-      <>
-        {isEditingBlock
-          ? (
-            <div>
-              <div
-                class={`flex items-center ${baseClasses}`}
-              >
-                <h3 class={`text-xl font-bold flex-grow ${isEditingClasses}`}>
-                  {block.text}
-                </h3>
-                <Button
-                  text=""
-                  onClick={() => toggleIsEditingBlock()}
-                  styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                  icon={IconEdit}
-                />
-                <Button
-                  text="Delete"
-                  onClick={onDelete}
-                  styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2"
-                />
-              </div>
-              <input
-                type="text"
-                value={block.text}
-                onChange={(e) => handleChange(e)}
-                class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
-              />
-
-              <Button
-                text="Save"
-                onClick={handleSaveBlock}
-                styles="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-2 mr-2"
-              />
-              <Button
-                text="Cancel"
-                onClick={handleCancelEdit}
-                styles="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-2"
-              />
-            </div>
-          )
-          : ((
-            <div
-              class={`flex items-center ${baseClasses}`}
-            >
-              <h3 class={`text-xl font-bold flex-grow`}>
-                {block.text}
-              </h3>
-              <Button
-                text=""
-                onClick={() => toggleIsEditingBlock()}
-                styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                icon={IconEdit}
-              />
-              <Button
-                text="Delete"
-                onClick={onDelete}
-                styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2"
-              />
-            </div>
-          ))}
-      </>
-    );
-  } else if (block.type === "unordered-list-item") {
-    return (
-      <>
-        {isEditingBlock
-          ? (
-            <div>
-              <div
-                class={`flex items-center ${baseClasses}`}
-              >
-                <li class={`flex-grow ${isEditingClasses}`}>{block.text}</li>
-                <Button
-                  text=""
-                  onClick={() => toggleIsEditingBlock()}
-                  styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                  icon={IconEdit}
-                />
-                <Button
-                  text="Delete"
-                  onClick={onDelete}
-                  styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2"
-                />
-              </div>
-              <input
-                type="text"
-                value={block.text}
-                onChange={(e) => handleChange(e)}
-                class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
-              />
-
-              <Button
-                text="Save"
-                onClick={handleSaveBlock}
-                styles="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-2 mr-2"
-              />
-              <Button
-                text="Cancel"
-                onClick={handleCancelEdit}
-                styles="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-2"
-              />
-            </div>
-          )
-          : ((
-            <div
-              class={`flex items-center ${baseClasses}`}
-            >
-              <li class={`flex-grow`}>{block.text}</li>
-              <Button
-                text=""
-                onClick={() => toggleIsEditingBlock()}
-                styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                icon={IconEdit}
-              />
-              <Button
-                text="Delete"
-                onClick={onDelete}
-                styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 ml-2"
-              />
-            </div>
-          ))}
-      </>
-    );
-  }
-};
-
-const AddBlockButton = ({ onAdd, text }) => (
-  <Button
-    text={text}
-    onClick={onAdd}
-    styles="bg-green-500 hover:bg-green-600 text-white rounded px-2 py-1 mr-2 mt-2"
-    icon={IconPlus}
-  />
-);
-
-const ChapterComponent = (
-  { chapter, onUpdate, onDelete, isExpanded, onToggleExpand }: {
-    chapter: Chapter;
-    onUpdate: (updatedChapter: Chapter) => void;
-    onDelete: () => void;
-    isExpanded: boolean;
-    onToggleExpand: () => void;
-  },
-) => {
-  const [activeBlock, setActiveBlock] = useState(null);
-  const [isCollapsed, setIsCollapsed] = useState(true);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [title, setTitle] = useState(chapter.title);
-  const [isEditingDescription, setIsEditingDescription] = useState(false);
-  const [description, setDescription] = useState(chapter.description);
-
-  const handleImageUpload = async (e: Event): Promise<void> => {
-    const functionId = crypto.randomUUID();
-    Logger.info(`[${functionId}] handleImageUpload started`);
-
-    const input = e.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) {
-      Logger.warn(`[${functionId}] No file selected`);
-      return;
-    }
-
-    const file = input.files[0];
-    Logger.info(
-      `[${functionId}] File selected: ${file.name}, size: ${file.size} bytes, type: ${file.type}`,
-    );
-
-    if (!file.type.startsWith("image/")) {
-      Logger.error(
-        `[${functionId}] Invalid file type: ${file.type}. Expected an image.`,
-      );
-      // Consider showing an error message to the user
-      return;
-    }
-
-    try {
-      const base64String = await convertToBase64(file);
-      Logger.info(`[${functionId}] Image converted to base64 successfully`);
-      onUpdate({ ...chapter, imageUrl: base64String });
-    } catch (error) {
-      Logger.error(`[${functionId}] Error processing image:`, {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-      });
-      // Consider showing an error message to the user
-    }
-
-    Logger.info(`[${functionId}] handleImageUpload completed`);
-  };
-
-  const convertToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
-  const handleTitleChange = (e: Event) => {
-    const newTitle = (e.target as HTMLInputElement).value;
-    setTitle(newTitle);
-  };
-
-  const handleTitleSave = () => {
-    onUpdate({ ...chapter, title });
-    setIsEditingTitle(false);
-  };
-
-  useEffect(() => {
-    setDescription(chapter.description);
-  }, [chapter.description]);
-
-  const toggleInclude = () => {
-    onUpdate({ ...chapter, isIncluded: !chapter.isIncluded });
-  };
-
-  const toggleIsEditingTitle = () => {
-    setIsEditingTitle(!isEditingTitle);
-  };
-
-  const toggleIsEditingDescription = () => {
-    setIsEditingDescription(!isEditingDescription);
-  };
-
-  const handleDeleteClick = () => {
-    setIsConfirmModalOpen(true);
-  };
-
-  const addSection = () => {
-    const newSection: Section = {
-      title: "New Section",
-      description: { blocks: [] },
-    };
-    const updatedSections = [...chapter.sections, newSection];
-    onUpdate({ ...chapter, sections: updatedSections });
-  };
-
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-  };
-
-  const handleDescriptionChange = (e: Event) => {
-    const newDescription = (e.target as HTMLTextAreaElement).value;
-    setDescription(newDescription);
-  };
-
-  const handleDescriptionBlur = () => {
-    if (description !== chapter.description) {
-      onUpdate({ ...chapter, description });
-    }
-  };
-
-  const handleDescriptionSave = () => {
-    onUpdate({ ...chapter, description });
-    setIsEditingDescription(false);
-  };
-
-  return (
-    <div>
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center">
-          <Button
-            text=""
-            onClick={onToggleExpand}
-            styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 mr-2"
-            icon={isExpanded ? IconChevronUp : IconChevronDown}
-          />
-          <button
-            onClick={toggleInclude}
-            class={`mr-2 w-6 h-6 flex items-center justify-center border-2 rounded ${
-              chapter.isIncluded
-                ? "bg-blue-500 border-blue-500"
-                : "border-gray-400"
-            }`}
-          >
-            {chapter.isIncluded && <IconCheck class="w-4 h-4 text-white" />}
-          </button>
-          {isEditingTitle
-            ? (
-              <div>
-                <div class="flex items-center">
-                  <h2 class="text-xl font-bold bg-purple-200 text-purple-800 p-2 rounded mr-2">
-                    {chapter.title}
-                  </h2>
-                  <Button
-                    text=""
-                    onClick={() => toggleIsEditingTitle()}
-                    styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                    icon={IconEdit}
-                  />
-                </div>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={handleTitleChange}
-                  class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
-                />
-                <Button
-                  text="Save"
-                  onClick={handleTitleSave}
-                  styles="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-2 mr-2"
-                />
-                <Button
-                  text="Cancel"
-                  onClick={() => {
-                    setIsEditingTitle(false);
-                    setTitle(chapter.title);
-                  }}
-                  styles="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-2"
-                />
-              </div>
-            )
-            : (
-              <div class="flex items-center">
-                <h2 class="text-sm lg:text-lg font-bold p-2 rounded mr-2">
-                  {chapter.title}
-                </h2>
-              </div>
-            )}
-        </div>
-        <div class="flex items-center">
-          <Button
-            text="Delete"
-            onClick={handleDeleteClick}
-            styles="bg-red-500 hover:bg-red-600 text-white rounded mx-2 px-2 py-1"
-          />
-        </div>
-      </div>
-      {isExpanded && (
-        <>
-          <div class="mb-4">
-            {chapter.imageUrl
-              ? (
-                <div class="relative">
-                  <img
-                    src={chapter.imageUrl}
-                    alt={chapter.title || "Chapter image"}
-                    class="w-full h-32 object-cover rounded-t-lg mb-2"
-                  />
-                  <Button
-                    text="Change Image"
-                    onClick={() =>
-                      document.getElementById(`imageUpload-${chapter.index}`)
-                        ?.click()}
-                    styles="absolute bottom-2 right-2 bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1"
-                  />
-                </div>
-              )
-              : (
-                <Button
-                  text="Add Cover Image"
-                  onClick={() =>
-                    document.getElementById(`imageUpload-${chapter.index}`)
-                      ?.click()}
-                  styles="w-full bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 mb-2"
-                />
-              )}
-            <input
-              id={`imageUpload-${chapter.index}`}
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              class="hidden"
-            />
-          </div>
-          <div class="mb-4">
-            {isEditingDescription
-              ? (
-                <div>
-                  <div class="flex items-center">
-                    <p class="flex-grow bg-purple-200 text-purple-800 p-2 rounded mr-2">
-                      {chapter.description}
-                    </p>
-                    <Button
-                      text=""
-                      onClick={() => toggleIsEditingDescription()}
-                      styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                      icon={IconEdit}
-                    />
-                  </div>
-                  <input
-                    type="text"
-                    value={description}
-                    onChange={handleDescriptionChange}
-                    class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
-                  />
-                  <Button
-                    text="Save"
-                    onClick={handleDescriptionSave}
-                    styles="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-2 mr-2"
-                  />
-                  <Button
-                    text="Cancel"
-                    onClick={() => {
-                      setIsEditingDescription(false);
-                      setDescription(chapter.description);
-                    }}
-                    styles="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-2"
-                  />
-                </div>
-              )
-              : (
-                <div class="flex items-center">
-                  <p class="flex-grow p-2 rounded mr-2">
-                    {chapter.description}
-                  </p>
-                  <Button
-                    text=""
-                    onClick={() => setIsEditingDescription(true)}
-                    styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                    icon={IconEdit}
-                  />
-                </div>
-              )}
-          </div>
-
-          {chapter.sections.map((section, index) => (
-            <ChapterSection
-              key={index}
-              section={section}
-              onUpdate={(updatedSection) => {
-                const updatedSections = [...chapter.sections];
-                updatedSections[index] = updatedSection;
-                onUpdate({ ...chapter, sections: updatedSections });
-              }}
-              onDelete={() => {
-                const updatedSections = chapter.sections.filter((_, i) =>
-                  i !== index
-                );
-                onUpdate({ ...chapter, sections: updatedSections });
-              }}
-              activeBlock={activeBlock}
-              setActiveBlock={setActiveBlock}
-              chapterIndex={chapter.index}
-              sectionIndex={index}
-            />
-          ))}
-
-          <AddBlockButton onAdd={addSection} text="Add Section" />
-        </>
-      )}
-      <ConfirmationModal
-        isOpen={isConfirmModalOpen}
-        onClose={() => setIsConfirmModalOpen(false)}
-        onConfirm={onDelete}
-        message={`Are you sure you want to delete the chapter "${chapter.title}"? This action cannot be undone.`}
-      />
-    </div>
-  );
-};
-
-const ChapterSection = ({
-  section,
-  depth = 1,
-  onUpdate,
-  onDelete,
-  activeBlock,
-  setActiveBlock,
-  chapterIndex,
-  sectionIndex,
-}: {
-  section: Section;
-  depth?: number;
-  onUpdate: (updatedSection: Section) => void;
-  onDelete: () => void;
-  activeBlock: string | null;
-  setActiveBlock: (id: string | null) => void;
-  chapterIndex: string;
-  sectionIndex: number;
-}) => {
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [title, setTitle] = useState(section.title);
-
-  const toggleIsEditingTitle = () => {
-    setIsEditingTitle(!isEditingTitle);
-  };
-
-  const handleTitleChange = (e: Event) => {
-    const newTitle = (e.target as HTMLInputElement).value;
-    setTitle(newTitle);
-  };
-
-  const handleTitleSave = () => {
-    onUpdate({ ...section, title });
-    setIsEditingTitle(false);
-  };
-
-  const HeadingTag = `h${
-    Math.min(depth + 2, 6)
-  }` as keyof JSX.IntrinsicElements;
-
-  const addBlock = (type: string) => {
-    const newBlock: Block = { type, text: `New ${type}` };
-    const updatedDescription = section.description
-      ? { blocks: [...section.description.blocks, newBlock] }
-      : { blocks: [newBlock] };
-    onUpdate({ ...section, description: updatedDescription });
-  };
-
-  const updateBlock = (index: number, updatedBlock: Block) => {
-    if (section.description) {
-      const updatedBlocks = [...section.description.blocks];
-      updatedBlocks[index] = updatedBlock;
-      onUpdate({ ...section, description: { blocks: updatedBlocks } });
-    }
-  };
-
-  const deleteBlock = (index: number) => {
-    if (section.description) {
-      const updatedBlocks = section.description.blocks.filter((_, i) =>
-        i !== index
-      );
-      onUpdate({ ...section, description: { blocks: updatedBlocks } });
-    }
-  };
-
-  const addSubsection = () => {
-    const newSubsection: Section = {
-      title: "New Subsection",
-      description: { blocks: [] },
-    };
-    const updatedSections = section.sections
-      ? [...section.sections, newSubsection]
-      : [newSubsection];
-    onUpdate({ ...section, sections: updatedSections });
-  };
-
-  return (
-    <div
-      id={`section-${chapterIndex}-${sectionIndex}`}
-      class={`ml-${depth * 4} border-l-2 border-blue-500 pl-4 my-4`}
-    >
-      <div class="flex items-center justify-between">
-        {isEditingTitle
-          ? (
-            <div class="flex-grow">
-              <div class="flex items-center flex-grow">
-                <HeadingTag class="font-bold mt-2 text-lg bg-purple-200 text-purple-800 p-2 rounded mr-2">
-                  {section.title}
-                </HeadingTag>
-                <Button
-                  text=""
-                  onClick={() => toggleIsEditingTitle()}
-                  styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                  icon={IconEdit}
-                />
-              </div>
-              <input
-                type="text"
-                value={title}
-                onChange={handleTitleChange}
-                class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
-              />
-              <Button
-                text="Save"
-                onClick={handleTitleSave}
-                styles="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-2 mr-2"
-              />
-              <Button
-                text="Cancel"
-                onClick={() => {
-                  setIsEditingTitle(false);
-                  setTitle(section.title);
-                }}
-                styles="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-2"
-              />
-            </div>
-          )
-          : (
-            <div class="flex items-center flex-grow">
-              <HeadingTag class="font-bold mt-2 text-lg p-2 rounded mr-2">
-                {section.title}
-              </HeadingTag>
-              <Button
-                text=""
-                onClick={() => toggleIsEditingTitle()}
-                styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
-                icon={IconEdit}
-              />
-            </div>
-          )}
-        <Button
-          text="Delete"
-          onClick={onDelete}
-          styles="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1"
-        />
-      </div>
-      {section.description &&
-        section.description.blocks.map((block, index) => (
-          <div key={index}>
-            <RenderBlock
-              block={block}
-              onDelete={() => deleteBlock(index)}
-              isActive={activeBlock === block.id}
-              setActiveBlock={setActiveBlock}
-              updateBlock={updateBlock}
-              myIndex={index}
-            />
-          </div>
-        ))}
-      <div class="flex flex-wrap">
-        <AddBlockButton
-          onAdd={() => addBlock("paragraph")}
-          text="Add Paragraph"
-        />
-        <AddBlockButton onAdd={() => addBlock("header")} text="Add Header" />
-        <AddBlockButton
-          onAdd={() => addBlock("unordered-list-item")}
-          text="Add List Item"
-        />
-        <AddBlockButton onAdd={addSubsection} text="Add Subsection" />
-      </div>
-      {section.sections?.map((subSection, index) => (
-        <ChapterSection
-          key={index}
-          section={subSection}
-          depth={depth + 1}
-          onUpdate={(updatedSubSection) => {
-            const updatedSections = [...(section.sections || [])];
-            updatedSections[index] = updatedSubSection;
-            onUpdate({ ...section, sections: updatedSections });
-          }}
-          onDelete={() => {
-            const updatedSections = (section.sections || []).filter((_, i) =>
-              i !== index
-            );
-            onUpdate({ ...section, sections: updatedSections });
-          }}
-          activeBlock={activeBlock}
-          setActiveBlock={setActiveBlock}
-        />
-      ))}
-    </div>
-  );
-};
 
 export default function HomeContent() {
   const [versions, setVersions] = useState<RoadmapVersion[]>([]);
@@ -1244,8 +509,8 @@ export default function HomeContent() {
       <Head>
         <title>Resource Roadmap Editor</title>
       </Head>
-      <main class="flex flex-row items-start justify-between my-10 p-4 mx-auto max-w-screen-xl">
-        <div class="flex-grow mr-4">
+      <main class="flex flex-col lg:flex-row items-start justify-between my-10 p-4 mx-auto max-w-screen-xl">
+        <div class="flex-grow mr-4 w-full lg:w-2/3">
           <div class="bg-gray-800 text-white w-full rounded-lg p-8 mb-10">
             <h1 class="text-3xl font-bold mb-4">Resource Roadmap</h1>
             <p class="mb-4">
@@ -1268,12 +533,12 @@ export default function HomeContent() {
             />
           </div>
 
-          <div class="w-full flex-col justify-between mb-10">
-            <h2 class="font-bold text-2xl w-3/5 text-left mb-4">
+          <div class="w-full mb-10">
+            <h2 class="font-bold text-2xl w-full text-left mb-4">
               Chapters
             </h2>
             <div class="flex flex-col sm:flex-row justify-between w-full mb-4">
-              <div class="relative flex-grow mr-2">
+              <div class="relative flex-grow mr-2 mb-4 sm:mb-0">
                 <input
                   type="text"
                   placeholder="Search chapters and sections..."
@@ -1283,21 +548,24 @@ export default function HomeContent() {
                 />
                 <IconSearch class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               </div>
+            </div>
+
+            {renderSearchResults()}
+
+            <div class="flex flex-col sm:flex-row justify-between w-full mt-4">
               <Button
                 text="Add New Chapter"
                 onClick={() => setIsModalOpen(true)}
                 styles="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 rounded-md py-2 px-4 text-white transition-colors focus:outline-none outline-none"
                 icon={IconPlus}
               />
-            </div>
-            <div class="flex flex-col sm:flex-row justify-between w-full">
               {isReordering
                 ? (
                   <>
                     <Button
                       text="Save Order"
                       onClick={saveReordering}
-                      styles="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
+                      styles="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none mb-2 sm:mb-0"
                       icon={IconCheck}
                     />
                     <Button
@@ -1312,7 +580,7 @@ export default function HomeContent() {
                   <Button
                     text="Reorder Chapters"
                     onClick={startReordering}
-                    styles="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
+                    styles="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none mb-2 sm:mb-0"
                     icon={IconArrowsSort}
                   />
                 )}
@@ -1324,8 +592,6 @@ export default function HomeContent() {
               />
             </div>
           </div>
-
-          {renderSearchResults()}
 
           {loading
             ? <p>Loading chapters...</p>
@@ -1340,7 +606,7 @@ export default function HomeContent() {
             )
             : (
               <div
-                class={`w-full grid grid-cols-1 lg:grid-cols-1 gap-4 ${
+                class={`w-full grid grid-cols-1 gap-4 ${
                   isReordering ? "cursor-move" : ""
                 }`}
               >
@@ -1385,7 +651,7 @@ export default function HomeContent() {
           <Footer />
         </div>
 
-        <div class="w-1/3 sticky top-0 hidden lg:block">
+        <div class="w-full lg:w-1/3 sticky top-0 mt-10 lg:mt-0">
           <h2 class="font-bold text-2xl mb-4">PDF Preview</h2>
           <PdfPreview chapters={chapters.filter((ch) => ch.isIncluded)} />
         </div>
