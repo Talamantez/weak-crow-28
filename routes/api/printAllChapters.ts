@@ -522,6 +522,33 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
 
     return { blocks };
   }
+
+  function toRoman(num: number): string {
+    const romanNumerals = [
+      ["m", 1000],
+      ["cm", 900],
+      ["d", 500],
+      ["cd", 400],
+      ["c", 100],
+      ["xc", 90],
+      ["l", 50],
+      ["xl", 40],
+      ["x", 10],
+      ["ix", 9],
+      ["v", 5],
+      ["iv", 4],
+      ["i", 1],
+    ];
+    let result = "";
+    for (const [letter, value] of romanNumerals) {
+      while (num >= value) {
+        result += letter;
+        num -= value;
+      }
+    }
+    return result;
+  }
+
   function drawRichText(
     page: PDFPage,
     richText: RichText | string,
@@ -671,6 +698,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     pages.push(page);
     let { width, height } = page.getSize();
     let y = height - margin;
+    let pageNumber = 1;
 
     // Draw TOC title
     const titleResult = drawWrappedText(
@@ -709,6 +737,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
           page = pdfDoc.addPage();
           pages.push(page);
           ({ width, height } = page.getSize());
+          pageNumber++;
           console.log(`New page started for TOC. New y: ${y}`);
         }
 
@@ -738,6 +767,20 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
 
       y -= fontSize * 0.5; // Add a small gap between entries
     }
+
+    // Add Roman numeral page numbers to TOC pages
+    pages.forEach((page, index) => {
+      const romanNumeral = toRoman(index + 1);
+      const pageNumberText = romanNumeral;
+      const textWidth = helveticaFont.widthOfTextAtSize(pageNumberText, 10);
+      page.drawText(pageNumberText, {
+        x: width - margin - textWidth,
+        y: margin / 2,
+        size: 10,
+        font: helveticaFont,
+        color: colors.secondary,
+      });
+    });
 
     console.log(
       `Finished drawing Table of Contents. Total pages: ${pages.length}`,
@@ -873,11 +916,17 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   console.log(
     `TOC inserted. It spans ${tocPages.length} pages. Content starts at page ${contentStartPage}`,
   );
+
   // Update page numbers for content pages
-  for (let i = contentStartPage; i < pdfDoc.getPageCount(); i++) {
+  // Subtract tocPages.length to account and the TOC pages
+  for (
+    let i = contentStartPage;
+    i < pdfDoc.getPageCount() - tocPages.length - 1;
+    i++
+  ) {
     const page = pdfDoc.getPage(i);
     const pageNumber = i - contentStartPage + 1;
-    const pageNumberText = `Page ${pageNumber}`;
+    const pageNumberText = `${pageNumber}`;
     const { width } = page.getSize();
     const textWidth = helveticaFont.widthOfTextAtSize(pageNumberText, 10);
 
@@ -889,26 +938,6 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       color: colors.secondary,
     });
   }
-  // Add all generated pages to the PDF document and add page numbers
-  pages.forEach((page, index) => {
-    pdfDoc.addPage(page);
-
-    // Add page numbers to content pages (skip cover and TOC)
-    if (index >= 1) { // Assuming index 0 is cover, index 1 is TOC
-      const pageNumber = index; // Adjust this if you want different numbering
-      const pageNumberText = `Page ${pageNumber}`;
-      const { width } = page.getSize();
-      const textWidth = helveticaFont.widthOfTextAtSize(pageNumberText, 10);
-
-      page.drawText(pageNumberText, {
-        x: width - margin - textWidth,
-        y: margin / 2,
-        size: 10,
-        font: helveticaFont,
-        color: colors.secondary,
-      });
-    }
-  });
 
   // console.log(`\nPDF generation completed. Total pages: ${pdfDoc.getPageCount()}`);
   return pdfDoc.save();
