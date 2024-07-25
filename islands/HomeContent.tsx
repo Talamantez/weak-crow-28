@@ -1183,7 +1183,7 @@ export default function HomeContent() {
                       onDrop={(e) => isReordering && onDrop(e, chapter.index)}
                       class={`relative transition-all duration-300 ${
                         isReordering
-                          ? "border-2 border-dashed border-gray-400 p-10"
+                          ? "border-2 border-dashed border-gray-400 p-4 pt-10"
                           : ""
                       } ${draggedChapter === chapter.index ? "opacity-50" : ""}
               ${
@@ -1193,7 +1193,7 @@ export default function HomeContent() {
                       }`}
                     >
                       {isReordering && (
-                        <div class="absolute top-0 left-0 right-0 bg-gray-200 text-center text-sm">
+                        <div class="absolute top-0 left-0 right-0 text-center text-sm">
                           Drag to reorder
                         </div>
                       )}
