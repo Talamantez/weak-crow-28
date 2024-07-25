@@ -151,7 +151,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       }
     }
     // Draw chapter title
-    const maxLineWidth = width / 2 - 2 * margin;
+    const maxLineWidth = width / 2 - 2 * margin + 40;
     const lines = wrapText(
       chapter.title,
       maxLineWidth,
@@ -660,7 +660,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         addNewPage(50); // Reduced space requirement
         result = drawSection(page, subSection, depth + 1, y, addNewPage);
         page = result.page;
-        y = result.y + 20; // Reduced space between subsections
+        y = result.y; // Reduced space between subsections
       }
     }
 
