@@ -40,6 +40,19 @@ interface Data {
   Chapters: Chapter[];
 }
 
+async function fetchImageAsArrayBuffer(url: string): Promise<ArrayBuffer> {
+  const response = await fetch(url);
+  return await response.arrayBuffer();
+}
+
+async function fetchImageAsBase64(url: string): Promise<string> {
+  const response = await fetch(url);
+  const arrayBuffer = await response.arrayBuffer();
+  const uint8Array = new Uint8Array(arrayBuffer);
+  const base64 = btoa(String.fromCharCode.apply(null, uint8Array));
+  const mimeType = response.headers.get("content-type") || "image/jpeg";
+  return `data:${mimeType};base64,${base64}`;
+}
 export async function generatePDF(data: Data): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.create();
   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -86,53 +99,55 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
 
     const sansSerifFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const titleFontSize = 36;
-    const margin = 50; // Margin from the edges
-    const lineSpacing = 1.5; // Line spacing multiplier
-    const textPadding = 10; // Padding around text for the background
+    const margin = 50;
+    const lineSpacing = 1.5;
+    const textPadding = 10;
 
-    // Add image if available
-    let imageDarkness = "left"; // Default assumption
+    let imageDarkness = "left";
     if (chapter.imageUrl) {
-      const [imageData, base64Data] = chapter.imageUrl.split(",");
-      if (base64Data) {
-        try {
-          const imageBytes = decode(base64Data);
-          const imageType = imageData.split(";")[0].split(":")[1];
-          const imageBlob = new Blob([imageBytes], { type: imageType });
-          let coverImage = null;
+      try {
+        let imageBytes: Uint8Array;
+        let imageType: string;
 
-          if (imageType === "image/png") {
-            coverImage = await pdfDoc.embedPng(await imageBlob.arrayBuffer());
-          } else if (imageType === "image/jpeg") {
-            coverImage = await pdfDoc.embedJpg(await imageBlob.arrayBuffer());
-          }
-
-          if (coverImage) {
-            // Scale image to cover the entire page (full-bleed)
-            const scaleFactor = Math.max(
-              width / coverImage.width,
-              height / coverImage.height,
-            );
-            const scaledWidth = coverImage.width * scaleFactor;
-            const scaledHeight = coverImage.height * scaleFactor;
-
-            page.drawImage(coverImage, {
-              x: (width - scaledWidth) / 2,
-              y: (height - scaledHeight) / 2,
-              width: scaledWidth,
-              height: scaledHeight,
-            });
-
-            // Here you would ideally analyze the image to determine the darkest side
-            // For now, we'll alternate between left and right based on chapter index
-            imageDarkness = chapter.index % 2 === 0 ? "left" : "right";
-          }
-        } catch (error) {
-          console.error("Error processing image:", error);
+        if (chapter.imageUrl.startsWith("data:image")) {
+          const [, base64Data] = chapter.imageUrl.split(",");
+          imageBytes = decode(base64Data);
+          [imageType] = chapter.imageUrl.match(/data:(image\/[^;]+)/);
+        } else {
+          // It's a URL, fetch it
+          const arrayBuffer = await fetchImageAsArrayBuffer(chapter.imageUrl);
+          imageBytes = new Uint8Array(arrayBuffer);
+          imageType = "image/jpeg"; // Assume JPEG for URL images, adjust if needed
         }
+
+        let coverImage = null;
+        if (imageType.includes("png")) {
+          coverImage = await pdfDoc.embedPng(imageBytes);
+        } else if (imageType.includes("jpeg") || imageType.includes("jpg")) {
+          coverImage = await pdfDoc.embedJpg(imageBytes);
+        }
+
+        if (coverImage) {
+          const scaleFactor = Math.max(
+            width / coverImage.width,
+            height / coverImage.height,
+          );
+          const scaledWidth = coverImage.width * scaleFactor;
+          const scaledHeight = coverImage.height * scaleFactor;
+
+          page.drawImage(coverImage, {
+            x: (width - scaledWidth) / 2,
+            y: (height - scaledHeight) / 2,
+            width: scaledWidth,
+            height: scaledHeight,
+          });
+
+          imageDarkness = chapter.index % 2 === 0 ? "left" : "right";
+        }
+      } catch (error) {
+        console.error("Error processing image:", error);
       }
     }
-
     // Draw chapter title
     const maxLineWidth = width / 2 - 2 * margin;
     const lines = wrapText(
@@ -856,7 +871,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       true,
       y,
       0,
-      0
+      0,
     );
     currentPage = result.page;
     y = result.y - titleFontSize; // Add extra space after title
@@ -971,7 +986,7 @@ export const handler: Handlers = {
     const chapters: Chapter[] = requestBody;
 
     const data: Data = {
-      Chapters: chapters.sort((a, b) => a.index - b.index)
+      Chapters: chapters.sort((a, b) => a.index - b.index),
     };
 
     try {

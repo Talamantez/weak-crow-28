@@ -5,6 +5,7 @@
 import * as $_middleware from "./routes/_middleware.ts";
 import * as $api_Data from "./routes/api/Data.ts";
 import * as $api_generate_pdf from "./routes/api/generate-pdf.ts";
+import * as $api_imageProcessor from "./routes/api/imageProcessor.ts";
 import * as $api_printAllChapters from "./routes/api/printAllChapters.ts";
 import * as $api_upload from "./routes/api/upload.ts";
 import * as $index from "./routes/index.tsx";
@@ -20,6 +21,7 @@ const manifest = {
     "./routes/_middleware.ts": $_middleware,
     "./routes/api/Data.ts": $api_Data,
     "./routes/api/generate-pdf.ts": $api_generate_pdf,
+    "./routes/api/imageProcessor.ts": $api_imageProcessor,
     "./routes/api/printAllChapters.ts": $api_printAllChapters,
     "./routes/api/upload.ts": $api_upload,
     "./routes/index.tsx": $index,
