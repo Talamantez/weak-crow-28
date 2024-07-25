@@ -263,10 +263,12 @@ const AddBlockButton = ({ onAdd, text }) => (
 );
 
 const ChapterComponent = (
-  { chapter, onUpdate, onDelete }: {
+  { chapter, onUpdate, onDelete, isExpanded, onToggleExpand }: {
     chapter: Chapter;
     onUpdate: (updatedChapter: Chapter) => void;
     onDelete: () => void;
+    isExpanded: boolean;
+    onToggleExpand: () => void;
   },
 ) => {
   const [activeBlock, setActiveBlock] = useState(null);
@@ -385,14 +387,14 @@ const ChapterComponent = (
   };
 
   return (
-    <div class="">
+    <div>
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center">
           <Button
             text=""
-            onClick={toggleCollapse}
+            onClick={onToggleExpand}
             styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 mr-2"
-            icon={isCollapsed ? IconChevronDown : IconChevronUp}
+            icon={isExpanded ? IconChevronUp : IconChevronDown}
           />
           <button
             onClick={toggleInclude}
@@ -455,7 +457,7 @@ const ChapterComponent = (
           />
         </div>
       </div>
-      {!isCollapsed && (
+      {isExpanded && (
         <>
           <div class="mb-4">
             {chapter.imageUrl
@@ -542,6 +544,7 @@ const ChapterComponent = (
                 </div>
               )}
           </div>
+
           {chapter.sections.map((section, index) => (
             <ChapterSection
               key={index}
@@ -559,8 +562,11 @@ const ChapterComponent = (
               }}
               activeBlock={activeBlock}
               setActiveBlock={setActiveBlock}
+              chapterIndex={chapter.index}
+              sectionIndex={index}
             />
           ))}
+
           <AddBlockButton onAdd={addSection} text="Add Section" />
         </>
       )}
@@ -581,6 +587,8 @@ const ChapterSection = ({
   onDelete,
   activeBlock,
   setActiveBlock,
+  chapterIndex,
+  sectionIndex,
 }: {
   section: Section;
   depth?: number;
@@ -588,6 +596,8 @@ const ChapterSection = ({
   onDelete: () => void;
   activeBlock: string | null;
   setActiveBlock: (id: string | null) => void;
+  chapterIndex: string;
+  sectionIndex: number;
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState(section.title);
@@ -647,7 +657,10 @@ const ChapterSection = ({
   };
 
   return (
-    <div class={`ml-${depth * 4} border-l-2 border-blue-500 pl-4 my-4`}>
+    <div
+      id={`section-${chapterIndex}-${sectionIndex}`}
+      class={`ml-${depth * 4} border-l-2 border-blue-500 pl-4 my-4`}
+    >
       <div class="flex items-center justify-between">
         {isEditingTitle
           ? (
@@ -770,6 +783,9 @@ export default function HomeContent() {
   const [confirmMessage, setConfirmMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<Chapter[]>([]);
+  const [expandedChapters, setExpandedChapters] = useState<Set<string>>(
+    new Set(),
+  );
 
   const handleSearch = (event: Event) => {
     const value = (event.target as HTMLInputElement).value;
@@ -808,11 +824,41 @@ export default function HomeContent() {
         <h3 class="text-lg font-semibold mb-2">Search Results:</h3>
         {searchResults.map((chapter) => (
           <div key={chapter.index} class="mb-4 p-4 bg-gray-100 rounded">
-            <h4 class="font-bold">{chapter.title}</h4>
+            <div class="flex justify-between items-center">
+              <h4 class="font-bold">{chapter.title}</h4>
+              <Button
+                text="Edit Chapter"
+                onClick={() => {
+                  toggleChapterExpansion(chapter.index);
+                  // Use setTimeout to ensure the chapter expands before scrolling
+                  setTimeout(() => {
+                    scrollToElement(`chapter-${chapter.index}`);
+                  }, 100);
+                }}
+                styles="bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1 text-sm"
+                icon={IconEdit}
+              />
+            </div>
             <p>{chapter.description}</p>
-            {chapter.sections.map((section, index) => (
-              <div key={index} class="ml-4 mt-2">
-                <h5 class="font-semibold">{section.title}</h5>
+            {chapter.sections.map((section, sectionIndex) => (
+              <div key={sectionIndex} class="ml-4 mt-2">
+                <div class="flex justify-between items-center">
+                  <h5 class="font-semibold">{section.title}</h5>
+                  <Button
+                    text="Edit Section"
+                    onClick={() => {
+                      toggleChapterExpansion(chapter.index);
+                      // Use setTimeout to ensure the chapter expands before scrolling
+                      setTimeout(() => {
+                        scrollToElement(
+                          `section-${chapter.index}-${sectionIndex}`,
+                        );
+                      }, 100);
+                    }}
+                    styles="bg-green-500 hover:bg-green-600 text-white rounded px-2 py-1 text-sm"
+                    icon={IconEdit}
+                  />
+                </div>
                 {section.description?.blocks.map((block, blockIndex) => (
                   <p key={blockIndex}>{block.text}</p>
                 ))}
@@ -832,6 +878,28 @@ export default function HomeContent() {
     });
   };
 
+  const toggleChapterExpansion = (chapterIndex: string) => {
+    setExpandedChapters((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(chapterIndex)) {
+        newSet.delete(chapterIndex);
+      } else {
+        newSet.add(chapterIndex);
+      }
+      return newSet;
+    });
+  };
+
+  const scrollToElement = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      // Scroll the element to the top of the viewport
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Highlight the scrolled-to element temporarily
+      element.classList.add("bg-yellow-200");
+      setTimeout(() => element.classList.remove("bg-yellow-200"), 2000);
+    }
+  };
   const updateScrollPosition = () => {
     scrollPositionRef.current = window.pageYOffset;
   };
@@ -1169,7 +1237,6 @@ export default function HomeContent() {
         console.error("Error clearing chapters:", error);
       });
   };
-
   return (
     <div>
       <Head>
@@ -1257,6 +1324,7 @@ export default function HomeContent() {
           </div>
 
           {renderSearchResults()}
+
           {loading
             ? <p>Loading chapters...</p>
             : loadError
@@ -1277,6 +1345,7 @@ export default function HomeContent() {
                 {chapters.map((chapter) => (
                   <div
                     key={chapter.index}
+                    id={`chapter-${chapter.index}`}
                     draggable={isReordering}
                     onDragStart={(e) =>
                       isReordering && onDragStart(e, chapter.index)}
@@ -1298,6 +1367,9 @@ export default function HomeContent() {
                       chapter={chapter}
                       onUpdate={updateChapter}
                       onDelete={() => deleteChapter(chapter.index)}
+                      isExpanded={expandedChapters.has(chapter.index)}
+                      onToggleExpand={() =>
+                        toggleChapterExpansion(chapter.index)}
                     />
                   </div>
                 ))}
