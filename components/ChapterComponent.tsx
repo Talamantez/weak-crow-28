@@ -10,7 +10,6 @@ import ConfirmationModal from "./ConfirmationModal.tsx";
 import { Logger } from "../util/logger.ts";
 import AddBlockButton from "./AddBlockButton.tsx";
 
-
 export const ChapterComponent = (
     { chapter, onUpdate, onDelete, isExpanded, onToggleExpand }: {
       chapter: Chapter;

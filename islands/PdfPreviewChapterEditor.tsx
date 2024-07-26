@@ -140,7 +140,7 @@ export const PdfPreviewChapterEditor = ({
               chapter={selectedChapter}
               onUpdate={onUpdate}
               onDelete={() => onDelete(selectedChapter.index)}
-              isExpanded={expandedChapters.has(selectedChapter.index)}
+              isExpanded={true}
               onToggleExpand={() => onToggleExpand(selectedChapter.index)}
             />
           </div>
