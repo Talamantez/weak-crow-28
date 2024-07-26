@@ -1,6 +1,7 @@
 import { ChapterComponent } from "../components/ChapterComponent.tsx";
-
+import Expandable from "../components/ExpandableComponent.tsx";
 export const ChapterList = ({ chapters, isReordering, onUpdate, onDelete, expandedChapters, onToggleExpand, onDragStart, onDragOver, onDragEnd, onDrop, highlightedElement, highlightClass }) => (
+<Expandable title="Chapters" defaultExpanded={true}>  
   <div class={`w-full grid grid-cols-1 gap-4 ${isReordering ? "cursor-move" : ""}`}>
     {chapters.map((chapter) => (
       <div
@@ -30,4 +31,5 @@ export const ChapterList = ({ chapters, isReordering, onUpdate, onDelete, expand
       </div>
     ))}
   </div>
+  </Expandable>
 );

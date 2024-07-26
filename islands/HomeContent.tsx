@@ -28,6 +28,7 @@ import { Chapter } from "../util/types.ts";
 import { useSearch } from "./useSearch.tsx";
 import { SearchResults } from "./SearchResults.tsx";
 import { PdfPreviewSidebar } from "./PdfPreviewSidebar.tsx";
+import Expandable from "../components/ExpandableComponent.tsx";
 
 export default function HomeContent() {
   const [versions, setVersions] = useState<RoadmapVersion[]>([]);
@@ -152,12 +153,14 @@ export default function HomeContent() {
     }
 
     return (
-      <SearchResults
-        searchTerm={searchTerm}
-        searchResults={searchResults}
-        onEditChapter={handleEditChapter}
-        onEditSection={handleEditSection}
-      />
+      <Expandable title="Search Results" defaultExpanded={true}>
+        <SearchResults
+          searchTerm={searchTerm}
+          searchResults={searchResults}
+          onEditChapter={handleEditChapter}
+          onEditSection={handleEditSection}
+        />
+      </Expandable>
     );
   };
 
@@ -561,21 +564,7 @@ export default function HomeContent() {
               <h2 class="font-bold text-2xl w-full text-left mb-4">
                 Chapters
               </h2>
-              {/* <div class="flex flex-col sm:flex-row justify-between w-full mb-4">
-                <div class="relative flex-grow mr-2 mb-4 sm:mb-0">
-                  <input
-                    type="text"
-                    placeholder="Search chapters and sections..."
-                    value={searchTerm}
-                    onInput={handleSearch}
-                    class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <IconSearch class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                </div>
-              </div> */}
-
               {renderSearchResults()}
-
               <div class="flex flex-col sm:flex-row justify-between w-full mt-4">
                 <Button
                   text="Add New Chapter"
