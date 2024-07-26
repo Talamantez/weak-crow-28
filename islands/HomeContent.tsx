@@ -623,43 +623,45 @@ export default function HomeContent() {
                     isReordering ? "cursor-move" : ""
                   }`}
                 >
-                  {chapters.map((chapter) => (
-                    <div
-                      key={chapter.index}
-                      id={`chapter-${chapter.index}`}
-                      class={`relative transition-all duration-300 ${
-                        highlightedElement === `chapter-${chapter.index}`
-                          ? highlightClass
-                          : ""
-                      } ${
-                        isReordering
-                          ? "border-2 border-dashed border-gray-400 p-4 pt-10"
-                          : ""
-                      } ${
-                        draggedChapter === chapter.index ? "opacity-50" : ""
-                      }`}
-                      draggable={isReordering}
-                      onDragStart={(e) =>
-                        isReordering && onDragStart(e, chapter.index)}
-                      onDragOver={(e) => isReordering && onDragOver(e)}
-                      onDragEnd={onDragEnd}
-                      onDrop={(e) => isReordering && onDrop(e, chapter.index)}
-                    >
-                      {isReordering && (
-                        <div class="absolute top-0 left-0 right-0 text-center text-sm">
-                          Drag to reorder
-                        </div>
-                      )}
-                      <ChapterComponent
-                        chapter={chapter}
-                        onUpdate={updateChapter}
-                        onDelete={() => deleteChapter(chapter.index)}
-                        isExpanded={expandedChapters.has(chapter.index)}
-                        onToggleExpand={() =>
-                          toggleChapterExpansion(chapter.index)}
-                      />
-                    </div>
-                  ))}
+                  <Expandable title="Chapters" defaultExpanded={true}>
+                    {chapters.map((chapter) => (
+                      <div
+                        key={chapter.index}
+                        id={`chapter-${chapter.index}`}
+                        class={`relative transition-all duration-300 ${
+                          highlightedElement === `chapter-${chapter.index}`
+                            ? highlightClass
+                            : ""
+                        } ${
+                          isReordering
+                            ? "border-2 border-dashed border-gray-400 p-4 pt-10"
+                            : ""
+                        } ${
+                          draggedChapter === chapter.index ? "opacity-50" : ""
+                        }`}
+                        draggable={isReordering}
+                        onDragStart={(e) =>
+                          isReordering && onDragStart(e, chapter.index)}
+                        onDragOver={(e) => isReordering && onDragOver(e)}
+                        onDragEnd={onDragEnd}
+                        onDrop={(e) => isReordering && onDrop(e, chapter.index)}
+                      >
+                        {isReordering && (
+                          <div class="absolute top-0 left-0 right-0 text-center text-sm">
+                            Drag to reorder
+                          </div>
+                        )}
+                        <ChapterComponent
+                          chapter={chapter}
+                          onUpdate={updateChapter}
+                          onDelete={() => deleteChapter(chapter.index)}
+                          isExpanded={expandedChapters.has(chapter.index)}
+                          onToggleExpand={() =>
+                            toggleChapterExpansion(chapter.index)}
+                        />
+                      </div>
+                    ))}
+                  </Expandable>
                 </div>
               )}
 
