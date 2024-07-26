@@ -45,8 +45,6 @@ export default function HomeContent() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmMessage, setConfirmMessage] = useState("");
-  // const [searchTerm, setSearchTerm] = useState("");
-  // const [searchResults, setSearchResults] = useState<Chapter[]>([]);
 
   const initialSearchResults = [];
 
@@ -563,7 +561,7 @@ export default function HomeContent() {
               <h2 class="font-bold text-2xl w-full text-left mb-4">
                 Chapters
               </h2>
-              <div class="flex flex-col sm:flex-row justify-between w-full mb-4">
+              {/* <div class="flex flex-col sm:flex-row justify-between w-full mb-4">
                 <div class="relative flex-grow mr-2 mb-4 sm:mb-0">
                   <input
                     type="text"
@@ -574,7 +572,7 @@ export default function HomeContent() {
                   />
                   <IconSearch class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 </div>
-              </div>
+              </div> */}
 
               {renderSearchResults()}
 
