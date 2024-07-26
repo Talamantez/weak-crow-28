@@ -5,7 +5,7 @@ import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import IconArrowsSort from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/arrows-sort.tsx";
 
 export const ChapterControls = ({ isReordering, onAddNew, onSaveOrder, onCancelReorder, onStartReorder, onDeleteAll }) => (
-  <div class='flex flex-col sm:flex-row justify-between w-full mt-4'>
+  <div class='flex'>
     <Button
       text="Add New Chapter"
       onClick={onAddNew}

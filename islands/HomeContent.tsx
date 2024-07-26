@@ -1,15 +1,12 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { apply, tw } from "https://esm.sh/@twind/core@1.1.3";
+import { apply } from "https://esm.sh/@twind/core@1.1.3";
 import { Head } from "$fresh/runtime.ts";
 import Footer from "../components/Footer.tsx";
 import Button from "../components/Button.tsx";
 import IconPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/plus.tsx";
 import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import IconArrowsSort from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/arrows-sort.tsx";
-import IconChevronDown from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-down.tsx";
-import IconChevronUp from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-up.tsx";
 import IconCheck from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/check.tsx";
-import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
 import IconSearch from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/search.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
@@ -17,8 +14,6 @@ import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.t
 import { PdfPreview } from "../components/PdfPreview.tsx";
 import NewChapterModal from "../components/NewChapterModal.tsx";
 import ConfirmationModal from "../components/ConfirmationModal.tsx";
-import { crypto } from "https://deno.land/std@0.177.0/crypto/mod.ts";
-import { Logger } from "../util/logger.ts";
 import { ChapterComponent } from "../components/ChapterComponent.tsx";
 import { VersionManagementModal } from "../components/VersionManagementModal.tsx";
 import {
@@ -29,7 +24,10 @@ import {
   saveVersion,
 } from "../util/versionManagement.ts";
 
-import { Block, Chapter, Section } from "../util/types.ts";
+import { Chapter } from "../util/types.ts";
+import { useSearch } from "./useSearch.tsx";
+import { SearchBar } from "./SearchBar.tsx";
+import { SearchResults } from "./SearchResults.tsx";
 
 export default function HomeContent() {
   const [versions, setVersions] = useState<RoadmapVersion[]>([]);
@@ -47,8 +45,14 @@ export default function HomeContent() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmMessage, setConfirmMessage] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<Chapter[]>([]);
+  // const [searchTerm, setSearchTerm] = useState("");
+  // const [searchResults, setSearchResults] = useState<Chapter[]>([]);
+
+  const initialSearchResults = [];
+
+  const { searchTerm, setSearchTerm, searchResults, setSearchResults } =
+    useSearch(initialSearchResults);
+
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(
     new Set(),
   );
@@ -89,52 +93,12 @@ export default function HomeContent() {
     }
 
     return (
-      <div class="mt-4">
-        <h3 class="text-lg font-semibold mb-2">Search Results:</h3>
-        {searchResults.map((chapter) => (
-          <div key={chapter.index} class="mb-4 p-4 bg-gray-100 rounded">
-            <div class="flex justify-between items-center">
-              <h4 class="font-bold">{chapter.title}</h4>
-              <Button
-                text="Edit Chapter"
-                onClick={() => {
-                  toggleChapterExpansion(chapter.index);
-                  setTimeout(() => {
-                    scrollToElement(`chapter-${chapter.index}`);
-                  }, 100);
-                }}
-                styles="bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1 text-sm"
-                icon={IconEdit}
-              />
-            </div>
-            <p>{chapter.description}</p>
-            {chapter.sections.map((section, sectionIndex) => (
-              <div key={sectionIndex} class="ml-4 mt-2">
-                <div class="flex justify-between items-center">
-                  <h5 class="font-semibold">{section.title}</h5>
-                  <Button
-                    text="Edit Section"
-                    onClick={() => {
-                      toggleChapterExpansion(chapter.index);
-                      // Use setTimeout to ensure the chapter expands before scrolling
-                      setTimeout(() => {
-                        scrollToElement(
-                          `section-${chapter.index}-${sectionIndex}`,
-                        );
-                      }, 100);
-                    }}
-                    styles="bg-green-500 hover:bg-green-600 text-white rounded px-2 py-1 text-sm"
-                    icon={IconEdit}
-                  />
-                </div>
-                {section.description?.blocks.map((block, blockIndex) => (
-                  <p key={blockIndex}>{block.text}</p>
-                ))}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+          <SearchResults
+            searchTerm={searchTerm}
+            searchResults={searchResults}
+            onEditChapter={()=>console.log("edit chapter")}
+            onEditSection={()=>console.log("edit section")}
+          />
     );
   };
 
@@ -508,8 +472,10 @@ export default function HomeContent() {
     <div>
       <Head>
         <title>Resource Roadmap Editor</title>
+
       </Head>
       <main class="flex flex-col lg:flex-row items-start justify-between my-10 p-4 mx-auto max-w-screen-xl">
+<div class="flex flex-row">
         <div class="flex-grow mr-4 w-full lg:w-2/3">
           <div class="bg-gray-800 text-white w-full rounded-lg p-8 mb-10">
             <h1 class="text-3xl font-bold mb-4">Resource Roadmap</h1>
@@ -650,11 +616,13 @@ export default function HomeContent() {
 
           <Footer />
         </div>
-
-        <div class="w-full lg:w-1/3 sticky top-0 mt-10 lg:mt-0">
+     
+     
+        <div>
           <h2 class="font-bold text-2xl mb-4">PDF Preview</h2>
           <PdfPreview chapters={chapters.filter((ch) => ch.isIncluded)} />
         </div>
+     </div>
       </main>
       <NewChapterModal
         isOpen={isModalOpen}

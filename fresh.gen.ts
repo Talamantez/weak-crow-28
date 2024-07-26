@@ -10,10 +10,20 @@ import * as $api_printAllChapters from "./routes/api/printAllChapters.ts";
 import * as $api_upload from "./routes/api/upload.ts";
 import * as $index from "./routes/index.tsx";
 import * as $AddChapter from "./islands/AddChapter.tsx";
+import * as $ChapterControls from "./islands/ChapterControls.tsx";
+import * as $ChapterList from "./islands/ChapterList.tsx";
+import * as $CollapsibleSection from "./islands/CollapsibleSection.tsx";
+import * as $ContentFooter from "./islands/ContentFooter.tsx";
+import * as $ContentHeader from "./islands/ContentHeader.tsx";
 import * as $HomeContent from "./islands/HomeContent.tsx";
 import * as $LoaderIsland from "./islands/LoaderIsland.tsx";
+import * as $PdfPreview from "./islands/PdfPreview.tsx";
+import * as $PdfPreviewSidebar from "./islands/PdfPreviewSidebar.tsx";
+import * as $SearchBar from "./islands/SearchBar.tsx";
+import * as $SearchResults from "./islands/SearchResults.tsx";
 import * as $Sections from "./islands/Sections.tsx";
 import * as $printAllChapters from "./islands/printAllChapters.tsx";
+import * as $useSearch from "./islands/useSearch.tsx";
 import { type Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -28,10 +38,20 @@ const manifest = {
   },
   islands: {
     "./islands/AddChapter.tsx": $AddChapter,
+    "./islands/ChapterControls.tsx": $ChapterControls,
+    "./islands/ChapterList.tsx": $ChapterList,
+    "./islands/CollapsibleSection.tsx": $CollapsibleSection,
+    "./islands/ContentFooter.tsx": $ContentFooter,
+    "./islands/ContentHeader.tsx": $ContentHeader,
     "./islands/HomeContent.tsx": $HomeContent,
     "./islands/LoaderIsland.tsx": $LoaderIsland,
+    "./islands/PdfPreview.tsx": $PdfPreview,
+    "./islands/PdfPreviewSidebar.tsx": $PdfPreviewSidebar,
+    "./islands/SearchBar.tsx": $SearchBar,
+    "./islands/SearchResults.tsx": $SearchResults,
     "./islands/Sections.tsx": $Sections,
     "./islands/printAllChapters.tsx": $printAllChapters,
+    "./islands/useSearch.tsx": $useSearch,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;
