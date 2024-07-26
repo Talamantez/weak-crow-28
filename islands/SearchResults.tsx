@@ -1,34 +1,30 @@
-import Button from "../components/Button.tsx";
-import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
-
-const highlightSearchTerm = (text, searchTerm) => {
-  if (!searchTerm.trim()) return text;
-  const regex = new RegExp(`(${searchTerm})`, 'gi');
-  return text.split(regex).map((part, index) => 
-    regex.test(part) ? <span key={index} className="bg-yellow-200">{part}</span> : part
-  );
-};
+import Expandable from "../components/ExpandableComponent.tsx";
+import { highlightSearchTerm } from "../components/highlightSearchTerm.tsx";
 
 const isMatch = (text, searchTerm) => {
   return text.toLowerCase().includes(searchTerm.toLowerCase());
 };
 
-export const SearchResults = ({ searchTerm, searchResults, onEditChapter, onEditSection }) => {
+export const SearchResults = (
+  { searchTerm, searchResults, onEditChapter, onEditSection },
+) => {
   if (searchTerm.trim() === "") {
     return null;
   }
 
-  const filteredResults = searchResults.map(chapter => {
-    const matchingChapter = isMatch(chapter.title, searchTerm) || isMatch(chapter.description, searchTerm);
-    const matchingSections = chapter.sections.filter(section => 
-      isMatch(section.title, searchTerm) || 
-      section.description?.blocks.some(block => isMatch(block.text, searchTerm))
+  const filteredResults = searchResults.map((chapter) => {
+    const matchingChapter = isMatch(chapter.title, searchTerm) ||
+      isMatch(chapter.description, searchTerm);
+    const matchingSections = chapter.sections.filter((section) =>
+      isMatch(section.title, searchTerm) ||
+      section.description?.blocks.some((block) =>
+        isMatch(block.text, searchTerm)
+      )
     );
-
     if (matchingChapter || matchingSections.length > 0) {
       return {
         ...chapter,
-        sections: matchingSections
+        sections: matchingSections,
       };
     }
     return null;
@@ -39,22 +35,34 @@ export const SearchResults = ({ searchTerm, searchResults, onEditChapter, onEdit
   }
 
   return (
-    <div className='mt-4'>
-      <h3 className='text-lg font-semibold mb-2'>Search Results:</h3>
+    <div className="mt-4">
+      <h3 className="text-lg font-semibold mb-2">Search Results:</h3>
       {filteredResults.map((chapter) => (
-        <div key={chapter.index} className='mb-4 p-4 bg-gray-100 rounded'>
-          <p>{highlightSearchTerm(chapter.description, searchTerm)}</p>
+        <Expandable
+          key={chapter.index}
+          title={chapter.title}
+          description={chapter.description}
+          searchTerm={searchTerm}
+          onEdit={() => onEditChapter(chapter)}
+          defaultExpanded={true}
+        >
           {chapter.sections.map((section, sectionIndex) => (
-            <div key={sectionIndex} className={`ml-4 mt-2`}>
-              <div className='flex justify-between items-center'>
-                <h5 className='font-semibold'>{highlightSearchTerm(section.title, searchTerm)}</h5>
-              </div>
+            <Expandable
+              key={sectionIndex}
+              title={section.title}
+              description={section.description?.blocks}
+              searchTerm={searchTerm}
+              onEdit={() => onEditSection(chapter, section)}
+              defaultExpanded={true}
+            >
               {section.description?.blocks.map((block, blockIndex) => (
-                <p key={blockIndex}>{highlightSearchTerm(block.text, searchTerm)}</p>
+                <p key={blockIndex}>
+                  {highlightSearchTerm(block.text, searchTerm)}
+                </p>
               ))}
-            </div>
+            </Expandable>
           ))}
-        </div>
+        </Expandable>
       ))}
     </div>
   );

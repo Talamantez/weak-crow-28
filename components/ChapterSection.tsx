@@ -83,7 +83,7 @@ const ChapterSection = ({
     };
 
     return (
-        <Expandable title={section.title} defaultExpanded={false}>
+        <Expandable title={section.title} defaultExpanded={false} >
             <div
                 id={`section-${chapterIndex}-${sectionIndex}`}
                 class={`ml-${depth * 4} border-l-2 border-blue-500 pl-4 my-4`}
