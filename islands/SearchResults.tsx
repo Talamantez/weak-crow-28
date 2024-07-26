@@ -40,7 +40,8 @@ export const SearchResults = (
       {filteredResults.map((chapter) => (
         <Expandable
           key={chapter.index}
-          title={chapter.title}
+          title={`CHAPTER:
+             ${chapter.title}`}
           description={chapter.description}
           searchTerm={searchTerm}
           onEdit={() => onEditChapter(chapter)}
@@ -49,7 +50,7 @@ export const SearchResults = (
           {chapter.sections.map((section, sectionIndex) => (
             <Expandable
               key={sectionIndex}
-              title={section.title}
+              title={`SECTION: ${section.title}`}
               description={section.description?.blocks}
               searchTerm={searchTerm}
               onEdit={() => onEditSection(chapter, section)}

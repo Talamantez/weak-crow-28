@@ -1,8 +1,6 @@
 import { useState } from "preact/hooks";
 import IconChevronUp from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-up.tsx";
 import IconChevronDown from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-down.tsx";
-import Button from "../components/Button.tsx";
-import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
 import { highlightSearchTerm } from "./highlightSearchTerm.tsx";
 
 const Expandable = (
