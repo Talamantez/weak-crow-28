@@ -26,7 +26,6 @@ import {
 
 import { Chapter } from "../util/types.ts";
 import { useSearch } from "./useSearch.tsx";
-import { SearchBar } from "./SearchBar.tsx";
 import { SearchResults } from "./SearchResults.tsx";
 
 export default function HomeContent() {
@@ -81,6 +80,67 @@ export default function HomeContent() {
     setSearchResults(results);
   };
 
+  const handleEditChapter = (chapterIndex: string) => {
+    const chapter = chapters.find((ch) => ch.index === chapterIndex);
+    if (chapter) {
+      setChapters((prev) =>
+        prev.map((ch) =>
+          ch.index === chapterIndex ? { ...ch, isEditing: true } : ch
+        )
+      );
+
+      // Scroll to the chapter section
+      setTimeout(() => {
+        const chapterElement = document.getElementById(
+          `chapter-${chapterIndex}`,
+        );
+        if (chapterElement) {
+          chapterElement.scrollIntoView({ behavior: "smooth", block: "start" });
+          setHighlightedElement(`chapter-${chapterIndex}`);
+          setTimeout(() => setHighlightedElement(null), 2000);
+        }
+      }, 100);
+    }
+  };
+
+  const handleEditSection = (chapterIndex: string, sectionIndex: number) => {
+    handleEditChapter(chapterIndex);
+    const chapter = chapters.find((ch) => ch.index === chapterIndex);
+    if (chapter) {
+      const section = chapter.sections[sectionIndex];
+      if (section) {
+        setChapters((prev) =>
+          prev.map((ch) =>
+            ch.index === chapterIndex
+              ? {
+                ...ch,
+                sections: ch.sections.map((s, i) =>
+                  i === sectionIndex ? { ...s, isEditing: true } : s
+                ),
+              }
+              : ch
+          )
+        );
+
+        // Scroll to the section
+        setTimeout(() => {
+          const sectionElement = document.getElementById(
+            `chapter-${chapterIndex}-section-${sectionIndex}`,
+          );
+          if (sectionElement) {
+            sectionElement.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+            setHighlightedElement(
+              `chapter-${chapterIndex}-section-${sectionIndex}`,
+            );
+            setTimeout(() => setHighlightedElement(null), 2000);
+          }
+        }, 100);
+      }
+    }
+  };
   const highlightClass = apply`transition-colors duration-300 bg-yellow-200`;
 
   const renderSearchResults = () => {
@@ -93,12 +153,12 @@ export default function HomeContent() {
     }
 
     return (
-          <SearchResults
-            searchTerm={searchTerm}
-            searchResults={searchResults}
-            onEditChapter={()=>console.log("edit chapter")}
-            onEditSection={()=>console.log("edit section")}
-          />
+      <SearchResults
+        searchTerm={searchTerm}
+        searchResults={searchResults}
+        onEditChapter={handleEditChapter}
+        onEditSection={handleEditSection}
+      />
     );
   };
 
@@ -472,157 +532,157 @@ export default function HomeContent() {
     <div>
       <Head>
         <title>Resource Roadmap Editor</title>
-
       </Head>
       <main class="flex flex-col lg:flex-row items-start justify-between my-10 p-4 mx-auto max-w-screen-xl">
-<div class="flex flex-row">
-        <div class="flex-grow mr-4 w-full lg:w-2/3">
-          <div class="bg-gray-800 text-white w-full rounded-lg p-8 mb-10">
-            <h1 class="text-3xl font-bold mb-4">Resource Roadmap</h1>
-            <p class="mb-4">
-              Welcome to Your Local Resource Publication Creator!
-            </p>
-            <Button
-              text="Generate Example Chapters"
-              styles="bg-white text-gray-800 rounded px-4 py-2 mb-2 w-full"
-              onClick={handleGenerate}
-            />
-            <Button
-              text="Print Your Roadmap"
-              styles="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 w-full"
-              onClick={handlePrint}
-            />
-            <Button
-              text="Manage Versions"
-              onClick={() => setIsVersionModalOpen(true)}
-              styles="bg-purple-500 hover:bg-purple-600 text-white rounded px-4 py-2 my-2"
-            />
-          </div>
-
-          <div class="w-full mb-10">
-            <h2 class="font-bold text-2xl w-full text-left mb-4">
-              Chapters
-            </h2>
-            <div class="flex flex-col sm:flex-row justify-between w-full mb-4">
-              <div class="relative flex-grow mr-2 mb-4 sm:mb-0">
-                <input
-                  type="text"
-                  placeholder="Search chapters and sections..."
-                  value={searchTerm}
-                  onInput={handleSearch}
-                  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <IconSearch class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              </div>
-            </div>
-
-            {renderSearchResults()}
-
-            <div class="flex flex-col sm:flex-row justify-between w-full mt-4">
-              <Button
-                text="Add New Chapter"
-                onClick={() => setIsModalOpen(true)}
-                styles="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 rounded-md py-2 px-4 text-white transition-colors focus:outline-none outline-none"
-                icon={IconPlus}
-              />
-              {isReordering
-                ? (
-                  <>
-                    <Button
-                      text="Save Order"
-                      onClick={saveReordering}
-                      styles="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none mb-2 sm:mb-0"
-                      icon={IconCheck}
-                    />
-                    <Button
-                      text="Cancel"
-                      onClick={cancelReordering}
-                      styles="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
-                      icon={IconX}
-                    />
-                  </>
-                )
-                : (
-                  <Button
-                    text="Reorder Chapters"
-                    onClick={startReordering}
-                    styles="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none mb-2 sm:mb-0"
-                    icon={IconArrowsSort}
-                  />
-                )}
-              <Button
-                text="Delete All Chapters"
-                onClick={handleDeleteAllChapters}
-                styles="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
-                icon={IconX}
-              />
-            </div>
-          </div>
-
-          {loading
-            ? <p>Loading chapters...</p>
-            : loadError
-            ? <p class="text-red-500">Error: {loadError}</p>
-            : chapters.length === 0
-            ? (
-              <p>
-                No chapters found. Try adding a new chapter or generating
-                example chapters.
+        <div class="flex flex-row">
+          <div class="flex-grow mr-4 w-full lg:w-2/3">
+            <div class="bg-gray-800 text-white w-full rounded-lg p-8 mb-10">
+              <h1 class="text-3xl font-bold mb-4">Resource Roadmap</h1>
+              <p class="mb-4">
+                Welcome to Your Local Resource Publication Creator!
               </p>
-            )
-            : (
-              <div
-                class={`w-full grid grid-cols-1 gap-4 ${
-                  isReordering ? "cursor-move" : ""
-                }`}
-              >
-                {chapters.map((chapter) => (
-                  <div
-                    key={chapter.index}
-                    id={`chapter-${chapter.index}`}
-                    class={`relative transition-all duration-300 ${
-                      highlightedElement === `chapter-${chapter.index}`
-                        ? highlightClass
-                        : ""
-                    } ${
-                      isReordering
-                        ? "border-2 border-dashed border-gray-400 p-4 pt-10"
-                        : ""
-                    } ${draggedChapter === chapter.index ? "opacity-50" : ""}`}
-                    draggable={isReordering}
-                    onDragStart={(e) =>
-                      isReordering && onDragStart(e, chapter.index)}
-                    onDragOver={(e) => isReordering && onDragOver(e)}
-                    onDragEnd={onDragEnd}
-                    onDrop={(e) => isReordering && onDrop(e, chapter.index)}
-                  >
-                    {isReordering && (
-                      <div class="absolute top-0 left-0 right-0 text-center text-sm">
-                        Drag to reorder
-                      </div>
-                    )}
-                    <ChapterComponent
-                      chapter={chapter}
-                      onUpdate={updateChapter}
-                      onDelete={() => deleteChapter(chapter.index)}
-                      isExpanded={expandedChapters.has(chapter.index)}
-                      onToggleExpand={() =>
-                        toggleChapterExpansion(chapter.index)}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+              <Button
+                text="Generate Example Chapters"
+                styles="bg-white text-gray-800 rounded px-4 py-2 mb-2 w-full"
+                onClick={handleGenerate}
+              />
+              <Button
+                text="Print Your Roadmap"
+                styles="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 w-full"
+                onClick={handlePrint}
+              />
+              <Button
+                text="Manage Versions"
+                onClick={() => setIsVersionModalOpen(true)}
+                styles="bg-purple-500 hover:bg-purple-600 text-white rounded px-4 py-2 my-2"
+              />
+            </div>
 
-          <Footer />
+            <div class="w-full mb-10">
+              <h2 class="font-bold text-2xl w-full text-left mb-4">
+                Chapters
+              </h2>
+              <div class="flex flex-col sm:flex-row justify-between w-full mb-4">
+                <div class="relative flex-grow mr-2 mb-4 sm:mb-0">
+                  <input
+                    type="text"
+                    placeholder="Search chapters and sections..."
+                    value={searchTerm}
+                    onInput={handleSearch}
+                    class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <IconSearch class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                </div>
+              </div>
+
+              {renderSearchResults()}
+
+              <div class="flex flex-col sm:flex-row justify-between w-full mt-4">
+                <Button
+                  text="Add New Chapter"
+                  onClick={() => setIsModalOpen(true)}
+                  styles="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 rounded-md py-2 px-4 text-white transition-colors focus:outline-none outline-none"
+                  icon={IconPlus}
+                />
+                {isReordering
+                  ? (
+                    <>
+                      <Button
+                        text="Save Order"
+                        onClick={saveReordering}
+                        styles="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none mb-2 sm:mb-0"
+                        icon={IconCheck}
+                      />
+                      <Button
+                        text="Cancel"
+                        onClick={cancelReordering}
+                        styles="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
+                        icon={IconX}
+                      />
+                    </>
+                  )
+                  : (
+                    <Button
+                      text="Reorder Chapters"
+                      onClick={startReordering}
+                      styles="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none mb-2 sm:mb-0"
+                      icon={IconArrowsSort}
+                    />
+                  )}
+                <Button
+                  text="Delete All Chapters"
+                  onClick={handleDeleteAllChapters}
+                  styles="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
+                  icon={IconX}
+                />
+              </div>
+            </div>
+
+            {loading
+              ? <p>Loading chapters...</p>
+              : loadError
+              ? <p class="text-red-500">Error: {loadError}</p>
+              : chapters.length === 0
+              ? (
+                <p>
+                  No chapters found. Try adding a new chapter or generating
+                  example chapters.
+                </p>
+              )
+              : (
+                <div
+                  class={`w-full grid grid-cols-1 gap-4 ${
+                    isReordering ? "cursor-move" : ""
+                  }`}
+                >
+                  {chapters.map((chapter) => (
+                    <div
+                      key={chapter.index}
+                      id={`chapter-${chapter.index}`}
+                      class={`relative transition-all duration-300 ${
+                        highlightedElement === `chapter-${chapter.index}`
+                          ? highlightClass
+                          : ""
+                      } ${
+                        isReordering
+                          ? "border-2 border-dashed border-gray-400 p-4 pt-10"
+                          : ""
+                      } ${
+                        draggedChapter === chapter.index ? "opacity-50" : ""
+                      }`}
+                      draggable={isReordering}
+                      onDragStart={(e) =>
+                        isReordering && onDragStart(e, chapter.index)}
+                      onDragOver={(e) => isReordering && onDragOver(e)}
+                      onDragEnd={onDragEnd}
+                      onDrop={(e) => isReordering && onDrop(e, chapter.index)}
+                    >
+                      {isReordering && (
+                        <div class="absolute top-0 left-0 right-0 text-center text-sm">
+                          Drag to reorder
+                        </div>
+                      )}
+                      <ChapterComponent
+                        chapter={chapter}
+                        onUpdate={updateChapter}
+                        onDelete={() => deleteChapter(chapter.index)}
+                        isExpanded={expandedChapters.has(chapter.index)}
+                        onToggleExpand={() =>
+                          toggleChapterExpansion(chapter.index)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+            <Footer />
+          </div>
+
+          <div>
+            <h2 class="font-bold text-2xl mb-4">PDF Preview</h2>
+            <PdfPreview chapters={chapters.filter((ch) => ch.isIncluded)} />
+          </div>
         </div>
-     
-     
-        <div>
-          <h2 class="font-bold text-2xl mb-4">PDF Preview</h2>
-          <PdfPreview chapters={chapters.filter((ch) => ch.isIncluded)} />
-        </div>
-     </div>
       </main>
       <NewChapterModal
         isOpen={isModalOpen}

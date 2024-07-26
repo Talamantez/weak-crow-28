@@ -57,12 +57,6 @@ export const SearchResults = ({ searchTerm, searchResults, onEditChapter, onEdit
             <div key={sectionIndex} className={`ml-4 mt-2`}>
               <div className='flex justify-between items-center'>
                 <h5 className='font-semibold'>{highlightSearchTerm(section.title, searchTerm)}</h5>
-                <Button
-                  text="Edit Section"
-                  onClick={() => onEditSection(chapter.index, sectionIndex)}
-                  styles="bg-green-500 hover:bg-green-600 text-white rounded px-2 py-1 text-sm"
-                  icon={IconEdit}
-                />
               </div>
               {section.description?.blocks.map((block, blockIndex) => (
                 <p key={blockIndex}>{highlightSearchTerm(block.text, searchTerm)}</p>
