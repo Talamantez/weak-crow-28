@@ -18,6 +18,7 @@ import * as $ContentHeader from "./islands/ContentHeader.tsx";
 import * as $HomeContent from "./islands/HomeContent.tsx";
 import * as $LoaderIsland from "./islands/LoaderIsland.tsx";
 import * as $PdfPreview from "./islands/PdfPreview.tsx";
+import * as $PdfPreviewChapterEditor from "./islands/PdfPreviewChapterEditor.tsx";
 import * as $PdfPreviewSidebar from "./islands/PdfPreviewSidebar.tsx";
 import * as $SearchBar from "./islands/SearchBar.tsx";
 import * as $SearchResults from "./islands/SearchResults.tsx";
@@ -46,6 +47,7 @@ const manifest = {
     "./islands/HomeContent.tsx": $HomeContent,
     "./islands/LoaderIsland.tsx": $LoaderIsland,
     "./islands/PdfPreview.tsx": $PdfPreview,
+    "./islands/PdfPreviewChapterEditor.tsx": $PdfPreviewChapterEditor,
     "./islands/PdfPreviewSidebar.tsx": $PdfPreviewSidebar,
     "./islands/SearchBar.tsx": $SearchBar,
     "./islands/SearchResults.tsx": $SearchResults,

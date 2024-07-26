@@ -43,15 +43,6 @@ export const SearchResults = ({ searchTerm, searchResults, onEditChapter, onEdit
       <h3 className='text-lg font-semibold mb-2'>Search Results:</h3>
       {filteredResults.map((chapter) => (
         <div key={chapter.index} className='mb-4 p-4 bg-gray-100 rounded'>
-          <div className='flex justify-between items-center'>
-            <h4 className='font-bold'>{highlightSearchTerm(chapter.title, searchTerm)}</h4>
-            <Button
-              text="Edit Chapter"
-              onClick={() => onEditChapter(chapter.index)}
-              styles="bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1 text-sm"
-              icon={IconEdit}
-            />
-          </div>
           <p>{highlightSearchTerm(chapter.description, searchTerm)}</p>
           {chapter.sections.map((section, sectionIndex) => (
             <div key={sectionIndex} className={`ml-4 mt-2`}>

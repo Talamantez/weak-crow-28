@@ -11,7 +11,7 @@ import IconSearch from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/search.ts
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
-import { PdfPreview } from "../components/PdfPreview.tsx";
+import { PdfPreviewChapterEditor } from "./PdfPreviewChapterEditor.tsx";
 import NewChapterModal from "../components/NewChapterModal.tsx";
 import ConfirmationModal from "../components/ConfirmationModal.tsx";
 import { ChapterComponent } from "../components/ChapterComponent.tsx";
@@ -27,6 +27,7 @@ import {
 import { Chapter } from "../util/types.ts";
 import { useSearch } from "./useSearch.tsx";
 import { SearchResults } from "./SearchResults.tsx";
+import { PdfPreviewSidebar } from "./PdfPreviewSidebar.tsx";
 
 export default function HomeContent() {
   const [versions, setVersions] = useState<RoadmapVersion[]>([]);
@@ -677,11 +678,24 @@ export default function HomeContent() {
 
             <Footer />
           </div>
-
-          <div>
-            <h2 class="font-bold text-2xl mb-4">PDF Preview</h2>
-            <PdfPreview chapters={chapters.filter((ch) => ch.isIncluded)} />
-          </div>
+          <PdfPreviewChapterEditor
+            chapters={chapters}
+            onUpdate={updateChapter}
+            onDelete={deleteChapter}
+            expandedChapters={expandedChapters}
+            onToggleExpand={toggleChapterExpansion}
+            isReordering={isReordering}
+            onDragStart={onDragStart}
+            onDragOver={onDragOver}
+            onDragEnd={onDragEnd}
+            onDrop={onDrop}
+            highlightedElement={highlightedElement}
+            highlightClass={highlightClass}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            searchResults={searchResults}
+            setSearchResults={setSearchResults}
+          />
         </div>
       </main>
       <NewChapterModal
