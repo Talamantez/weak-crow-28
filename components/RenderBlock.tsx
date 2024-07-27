@@ -2,6 +2,7 @@ import { useState } from "preact/hooks";
 import Button from "./Button.tsx";
 import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
 import { Block } from "../util/types.ts";
+import { highlightSearchTerm } from "./highlightSearchTerm.tsx";
 
 const RenderBlock = ({
     block,
@@ -10,6 +11,7 @@ const RenderBlock = ({
     setActiveBlock,
     updateBlock,
     myIndex,
+    searchTerm
   }: {
     block: Block;
     onDelete: () => void;
@@ -17,6 +19,7 @@ const RenderBlock = ({
     setActiveBlock: (id: string | null) => void;
     updateBlock: (index: number, updatedBlock: Block) => void;
     myIndex: number;
+    searchTerm: string;
   }) => {
     const [isEditingBlock, setIsEditingBlock] = useState(false);
     let newValue = block.text;
@@ -56,7 +59,7 @@ const RenderBlock = ({
                 <div
                   class={`flex items-center ${baseClasses}`}
                 >
-                  <p class={`flex-grow ${isEditingClasses}`}>{block.text}</p>
+                  <p class={`flex-grow ${isEditingClasses}`}>{highlightSearchTerm(block.text, searchTerm)}</p>
                   <Button
                     text=""
                     onClick={() => toggleIsEditingBlock()}
@@ -71,7 +74,7 @@ const RenderBlock = ({
                 </div>
                 <input
                   type="text"
-                  value={block.text}
+                  value={highlightSearchTerm(block.text,searchTerm)}
                   onChange={(e) => handleChange(e)}
                   class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
                   onFocus={() => setActiveBlock(block.id)}
@@ -93,7 +96,7 @@ const RenderBlock = ({
               <div
                 class={`flex items-center ${baseClasses}`}
               >
-                <p class={`flex-grow`}>{block.text}</p>
+                <p class={`flex-grow`}>{highlightSearchTerm(block.text,searchTerm)}</p>
                 <Button
                   text=""
                   onClick={() => toggleIsEditingBlock()}
@@ -119,7 +122,7 @@ const RenderBlock = ({
                   class={`flex items-center ${baseClasses}`}
                 >
                   <h3 class={`text-xl font-bold flex-grow ${isEditingClasses}`}>
-                    {block.text}
+                    {highlightSearchTerm(block.text, searchTerm)}
                   </h3>
                   <Button
                     text=""
@@ -135,7 +138,7 @@ const RenderBlock = ({
                 </div>
                 <input
                   type="text"
-                  value={block.text}
+                  value={highlightSearchTerm(block.text,searchTerm)}
                   onChange={(e) => handleChange(e)}
                   class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
                 />
@@ -157,7 +160,7 @@ const RenderBlock = ({
                 class={`flex items-center ${baseClasses}`}
               >
                 <h3 class={`text-xl font-bold flex-grow`}>
-                  {block.text}
+                  {highlightSearchTerm(block.text,searchTerm)}
                 </h3>
                 <Button
                   text=""
@@ -183,7 +186,7 @@ const RenderBlock = ({
                 <div
                   class={`flex items-center ${baseClasses}`}
                 >
-                  <li class={`flex-grow ${isEditingClasses}`}>{block.text}</li>
+                  <li class={`flex-grow ${isEditingClasses}`}>{highlightSearchTerm(block.text, searchTerm)}</li>
                   <Button
                     text=""
                     onClick={() => toggleIsEditingBlock()}
@@ -198,7 +201,7 @@ const RenderBlock = ({
                 </div>
                 <input
                   type="text"
-                  value={block.text}
+                  value={highlightSearchTerm(block.text,searchTerm)}
                   onChange={(e) => handleChange(e)}
                   class="w-full p-2 border-2 border-blue-500 rounded mb-2 focus:(outline-none ring-4 ring-yellow-400)"
                 />
@@ -219,7 +222,7 @@ const RenderBlock = ({
               <div
                 class={`flex items-center ${baseClasses}`}
               >
-                <li class={`flex-grow`}>{block.text}</li>
+                <li class={`flex-grow`}>{highlightSearchTerm(block.text, searchTerm)}</li>
                 <Button
                   text=""
                   onClick={() => toggleIsEditingBlock()}

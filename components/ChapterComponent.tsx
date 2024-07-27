@@ -9,14 +9,16 @@ import ChapterSection from "./ChapterSection.tsx";
 import ConfirmationModal from "./ConfirmationModal.tsx";
 import { Logger } from "../util/logger.ts";
 import AddBlockButton from "./AddBlockButton.tsx";
+import { highlightSearchTerm } from "./highlightSearchTerm.tsx";
 
 export const ChapterComponent = (
-  { chapter, onUpdate, onDelete, isExpanded, onToggleExpand }: {
+  { chapter, onUpdate, onDelete, isExpanded, onToggleExpand, searchTerm }: {
     chapter: Chapter;
     onUpdate: (updatedChapter: Chapter) => void;
     onDelete: () => void;
     isExpanded: boolean;
     onToggleExpand: () => void;
+    searchTerm: string;
   },
 ) => {
   const [activeBlock, setActiveBlock] = useState(null);
@@ -26,6 +28,7 @@ export const ChapterComponent = (
   const [title, setTitle] = useState(chapter.title);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [description, setDescription] = useState(chapter.description);
+
 
   const handleImageUpload = async (e: Event): Promise<void> => {
     const functionId = crypto.randomUUID();
@@ -159,7 +162,8 @@ export const ChapterComponent = (
               <div>
                 <div class="flex items-center">
                   <h2 class="text-xl font-bold bg-purple-200 text-purple-800 p-2 rounded mr-2">
-                    {chapter.title}
+                    {/* {chapter.title} */}
+                    {highlightSearchTerm(chapter.title, searchTerm)}
                   </h2>
                   <Button
                     text=""
@@ -192,7 +196,7 @@ export const ChapterComponent = (
             : (
               <div class="flex items-center">
                 <h2 class="text-sm lg:text-lg font-bold p-2 rounded mr-2">
-                  {chapter.title}
+                  {highlightSearchTerm(chapter.title, searchTerm)}
                 </h2>
               </div>
             )}
@@ -248,7 +252,7 @@ export const ChapterComponent = (
                 <div>
                   <div class="flex items-center">
                     <p class="flex-grow bg-purple-200 text-purple-800 p-2 rounded mr-2">
-                      {chapter.description}
+                      {highlightSearchTerm(chapter.description, searchTerm)}
                     </p>
                     <Button
                       text=""
@@ -281,7 +285,7 @@ export const ChapterComponent = (
               : (
                 <div class="flex items-center">
                   <p class="flex-grow p-2 rounded mr-2">
-                    {chapter.description}
+                    {highlightSearchTerm(chapter.description, searchTerm)}
                   </p>
                   <Button
                     text=""
@@ -312,6 +316,7 @@ export const ChapterComponent = (
               setActiveBlock={setActiveBlock}
               chapterIndex={chapter.index}
               sectionIndex={index}
+              searchTerm={searchTerm}
             />
           ))}
           <div>

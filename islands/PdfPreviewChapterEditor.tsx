@@ -142,6 +142,7 @@ export const PdfPreviewChapterEditor = ({
               onDelete={() => onDelete(selectedChapter.index)}
               isExpanded={true}
               onToggleExpand={() => onToggleExpand(selectedChapter.index)}
+              searchTerm={searchTerm}
             />
           </div>
         </div>

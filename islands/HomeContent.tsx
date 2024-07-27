@@ -153,7 +153,7 @@ export default function HomeContent() {
     }
 
     return (
-      <Expandable title="Search Results" defaultExpanded={true}>
+      <Expandable title="Search Results" description="" defaultExpanded={true} searchTerm={searchTerm }>
         <SearchResults
           searchTerm={searchTerm}
           searchResults={searchResults}
@@ -537,7 +537,7 @@ export default function HomeContent() {
       </Head>
       <main class="flex flex-col lg:flex-row items-start justify-between my-10 p-4 mx-auto max-w-screen-xl">
         <div class="flex flex-row">
-          <div class="flex-grow mr-4 w-full lg:w-2/3">
+          <div class="flex-grow mr-4 w-full">
             <div class="bg-gray-800 text-white w-full rounded-lg p-8 mb-10">
               <h1 class="text-3xl font-bold mb-4">Resource Roadmap</h1>
               <p class="mb-4">
@@ -623,7 +623,7 @@ export default function HomeContent() {
                     isReordering ? "cursor-move" : ""
                   }`}
                 >
-                  <Expandable title="Chapters" defaultExpanded={true}>
+                  <Expandable title="Chapters" defaultExpanded={true} searchTerm={searchTerm}>
                     {chapters.map((chapter) => (
                       <div
                         key={chapter.index}
@@ -658,6 +658,7 @@ export default function HomeContent() {
                           isExpanded={expandedChapters.has(chapter.index)}
                           onToggleExpand={() =>
                             toggleChapterExpansion(chapter.index)}
+                        searchTerm={searchTerm}
                         />
                       </div>
                     ))}

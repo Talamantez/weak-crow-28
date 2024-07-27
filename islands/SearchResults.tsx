@@ -36,7 +36,6 @@ export const SearchResults = (
 
   return (
     <div className="mt-4">
-      <h3 className="text-lg font-semibold mb-2">Search Results:</h3>
       {filteredResults.map((chapter) => (
         <Expandable
           key={chapter.index}

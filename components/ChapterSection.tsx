@@ -5,6 +5,7 @@ import { Block, Section } from "../util/types.ts";
 import RenderBlock from "./RenderBlock.tsx";
 import AddBlockButton from "./AddBlockButton.tsx";
 import Expandable from "./ExpandableComponent.tsx";
+import { highlightSearchTerm } from "./highlightSearchTerm.tsx";
 
 const ChapterSection = ({
     section,
@@ -15,6 +16,7 @@ const ChapterSection = ({
     setActiveBlock,
     chapterIndex,
     sectionIndex,
+    searchTerm,
 }: {
     section: Section;
     depth?: number;
@@ -24,6 +26,7 @@ const ChapterSection = ({
     setActiveBlock: (id: string | null) => void;
     chapterIndex: string;
     sectionIndex: number;
+    searchTerm: string;
 }) => {
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [title, setTitle] = useState(section.title);
@@ -83,7 +86,7 @@ const ChapterSection = ({
     };
 
     return (
-        <Expandable title={section.title} defaultExpanded={false} >
+        <Expandable title={section.title} description={section.description} defaultExpanded={false} searchTerm={searchTerm}>
             <div
                 id={`section-${chapterIndex}-${sectionIndex}`}
                 class={`ml-${depth * 4} border-l-2 border-blue-500 pl-4 my-4`}
@@ -94,7 +97,7 @@ const ChapterSection = ({
                             <div class="flex-grow">
                                 <div class="flex items-center flex-grow">
                                     <HeadingTag class="font-bold mt-2 text-lg bg-purple-200 text-purple-800 p-2 rounded mr-2">
-                                        {section.title}
+                                        {highlightSearchTerm(section.title, searchTerm)}
                                     </HeadingTag>
                                     <Button
                                         text=""
@@ -127,7 +130,7 @@ const ChapterSection = ({
                         : (
                             <div class="flex items-center flex-grow">
                                 <HeadingTag class="font-bold mt-2 text-lg p-2 rounded mr-2">
-                                    {section.title}
+                                    {highlightSearchTerm(section.title, searchTerm)}
                                 </HeadingTag>
                                 <Button
                                     text=""
@@ -154,6 +157,7 @@ const ChapterSection = ({
                                 setActiveBlock={setActiveBlock}
                                 updateBlock={updateBlock}
                                 myIndex={index}
+                                searchTerm= {searchTerm}
                             />
                         </div>
                     ))}
@@ -177,6 +181,8 @@ const ChapterSection = ({
                 </div>
                 {section.sections?.map((subSection, index) => (
                     <ChapterSection
+                        chapterIndex={chapterIndex}
+                        sectionIndex={sectionIndex}
                         key={index}
                         section={subSection}
                         depth={depth + 1}
@@ -196,6 +202,7 @@ const ChapterSection = ({
                         }}
                         activeBlock={activeBlock}
                         setActiveBlock={setActiveBlock}
+                        searchTerm={searchTerm}
                     />
                 ))}
             </div>
