@@ -7,6 +7,7 @@ import IconPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/plus.tsx";
 import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import IconArrowsSort from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/arrows-sort.tsx";
 import IconCheck from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/check.tsx";
+import IconSearch from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/search.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
@@ -581,6 +582,16 @@ export default function HomeContent() {
               <h2 class="font-bold text-2xl w-full text-left mb-4">
                 Manage Chapters
               </h2>
+              <div class="relative flex-grow mr-2 mb-4 sm:mb-0">
+                <input
+                  type="text"
+                  placeholder="Search chapters and sections..."
+                  value={searchTerm}
+                  onInput={handleSearch}
+                  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <IconSearch class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              </div>
               {renderSearchResults()}
               <div class="flex flex-col sm:flex-row justify-between w-full mt-4">
                 <Button
