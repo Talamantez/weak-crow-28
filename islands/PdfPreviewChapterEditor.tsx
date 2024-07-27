@@ -9,7 +9,6 @@ export const PdfPreviewChapterEditor = ({
   chapters,
   onUpdate,
   onDelete,
-  expandedChapters,
   onToggleExpand,
   isReordering,
   onDragStart,
@@ -143,6 +142,8 @@ export const PdfPreviewChapterEditor = ({
               isExpanded={true}
               onToggleExpand={() => onToggleExpand(selectedChapter.index)}
               searchTerm={searchTerm}
+              hideExpandButton={true}
+              hideCheckbox={true}
             />
           </div>
         </div>

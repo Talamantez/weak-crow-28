@@ -7,7 +7,6 @@ import IconPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/plus.tsx";
 import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import IconArrowsSort from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/arrows-sort.tsx";
 import IconCheck from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/check.tsx";
-import IconSearch from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/search.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
@@ -153,7 +152,12 @@ export default function HomeContent() {
     }
 
     return (
-      <Expandable title="Search Results" description="" defaultExpanded={true} searchTerm={searchTerm }>
+      <Expandable
+        title="Search Results"
+        description=""
+        defaultExpanded={true}
+        searchTerm={searchTerm}
+      >
         <SearchResults
           searchTerm={searchTerm}
           searchResults={searchResults}
@@ -623,7 +627,11 @@ export default function HomeContent() {
                     isReordering ? "cursor-move" : ""
                   }`}
                 >
-                  <Expandable title="Chapters" defaultExpanded={true} searchTerm={searchTerm}>
+                  <Expandable
+                    title="Chapters"
+                    defaultExpanded={true}
+                    searchTerm={searchTerm}
+                  >
                     {chapters.map((chapter) => (
                       <div
                         key={chapter.index}
@@ -658,7 +666,9 @@ export default function HomeContent() {
                           isExpanded={expandedChapters.has(chapter.index)}
                           onToggleExpand={() =>
                             toggleChapterExpansion(chapter.index)}
-                        searchTerm={searchTerm}
+                          searchTerm={searchTerm}
+                          hideExpandButton={false}
+                          hideCheckbox={false}
                         />
                       </div>
                     ))}

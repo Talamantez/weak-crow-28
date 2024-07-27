@@ -12,13 +12,24 @@ import AddBlockButton from "./AddBlockButton.tsx";
 import { highlightSearchTerm } from "./highlightSearchTerm.tsx";
 
 export const ChapterComponent = (
-  { chapter, onUpdate, onDelete, isExpanded, onToggleExpand, searchTerm }: {
+  {
+    chapter,
+    onUpdate,
+    onDelete,
+    isExpanded,
+    onToggleExpand,
+    searchTerm,
+    hideCheckbox,
+    hideExpandButton,
+  }: {
     chapter: Chapter;
     onUpdate: (updatedChapter: Chapter) => void;
     onDelete: () => void;
     isExpanded: boolean;
     onToggleExpand: () => void;
     searchTerm: string;
+    hideCheckbox: boolean;
+    hideExpandButton: boolean;
   },
 ) => {
   const [activeBlock, setActiveBlock] = useState(null);
@@ -28,7 +39,6 @@ export const ChapterComponent = (
   const [title, setTitle] = useState(chapter.title);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [description, setDescription] = useState(chapter.description);
-
 
   const handleImageUpload = async (e: Event): Promise<void> => {
     const functionId = crypto.randomUUID();
@@ -126,37 +136,35 @@ export const ChapterComponent = (
     setDescription(newDescription);
   };
 
-  const handleDescriptionBlur = () => {
-    if (description !== chapter.description) {
-      onUpdate({ ...chapter, description });
-    }
-  };
 
   const handleDescriptionSave = () => {
     onUpdate({ ...chapter, description });
     setIsEditingDescription(false);
   };
-
   return (
     <div>
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center">
-          <Button
-            text=""
-            onClick={onToggleExpand}
-            styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 mr-2"
-            icon={isExpanded ? IconChevronUp : IconChevronDown}
-          />
-          <button
-            onClick={toggleInclude}
-            class={`mr-2 w-6 h-6 flex items-center justify-center border-2 rounded ${
-              chapter.isIncluded
-                ? "bg-blue-500 border-blue-500"
-                : "border-gray-400"
-            }`}
-          >
-            {chapter.isIncluded && <IconCheck class="w-4 h-4 text-white" />}
-          </button>
+          {!hideExpandButton && (
+            <Button
+              text=""
+              onClick={onToggleExpand}
+              styles="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 mr-2"
+              icon={isExpanded ? IconChevronUp : IconChevronDown}
+            />
+          )}
+          {!hideCheckbox && (
+            <button
+              onClick={toggleInclude}
+              class={`mr-2 w-6 h-6 flex items-center justify-center border-2 rounded ${
+                chapter.isIncluded
+                  ? "bg-blue-500 border-blue-500"
+                  : "border-gray-400"
+              }`}
+            >
+              {chapter.isIncluded && <IconCheck class="w-4 h-4 text-white" />}
+            </button>
+          )}
           {isEditingTitle
             ? (
               <div>

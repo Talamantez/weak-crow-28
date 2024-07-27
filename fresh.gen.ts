@@ -11,7 +11,6 @@ import * as $api_upload from "./routes/api/upload.ts";
 import * as $index from "./routes/index.tsx";
 import * as $AddChapter from "./islands/AddChapter.tsx";
 import * as $ChapterControls from "./islands/ChapterControls.tsx";
-import * as $ChapterList from "./islands/ChapterList.tsx";
 import * as $CollapsibleSection from "./islands/CollapsibleSection.tsx";
 import * as $ContentFooter from "./islands/ContentFooter.tsx";
 import * as $ContentHeader from "./islands/ContentHeader.tsx";
@@ -40,7 +39,6 @@ const manifest = {
   islands: {
     "./islands/AddChapter.tsx": $AddChapter,
     "./islands/ChapterControls.tsx": $ChapterControls,
-    "./islands/ChapterList.tsx": $ChapterList,
     "./islands/CollapsibleSection.tsx": $CollapsibleSection,
     "./islands/ContentFooter.tsx": $ContentFooter,
     "./islands/ContentHeader.tsx": $ContentHeader,
