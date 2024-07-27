@@ -547,8 +547,8 @@ export default function HomeContent() {
       <Head>
         <title>Resource Roadmap Editor</title>
       </Head>
-      <main class="flex flex-col lg:flex-row items-start justify-between my-10 p-4 mx-auto max-w-screen-xl">
-        <div class="flex flex-row">
+      <main class="flex items-start justify-between my-10 p-4 mx-auto max-w-screen-xl">
+        <div class="flex flex-col sm:flex-row">
           <div class="flex-grow mr-4 w-full">
             <div class="bg-gray-800 text-white w-full rounded-lg p-8 mb-10">
               <h1 class="text-3xl font-bold mb-4">Resource Roadmap</h1>
