@@ -26,7 +26,6 @@ import {
 import { Chapter } from "../util/types.ts";
 import { useSearch } from "./useSearch.tsx";
 import { SearchResults } from "./SearchResults.tsx";
-import { PdfPreviewSidebar } from "./PdfPreviewSidebar.tsx";
 import Expandable from "../components/ExpandableComponent.tsx";
 
 export default function HomeContent() {
@@ -580,7 +579,7 @@ export default function HomeContent() {
 
             <div class="w-full mb-10">
               <h2 class="font-bold text-2xl w-full text-left mb-4">
-                Chapters
+                Manage Chapters
               </h2>
               {renderSearchResults()}
               <div class="flex flex-col sm:flex-row justify-between w-full mt-4">
@@ -609,14 +608,14 @@ export default function HomeContent() {
                   )
                   : (
                     <Button
-                      text="Reorder Chapters"
+                      text="Reorder"
                       onClick={startReordering}
                       styles="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none mb-2 sm:mb-0"
                       icon={IconArrowsSort}
                     />
                   )}
                 <Button
-                  text="Delete All Chapters"
+                  text="Clear"
                   onClick={handleDeleteAllChapters}
                   styles="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white rounded-md py-2 px-4 transition-colors focus:outline-none outline-none"
                   icon={IconX}
@@ -642,9 +641,10 @@ export default function HomeContent() {
                   }`}
                 >
                   <Expandable
-                    title="Chapters"
+                    title="Manage Chapters"
                     defaultExpanded={true}
                     searchTerm={searchTerm}
+                    description=""
                   >
                     {chapters.map((chapter) => (
                       <div
@@ -696,7 +696,6 @@ export default function HomeContent() {
             chapters={chapters}
             onUpdate={updateChapter}
             onDelete={deleteChapter}
-            expandedChapters={expandedChapters}
             onToggleExpand={toggleChapterExpansion}
             isReordering={isReordering}
             onDragStart={onDragStart}
