@@ -14,14 +14,16 @@ interface ButtonProps {
   }) => JSX.Element;
   onClick: () => void;
   styles?: string;
+  disabled?: boolean;
 }
 
-export default function Button({ text, icon:Icon, onClick, styles }: ButtonProps): JSX.Element {
+export default function Button(
+  { text, icon: Icon, onClick, styles, disabled = false }: ButtonProps,
+): JSX.Element {
   return (
-    <button class={styles} onClick={onClick}>
-            {Icon &&
-      <Icon size={20} class="ml-2" />
-      }
+    <button class={styles} onClick={onClick} disabled={disabled}>
+      {Icon &&
+        <Icon size={20} class="ml-2" />}
       <span>{text}</span>
     </button>
   );

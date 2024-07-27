@@ -283,6 +283,11 @@ export default function HomeContent() {
   };
 
   useEffect(() => {
+    loadChapters();
+    // if(chapters.length === 0) handleGenerate()
+  }, []);
+
+  useEffect(() => {
     window.scrollTo(0, scrollPositionRef.current);
   }, [chapters]);
 
@@ -455,12 +460,16 @@ export default function HomeContent() {
 
   const handleGenerate = async () => {
     console.log("Generate button clicked");
-    try {
-      await generateChaptersFromJSON(dbName, storeName);
-      console.log("Generation completed successfully");
-      window.location.reload();
-    } catch (error) {
-      console.error("Error generating chapters:", error);
+    if (chapters.length === 0) {
+      try {
+        await generateChaptersFromJSON(dbName, storeName);
+        console.log("Generation completed successfully");
+        loadChapters(); // Reload chapters after generation
+      } catch (error) {
+        console.error("Error generating chapters:", error);
+      }
+    } else {
+      console.log("Chapters already exist, skipping generation");
     }
   };
 
@@ -548,9 +557,14 @@ export default function HomeContent() {
                 Welcome to Your Local Resource Publication Creator!
               </p>
               <Button
-                text="Generate Example Chapters"
-                styles="bg-white text-gray-800 rounded px-4 py-2 mb-2 w-full"
+                text={chapters.length === 0
+                  ? "Generate Example Chapters"
+                  : "Example Chapters Already Generated"}
+                styles={`bg-white text-gray-800 rounded px-4 py-2 mb-2 w-full ${
+                  chapters.length > 0 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
                 onClick={handleGenerate}
+                disabled={chapters.length > 0}
               />
               <Button
                 text="Print Your Roadmap"
