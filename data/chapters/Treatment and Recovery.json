@@ -4,171 +4,64 @@
     "blocks": [
       {
         "type": "paragraph",
-        "text": "This chapter covers various aspects of treatment and recovery for mental health conditions, including medication, therapy, and other support systems."
+        "text": "Recovery is often a lifelong wellness plan when someone is living with mental illness.  Treatment can include diet and exercise, work, sleep, mental health and an overall treatment plan.  Evidence-based medications, therapy and psychosocial services such as psychiatric rehabilitation, housing, employment and peer supports have made wellness and recovery a reality for people living with mental health conditions."
       }
     ]
   },
   "sections": [
     {
-      "title": "What is recovery?",
+      "title": "What is Recovery?",
       "description": {
-        "blocks": [
-          {
-            "type": "paragraph",
-            "text": "Recovery is often a lifelong wellness plan when someone is living with mental illness. Treatment can include diet and exercise, work, sleep, mental health and an overall treatment plan. Evidence-based medications, therapy and psychosocial services such as psychiatric rehabilitation, housing, employment and peer supports have made wellness and recovery a reality for people living with mental health conditions."
-          }
-        ]
-      },
-      "sections": []
+        "blocks": []
+      }
     },
     {
-      "title": "The Elements of Recovery",
+      "title": "Elements of Recovery",
       "description": {
-        "blocks": [
-          {
-            "type": "paragraph",
-            "text": "Looking at an array of research, models and experience, NAMI believes there are core elements to recovery."
-          }
-        ]
-      },
-      "sections": [
-        {
-          "title": "Acceptance",
-          "description": {
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "Acceptance that you or a loved one has mental illness is often the most difficult hurdle in recovery. When individuals or family members first hear that they or someone they love has a diagnosis, they frequently find themselves experiencing a wide range of emotions including denial, fear, relief, embarrassment, guilt, frustration."
-              }
-            ]
-          },
-          "sections": []
-        },
-        {
-          "title": "Hope",
-          "description": {
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "Individuals with mental illness must believe that there is hope for recovery. Those who have previous episodes of mental illnesses can look back and realize that because they recovered once, they can do it again."
-              }
-            ]
-          },
-          "sections": []
-        },
-        {
-          "title": "Medication",
-          "description": {
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "Finding the right medication that works – with side effects that are minimal or absent – can be tricky and extremely stressful. If you can find a good fit, medications can be important to your recovery process. Some people may work toward being medication-free, and others may need to change medications many times over the course of their mental health journey."
-              }
-            ]
-          },
-          "sections": []
-        }
-      ]
+        "blocks": []
+      }
+    },
+    {
+      "title": "Mental Health Care Services for Veterans and Service Members",
+      "description": {
+        "blocks": []
+      }
+    },
+    {
+      "title": "Dual Diagnosis",
+      "description": {
+        "blocks": []
+      }
+    },
+    {
+      "title": "Treating Mental Illness",
+      "description": {
+        "blocks": []
+      }
     },
     {
       "title": "Psychotherapy",
       "description": {
-        "blocks": [
-          {
-            "type": "paragraph",
-            "text": "Psychotherapy, also known as \"talk therapy,\" is when a person speaks with a trained therapist in a safe and confidential environment to explore and understand feelings and behaviors and gain coping skills."
-          }
-        ]
-      },
-      "sections": [
-        {
-          "title": "Types of Psychotherapy",
-          "description": {
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "There are various types of psychotherapy, each with its own approach and benefits."
-              }
-            ]
-          },
-          "sections": [
-            {
-              "title": "Cognitive Behavioral Therapy (CBT)",
-              "description": {
-                "blocks": [
-                  {
-                    "type": "paragraph",
-                    "text": "Cognitive behavioral therapy (CBT) focuses on exploring relationships among a person's thoughts, feelings and behaviors. During CBT a therapist will actively work with a person to uncover unhealthy patterns of thought and how they may be causing self-destructive behaviors and beliefs."
-                  }
-                ]
-              },
-              "sections": []
-            },
-            {
-              "title": "Dialectical Behavioral Therapy (DBT)",
-              "description": {
-                "blocks": [
-                  {
-                    "type": "paragraph",
-                    "text": "Dialectical behavior therapy (DBT) was originally developed to treat chronically suicidal individuals with borderline personality disorder (BPD). It emphasizes validation, or accepting uncomfortable thoughts, feelings and behaviors instead of struggling with them."
-                  }
-                ]
-              },
-              "sections": []
-            }
-          ]
-        }
-      ]
+        "blocks": []
+      }
+    },
+    {
+      "title": "Psychosocial Treatments",
+      "description": {
+        "blocks": []
+      }
     },
     {
       "title": "Medication",
       "description": {
-        "blocks": [
-          {
-            "type": "paragraph",
-            "text": "Medications can play an important part of a treatment plan. Medicines are usually more effective when combined with psychotherapy."
-          }
-        ]
-      },
-      "sections": [
-        {
-          "title": "Types of Medication",
-          "description": {
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "Psychiatric medications work by influencing the brain chemicals regulating emotions and thought patterns."
-              }
-            ]
-          },
-          "sections": [
-            {
-              "title": "Antipsychotics",
-              "description": {
-                "blocks": [
-                  {
-                    "type": "paragraph",
-                    "text": "These medications reduce or eliminate the symptoms of psychosis (delusions and hallucinations) by impacting the brain chemical called dopamine. Antipsychotics play an important role in treating schizophrenia and schizoaffective disorder."
-                  }
-                ]
-              },
-              "sections": []
-            },
-            {
-              "title": "Antidepressants",
-              "description": {
-                "blocks": [
-                  {
-                    "type": "paragraph",
-                    "text": "These medications improve the symptoms of depression by impacting the brain chemicals associated with emotion, such as serotonin, norepinephrine and dopamine."
-                  }
-                ]
-              },
-              "sections": []
-            }
-          ]
-        }
-      ]
+        "blocks": []
+      }
+    },
+    {
+      "title": "Complementary Health Approaches",
+      "description": {
+        "blocks": []
+      }
     }
   ],
   "imageUrl": "https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_960_720.jpg"

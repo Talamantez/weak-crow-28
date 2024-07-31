@@ -4,59 +4,37 @@
     "blocks": [
       {
         "type": "paragraph",
-        "text": "This chapter provides guidance on how to handle mental health crises and interact with emergency services."
+        "text": "Mental health crises can be some of the scariest and most stressful situations one can experience.  However, there are ways to make them safe, more manageable, or help prevent them altogether.  This section gives an overview of information that can help you navigate a crisis when it occurs, and tools that can help prevent the next crisis."
       }
     ]
   },
   "sections": [
     {
-      "title": "What is a crisis?",
+      "title": "What is a Crisis?",
       "description": {
         "blocks": [
           {
-            "type": "paragraph",
-            "text": "A mental health crisis is any situation in which a person's behavior puts them at risk of hurting themselves or others and/or prevents them from being able to care for themselves or function effectively in the community."
-          }
-        ]
-      },
-      "sections": [
-        {
-          "title": "Precursor to a Crisis",
-          "description": {
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "Warning signs that may indicate an impending crisis include increased agitation, non-compliance with treatment, isolation, and substance use."
-              }
-            ]
+            "type": "header",
+            "text": "Precursors to a Crisis"
           },
-          "sections": []
-        }
-      ]
-    },
-    {
-      "title": "Basic steps to take when your loved one is in a crisis",
-      "description": {
-        "blocks": [
           {
             "type": "paragraph",
-            "text": "During a crisis, it's important to remain calm, assess the situation for immediate danger, and contact appropriate help, which may include emergency services or crisis hotlines."
+            "text": "There are usually indicators when someone's mental health is starting to deteriorate.  You may see more symptoms appear in yourself, or in the person you are supporting.  The first thing to do if you feel your health is worsening is to call your mental health professionals and inform them of what's going on.  Don't be afraid to speak openly and honestly.  Your treatment provider can help make adjustments to your treatment---whether that be with medication, additional therapy appointments, or something else---to help you re-stabilize before a crisis occurs.  It is especially important to reach out for help and support if you are feeling suicidal.  If you or someone else is at risk for suicide, call the National Suicide and Crisis Lifeline at 988 as soon as possible.  They have trained counselors available to speak with you 24/7 and assist in a crisis situation."
           }
         ]
-      },
-      "sections": []
+      }
     },
     {
-      "title": "Navigating police interactions",
+      "title": "Basic Steps to Take when Your Loved One is in a Crisis",
       "description": {
-        "blocks": [
-          {
-            "type": "paragraph",
-            "text": "When interacting with police during a mental health crisis, it's crucial to clearly communicate that the situation involves a mental health condition and provide relevant information about the person's diagnosis and current state."
-          }
-        ]
-      },
-      "sections": []
+        "blocks": []
+      }
+    },
+    {
+      "title": "Navigating Police Interactions",
+      "description": {
+        "blocks": []
+      }
     }
   ],
   "imageUrl": "https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_960_720.jpg"

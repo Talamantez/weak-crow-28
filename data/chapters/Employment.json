@@ -4,59 +4,22 @@
     "blocks": [
       {
         "type": "paragraph",
-        "text": "This chapter covers employment issues for individuals with mental health conditions, including supported employment and workplace rights."
+        "text": "Despite large amounts of federal funding for supported employment programs, the employment rates for people with mental illness have continued to decline over the last decade.  Unemployment among people served by the public mental health system is three times that of the general population."
       }
     ]
   },
   "sections": [
     {
-      "title": "Supported employment",
+      "title": "Supported Employment",
       "description": {
-        "blocks": [
-          {
-            "type": "paragraph",
-            "text": "Supported employment improves the employment opportunities for adults with serious mental illness. It involves placement of individuals with mental illness in competitive employment with ongoing supports."
-          }
-        ]
-      },
-      "sections": []
+        "blocks": []
+      }
     },
     {
-      "title": "Self-advocacy in the workplace",
+      "title": "Self-Advocacy",
       "description": {
-        "blocks": [
-          {
-            "type": "paragraph",
-            "text": "Understanding your rights and how to advocate for yourself in the workplace is crucial for individuals with mental health conditions."
-          }
-        ]
-      },
-      "sections": [
-        {
-          "title": "Legal protections",
-          "description": {
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "The Americans with Disabilities Act (ADA) provides legal protections for people with mental illness in the workplace, including the right to reasonable accommodations."
-              }
-            ]
-          },
-          "sections": []
-        },
-        {
-          "title": "Accommodations",
-          "description": {
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "Accommodations are adjustments to a work setting that make it possible for qualified individuals with disabilities to perform the essential functions of their jobs. Examples might include flexible scheduling or changes in the work environment."
-              }
-            ]
-          },
-          "sections": []
-        }
-      ]
+        "blocks": []
+      }
     }
   ],
   "imageUrl": "https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_960_720.jpg"
