@@ -10,8 +10,8 @@ import advocacy from "../data/chapters/Advocacy.json" with { type: "json" };
 import guardianship from "../data/chapters/Guardianship and Alternatives.json" with { type: "json" };
 import justice from "../data/chapters/The Criminal Justice System.json" with { type: "json" };
 import toolkit from "../data/chapters/Toolkit.json" with { type: "json" };
-import appendices from "../data/chapters/Appendicies.json" with { type: "json" };
-import acknowlegments from "../data/chapters/Acknowledgments.json" with { type: "json" };
+import appendices from "../data/chapters/Appendices.json" with { type: "json" };
+import acknowledgments from "../data/chapters/Acknowledgments.json" with { type: "json" };
 
 
 const chapters = {
@@ -102,10 +102,10 @@ const chapters = {
     },
     {
       index: "12",
-      title: acknowlegments.title,
-      description: acknowlegments.description,
-      sections: acknowlegments.sections,
-      imageUrl: acknowlegments.imageUrl,
+      title: acknowledgments.title,
+      description: acknowledgments.description,
+      sections: acknowledgments.sections,
+      imageUrl: acknowledgments.imageUrl,
     },
   ],
 };
