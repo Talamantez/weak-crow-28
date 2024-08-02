@@ -1,7 +1,7 @@
 {
-    "id": "1722638269438",
-    "name": "",
-    "date": "2024-08-02T22:37:49.438Z",
+    "id": "1722638752287",
+    "name": "8/2/2024",
+    "date": "2024-08-02T22:45:52.287Z",
     "chapters": [
       {
         "index": "0",
@@ -129,85 +129,6 @@
       },
       {
         "index": "2",
-        "title": "Toolkit: Mental Health Advanced Directives (MHADs) & Critical Advocacy Resources for Emergencies (CARE) Kits",
-        "description": "A mental health advance directive (MHAD) is a written legal document describing what you want to have happen if you become so incapacitated by mental illness that your judgement is impaired and/or you are unable to communicate effectively. It can inform others about what treatment you want or don't want, and can identify a person to whom you have given the authority to make decisions on your behalf. An MHAD is entirely voluntary and is intended to honor the treatment choices of the individual with a mental illness if a crisis strikes.",
-        "sections": [],
-        "imageUrl": "https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_960_720.jpg",
-        "isIncluded": true
-      },
-      {
-        "index": "3",
-        "title": "Advocacy",
-        "description": "This chapter covers how individuals can advocate for better mental health care and fight stigma.",
-        "sections": [
-          {
-            "title": "Use your experience to work for change",
-            "description": {
-              "blocks": [
-                {
-                  "type": "paragraph",
-                  "text": "Personal experiences with mental health conditions can be powerful tools for advocating for change in mental health care systems and policies."
-                }
-              ]
-            },
-            "sections": [
-              {
-                "title": "Legislative Advocacy",
-                "description": {
-                  "blocks": [
-                    {
-                      "type": "paragraph",
-                      "text": "Engaging with lawmakers to promote policies that improve mental health care and support for individuals with mental health conditions."
-                    }
-                  ]
-                },
-                "sections": []
-              }
-            ]
-          },
-          {
-            "title": "Fighting stigma & discrimination",
-            "description": {
-              "blocks": [
-                {
-                  "type": "paragraph",
-                  "text": "Stigma and discrimination can be significant barriers for individuals with mental health conditions. Fighting these issues is crucial for improving overall mental health care and support."
-                }
-              ]
-            },
-            "sections": [
-              {
-                "title": "Tips to Fight Stigma in Your Daily Life",
-                "description": {
-                  "blocks": [
-                    {
-                      "type": "paragraph",
-                      "text": "Simple actions like talking openly about mental health, educating yourself and others, and showing compassion can help reduce stigma in daily life."
-                    }
-                  ]
-                },
-                "sections": []
-              },
-              {
-                "title": "Everyday Advocacy",
-                "description": {
-                  "blocks": [
-                    {
-                      "type": "paragraph",
-                      "text": "Everyday advocacy involves speaking up about mental health issues in your community, workplace, or social circles to raise awareness and promote positive change."
-                    }
-                  ]
-                },
-                "sections": []
-              }
-            ]
-          }
-        ],
-        "imageUrl": "https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_960_720.jpg",
-        "isIncluded": true
-      },
-      {
-        "index": "4",
         "title": "Appendices",
         "description": "",
         "sections": [
@@ -246,7 +167,7 @@
         "isIncluded": true
       },
       {
-        "index": "5",
+        "index": "3",
         "title": "An Overview of Mental Illness",
         "description": "In the United States, one in five people will face a mental health condition in their lifetime.  Diagnosing mental illness can be a complicated process that can take years, as there is no uniform medical test.  Health care providers consult the Diagnostic and Statistical Manual of Mental Disorders (DSM) to identify symptoms to illness and person to person, but it is critical to have a good system of care in place and a holistic approach to recovery.",
         "sections": [
@@ -657,7 +578,7 @@
         "isIncluded": true
       },
       {
-        "index": "6",
+        "index": "4",
         "title": "Treatment and Recovery",
         "description": "Recovery is often a lifelong wellness plan when someone is living with mental illness.  Treatment can include diet and exercise, work, sleep, mental health and an overall treatment plan.  Evidence-based medications, therapy and psychosocial services such as psychiatric rehabilitation, housing, employment and peer supports have made wellness and recovery a reality for people living with mental health conditions.",
         "sections": [
@@ -720,7 +641,7 @@
         "isIncluded": true
       },
       {
-        "index": "7",
+        "index": "5",
         "title": "What to Do in a Crisis",
         "description": "Mental health crises can be some of the scariest and most stressful situations one can experience.  However, there are ways to make them safe, more manageable, or help prevent them altogether.  This section gives an overview of information that can help you navigate a crisis when it occurs, and tools that can help prevent the next crisis.",
         "sections": [
@@ -756,7 +677,7 @@
         "isIncluded": true
       },
       {
-        "index": "8",
+        "index": "6",
         "title": "The Criminal Justice System",
         "description": "This chapter provides detailed information about various mental health conditions, their symptoms, and treatment approaches.",
         "sections": [
@@ -789,7 +710,7 @@
         "isIncluded": true
       },
       {
-        "index": "9",
+        "index": "7",
         "title": "Employment",
         "description": "Despite large amounts of federal funding for supported employment programs, the employment rates for people with mental illness have continued to decline over the last decade.  Unemployment among people served by the public mental health system is three times that of the general population.",
         "sections": [
@@ -810,7 +731,7 @@
         "isIncluded": true
       },
       {
-        "index": "10",
+        "index": "8",
         "title": "Housing",
         "description": "This chapter covers housing options and considerations for individuals with mental health conditions.",
         "sections": [
@@ -880,7 +801,7 @@
         "isIncluded": true
       },
       {
-        "index": "11",
+        "index": "9",
         "title": "Understanding HIPAA",
         "description": "The Health Insurance Portability and Accountability Act (HIPAA) is a federal law that helps protect the privacy of individual health information.  For individuals living with mental illness, this law is important because it helps protect confidential mental health treatment records.\n\nOver the years, however, there have been many misunderstandings about the type and range of information that mental health treatment providers are allowed to share with others.  This sometimes has resulted in situations where family and friends of a person living with mental illness were unable to communicate with healthcare providers, often to the detriment of the loved one.",
         "sections": [
@@ -937,7 +858,7 @@
         "isIncluded": true
       },
       {
-        "index": "12",
+        "index": "10",
         "title": "Guardianship (AKA Conservatorship) and Alternatives",
         "description": "Individuals with mental health conditions sometimes require assistance in performing daily routines and managing both personal and financial affairs.  There are many options available to assist the person in need.  The different levels of care include representative payeeship, powers of attorney, and advanced directives or living wills.  Guardianships should be considered as a last resort, because the process can be costly and may take away more autonomy than is necessary to assist the person with a mental health condition.",
         "sections": [
@@ -988,6 +909,85 @@
               ]
             },
             "sections": []
+          }
+        ],
+        "imageUrl": "https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_960_720.jpg",
+        "isIncluded": true
+      },
+      {
+        "index": "11",
+        "title": "Toolkit: Mental Health Advanced Directives (MHADs) & Critical Advocacy Resources for Emergencies (CARE) Kits",
+        "description": "A mental health advance directive (MHAD) is a written legal document describing what you want to have happen if you become so incapacitated by mental illness that your judgement is impaired and/or you are unable to communicate effectively. It can inform others about what treatment you want or don't want, and can identify a person to whom you have given the authority to make decisions on your behalf. An MHAD is entirely voluntary and is intended to honor the treatment choices of the individual with a mental illness if a crisis strikes.",
+        "sections": [],
+        "imageUrl": "https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_960_720.jpg",
+        "isIncluded": true
+      },
+      {
+        "index": "12",
+        "title": "Advocacy",
+        "description": "This chapter covers how individuals can advocate for better mental health care and fight stigma.",
+        "sections": [
+          {
+            "title": "Use your experience to work for change",
+            "description": {
+              "blocks": [
+                {
+                  "type": "paragraph",
+                  "text": "Personal experiences with mental health conditions can be powerful tools for advocating for change in mental health care systems and policies."
+                }
+              ]
+            },
+            "sections": [
+              {
+                "title": "Legislative Advocacy",
+                "description": {
+                  "blocks": [
+                    {
+                      "type": "paragraph",
+                      "text": "Engaging with lawmakers to promote policies that improve mental health care and support for individuals with mental health conditions."
+                    }
+                  ]
+                },
+                "sections": []
+              }
+            ]
+          },
+          {
+            "title": "Fighting stigma & discrimination",
+            "description": {
+              "blocks": [
+                {
+                  "type": "paragraph",
+                  "text": "Stigma and discrimination can be significant barriers for individuals with mental health conditions. Fighting these issues is crucial for improving overall mental health care and support."
+                }
+              ]
+            },
+            "sections": [
+              {
+                "title": "Tips to Fight Stigma in Your Daily Life",
+                "description": {
+                  "blocks": [
+                    {
+                      "type": "paragraph",
+                      "text": "Simple actions like talking openly about mental health, educating yourself and others, and showing compassion can help reduce stigma in daily life."
+                    }
+                  ]
+                },
+                "sections": []
+              },
+              {
+                "title": "Everyday Advocacy",
+                "description": {
+                  "blocks": [
+                    {
+                      "type": "paragraph",
+                      "text": "Everyday advocacy involves speaking up about mental health issues in your community, workplace, or social circles to raise awareness and promote positive change."
+                    }
+                  ]
+                },
+                "sections": []
+              }
+            ]
           }
         ],
         "imageUrl": "https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_960_720.jpg",
