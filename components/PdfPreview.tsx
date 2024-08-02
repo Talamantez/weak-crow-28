@@ -1,9 +1,4 @@
-interface Chapter {
-  index: number;
-  title: string;
-  imageUrl?: string;
-  description: string;
-}
+import {Chapter} from "../util/types.ts"
 
 export function PdfPreview({ chapters }: { chapters: Chapter[] }) {
   return (
@@ -27,7 +22,7 @@ export function PdfPreview({ chapters }: { chapters: Chapter[] }) {
                 className="w-full h-32 object-cover rounded-lg mb-2"
               />
             )}
-            <p className="text-sm mb-2">{chapter.description}</p>
+            <p className="text-sm mb-2">{chapter.description.blocks[0].text}</p>
           </div>
         ))}
     </div>

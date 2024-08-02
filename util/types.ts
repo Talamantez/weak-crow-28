@@ -25,7 +25,9 @@ export interface Section {
 export interface Chapter {
   index: string;
   title: string;
-  description: string;
+  description: {
+    blocks: Block[]
+  };
   imageUrl?: string;
   isIncluded: boolean;
   sections: Section[];

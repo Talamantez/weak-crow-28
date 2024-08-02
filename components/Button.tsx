@@ -12,7 +12,7 @@ interface ButtonProps {
     stroke?: number;
     [key: string]: any;
   }) => JSX.Element;
-  onClick: () => void;
+  onClick: (e?:Event) => void;
   styles?: string;
   disabled?: boolean;
 }

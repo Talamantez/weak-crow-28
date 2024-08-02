@@ -11,11 +11,45 @@ export interface RoadmapVersion {
 }
 
 export async function exportVersionToJSON(id: string): Promise<string> {
-  const version = await loadVersion(id);
-  if (version) {
-    return JSON.stringify(version, null, 2);
+  try {
+    const version = await loadVersion(id);
+    const clonedVersion = JSON.parse(JSON.stringify(version));
+    
+
+    if (!clonedVersion || typeof clonedVersion !== 'object') {
+      throw new Error("Invalid cloned version structure");
+    }
+
+    if (!Array.isArray(clonedVersion.chapters)) {
+      throw new Error("chapters is not an array in cloned version");
+    }
+
+    const processedVersion = clonedVersion.chapters.map((chapter: any) => {
+      if (typeof chapter.description === "string") {
+        return {
+          ...chapter,
+          description: {
+            blocks: [
+              {
+                "type": "paragraph",
+                "text": chapter.description
+              }
+            ]
+          }
+        };
+      }
+      return chapter;
+    });
+
+    
+    clonedVersion.chapters = processedVersion;
+    delete clonedVersion.id;
+    return JSON.stringify(clonedVersion, null, 2);
+  } catch (error) {
+    console.error("Error in exportVersionToJSON:", error);
+    alert("Error in exportVersionToJSON: " + error.message);
+    throw error;
   }
-  throw new Error("Version not found");
 }
 
 const openDatabase = (

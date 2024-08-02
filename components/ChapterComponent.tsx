@@ -38,7 +38,7 @@ export const ChapterComponent = (
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState(chapter.title);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
-  const [description, setDescription] = useState(chapter.description);
+  const [description, setDescription] = useState(chapter.description.blocks[0].text);
 
   const handleImageUpload = async (e: Event): Promise<void> => {
     const functionId = crypto.randomUUID();
@@ -99,7 +99,11 @@ export const ChapterComponent = (
   };
 
   useEffect(() => {
-    setDescription(chapter.description);
+    if (typeof (chapter.description) === "string") {
+      setDescription(chapter.description);
+    } else {
+      setDescription(chapter.description.blocks[0].text)
+    }
   }, [chapter.description]);
 
   const toggleInclude = () => {
@@ -135,7 +139,6 @@ export const ChapterComponent = (
     const newDescription = (e.target as HTMLTextAreaElement).value;
     setDescription(newDescription);
   };
-
 
   const handleDescriptionSave = () => {
     onUpdate({ ...chapter, description });

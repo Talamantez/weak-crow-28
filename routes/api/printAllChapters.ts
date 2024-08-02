@@ -32,7 +32,7 @@ interface Section {
 interface Chapter {
   index: number;
   title: string;
-  description: RichText | string;
+  description: RichText;
   sections: Section[];
   imageUrl?: string;
 }
@@ -812,8 +812,8 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     y = result.y - titleFontSize;
 
     // Draw chapter description
-    if (chapter.description) {
-      result = drawRichText(currentPage, chapter.description, y, 0, 0);
+    if (chapter.description && chapter.description.blocks[0].text) {
+      result = drawRichText(currentPage, chapter.description.blocks[0].text, y, 0, 0);
       currentPage = result.page;
       y = result.y - 20;
     }
