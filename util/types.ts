@@ -10,22 +10,16 @@ export interface RichText {
   blocks: Block[];
 }
 
-export type Content = {
-  blocks: Block[];
-};
-
 export interface Section {
   title: string;
-  description?: {
-    blocks: Block[];
-  };
+  description?: RichText
   sections?: Section[];
 }
 
 export interface Chapter {
   index: string;
   title: string;
-  description: string;
+  description: RichText;
   imageUrl?: string;
   isIncluded: boolean;
   sections: Section[];

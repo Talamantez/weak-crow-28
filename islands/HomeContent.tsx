@@ -67,7 +67,7 @@ export default function HomeContent() {
 
     const results = chapters.filter((chapter) =>
       chapter.title.toLowerCase().includes(value.toLowerCase()) ||
-      chapter.description.toLowerCase().includes(value.toLowerCase()) ||
+      chapter.description.blocks[0].text.toLowerCase().includes(value.toLowerCase()) ||
       chapter.sections.some((section) =>
         section.title.toLowerCase().includes(value.toLowerCase()) ||
         section.description?.blocks.some((block) =>
@@ -154,7 +154,6 @@ export default function HomeContent() {
     return (
       <Expandable
         title="Search Results"
-        description=""
         defaultExpanded={true}
         searchTerm={searchTerm}
       >
@@ -297,7 +296,7 @@ export default function HomeContent() {
     }
   }, [chapters, isReordering]);
 
-  const updateChapterOrder = async (newChapters) => {
+  const updateChapterOrder = async (newChapters: Chapter[]) => {
     // updateScrollPosition();
     try {
       const db = await new Promise<IDBDatabase>((resolve, reject) => {
@@ -505,7 +504,7 @@ export default function HomeContent() {
 
   const clearAllChapters = () => {
     updateScrollPosition();
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       const request = indexedDB.open(dbName, dbVersion);
 
       request.onerror = function (event: Event) {
@@ -655,7 +654,6 @@ export default function HomeContent() {
                     title="Manage Chapters"
                     defaultExpanded={true}
                     searchTerm={searchTerm}
-                    description=""
                   >
                     {chapters.map((chapter) => (
                       <div

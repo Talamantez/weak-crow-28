@@ -7,7 +7,6 @@ const Expandable = (
   {
     children,
     title,
-    description,
     searchTerm,
     defaultExpanded = false,
   },
@@ -25,11 +24,6 @@ const Expandable = (
           <h3 className="font-semibold">
             {highlightSearchTerm(title, searchTerm)}
           </h3>
-          {description && (
-            <p className="text-sm text-gray-600">
-              {highlightSearchTerm(description, searchTerm)}
-            </p>
-          )}
         </div>
         <div className="flex items-center">
           {isExpanded

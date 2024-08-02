@@ -49,7 +49,9 @@ export default function AddChapter() {
       const chapter = {
         index: Date.now(), // Use current timestamp as index
         title: title,
-        description: description,
+        description: {
+          blocks: [{ type: "paragraph", text: description }],
+        },
         sections: [],
         imageUrl: imageUrl,
       };
