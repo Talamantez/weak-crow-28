@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import ContextAwareNAMILoader from "../components/ContextAwareNAMILoader.tsx";
+// import GeneralizedNAMILoader from "../components/GeneralizedNAMILoader.tsx"
 import HomeContent from "./HomeContent.tsx";
 
 export default function LoaderIsland() {

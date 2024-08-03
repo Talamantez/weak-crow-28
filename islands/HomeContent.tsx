@@ -27,7 +27,6 @@ import { Chapter } from "../util/types.ts";
 import { useSearch } from "./useSearch.tsx";
 import { SearchResults } from "./SearchResults.tsx";
 import Expandable from "../components/ExpandableComponent.tsx";
-import GeneralizedNAMILoader from "../components/GeneralizedNAMILoader.tsx";
 import { LoaderOverlay } from "../components/LoaderOverlay.tsx";
 
 export default function HomeContent() {
@@ -58,31 +57,6 @@ export default function HomeContent() {
   );
   const [highlightedElement, setHighlightedElement] = useState(null);
 
-  const handleSearch = (event: Event) => {
-    const value = (event.target as HTMLInputElement).value;
-    setSearchTerm(value);
-
-    if (value.trim() === "") {
-      setSearchResults([]);
-      return;
-    }
-
-    const results = chapters.filter((chapter) =>
-      chapter.title.toLowerCase().includes(value.toLowerCase()) ||
-      chapter.description.blocks[0].text.toLowerCase().includes(
-        value.toLowerCase(),
-      ) ||
-      chapter.sections.some((section) =>
-        section.title.toLowerCase().includes(value.toLowerCase()) ||
-        section.description?.blocks.some((block) =>
-          block.text.toLowerCase().includes(value.toLowerCase())
-        )
-      )
-    );
-
-    setSearchResults(results);
-  };
-
   const handleEditChapter = (chapterIndex: string) => {
     const chapter = chapters.find((ch) => ch.index === chapterIndex);
     if (chapter) {
@@ -91,18 +65,6 @@ export default function HomeContent() {
           ch.index === chapterIndex ? { ...ch, isEditing: true } : ch
         )
       );
-
-      // Scroll to the chapter section
-      setTimeout(() => {
-        const chapterElement = document.getElementById(
-          `chapter-${chapterIndex}`,
-        );
-        if (chapterElement) {
-          chapterElement.scrollIntoView({ behavior: "smooth", block: "start" });
-          setHighlightedElement(`chapter-${chapterIndex}`);
-          setTimeout(() => setHighlightedElement(null), 2000);
-        }
-      }, 100);
     }
   };
 
@@ -642,7 +604,6 @@ export default function HomeContent() {
                 />
               </div>
             </div>
-            <button onClick={handlePrint}>Generate PDF</button>
             <LoaderOverlay isVisible={isGeneratingPDF} />
             {loading
               ? <p>Loading chapters...</p>
