@@ -79,8 +79,6 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   const maxWidth = width - 2 * margin;
   const pageBottom = margin + 50;
 
-  // console.log(`Page ${pageCount} created. Height: ${height}, Initial y: ${y}`);
-
   // Calm color palette
   const colors = {
     background: rgb(0.96, 0.98, 1), // Light blue-gray
@@ -285,19 +283,6 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
       const y = height - 150 - index * titleSize * 1.5;
 
       // Draw semi-transparent background for title
-
-      // * page.drawSquare({
-      // *   x: 25,
-      // *   y: 75,
-      // *   size: 100,
-      // *   rotate: degrees(-15),
-      // *   borderWidth: 5,
-      // *   borderColor: grayscale(0.5),
-      // *   color: rgb(0.75, 0.2, 0.2),
-      // *   opacity: 0.5,
-      // *   borderOpacity: 0.75,
-      // * })
-
       _coverPage.drawRectangle({
         x: x - textPadding,
         y: y - textPadding - 8,
@@ -338,19 +323,9 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         y: y - textPadding + 40,
         width: lineWidth + 2 * textPadding,
         height: subtitleSize + 2 * textPadding,
-        color: colors.accent, // TODO: Make semi-transparent black
+        color: colors.accent,
         opacity: 1,
       });
-
-      // *   {
-      // *     x: 25,
-      // *     y: 100,
-      // *     font: timesRomanFont,
-      // *     size: 24,
-      // *     color: rgb(1, 0, 0),
-      // *     lineHeight: 24,
-      // *     opacity: 0.75,
-      // *   },
 
       // Draw subtitle text
       _coverPage.drawText(line, {
@@ -358,7 +333,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         y: y + 40,
         size: subtitleSize,
         font: sansSerifFont,
-        color: colors.primary, // White color
+        color: colors.primary,
       });
     });
 
@@ -369,10 +344,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     currentY: number,
     requiredSpace: number,
   ): { newPage: boolean; y: number } {
-    // console.log(`Current y: ${currentY}, Required space: ${requiredSpace}, Page bottom: ${pageBottom}`);
-
     if (currentY - requiredSpace < pageBottom) {
-      // console.log("Adding new page");
       page = pdfDoc.addPage();
       ({ width, height } = page.getSize());
       const newY = height - margin;
@@ -387,11 +359,9 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         color: colors.background,
       });
 
-      // console.log(`New page added. New y: ${newY}, Page count: ${pageCount}`);
       return { newPage: true, y: newY };
     }
 
-    // console.log("No new page needed");
     return { newPage: false, y: currentY };
   }
 
@@ -878,34 +848,11 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     return tocEntries;
   }
 
-  // Generate and replace TOC
+  // Generate TOC entries
   const tocEntries = generateTableOfContents(data.Chapters);
-  const tocPages = drawTableOfContents(pdfDoc, tocEntries);
 
-  // Remove the placeholder TOC
-  pdfDoc.removePage(1);
-
-  // Insert all TOC pages
-  let insertIndex = 1;
-  for (const tocPage of tocPages) {
-    pdfDoc.insertPage(insertIndex, tocPage);
-    insertIndex++;
-  }
-
-  // Update contentStartPage to account for multiple TOC pages
-  contentStartPage = insertIndex;
-
-  // console.log(
-  //   `TOC inserted. It spans ${tocPages.length} pages. Content starts at page ${contentStartPage}`,
-  // );
-
-  // Update page numbers for content pages
-  // Subtract tocPages.length to account and the TOC pages
-  for (
-    let i = contentStartPage;
-    i < pdfDoc.getPageCount() - tocPages.length - 1;
-    i++
-  ) {
+  // Number content pages first
+  for (let i = contentStartPage; i < pdfDoc.getPageCount(); i++) {
     const page = pdfDoc.getPage(i);
     const pageNumber = i - contentStartPage + 1;
     const pageNumberText = `${pageNumber}`;
@@ -921,7 +868,22 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     });
   }
 
-  // console.log(`\nPDF generation completed. Total pages: ${pdfDoc.getPageCount()}`);
+  // Generate and insert TOC pages
+  const tocPages = drawTableOfContents(pdfDoc, tocEntries);
+
+  // Remove the placeholder TOC
+  pdfDoc.removePage(1);
+
+  // Insert all TOC pages
+  let insertIndex = 1;
+  for (const tocPage of tocPages) {
+    pdfDoc.insertPage(insertIndex, tocPage);
+    insertIndex++;
+  }
+
+  // Update contentStartPage to account for multiple TOC pages
+  contentStartPage = insertIndex;
+
   return pdfDoc.save();
 }
 
@@ -951,3 +913,4 @@ export const handler: Handlers = {
     }
   },
 };
+
