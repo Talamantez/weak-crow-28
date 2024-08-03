@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { apply } from "https://esm.sh/@twind/core@1.1.3";
 import { Head } from "$fresh/runtime.ts";
 import Footer from "../components/Footer.tsx";
@@ -7,7 +7,6 @@ import IconPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/plus.tsx";
 import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import IconArrowsSort from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/arrows-sort.tsx";
 import IconCheck from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/check.tsx";
-import IconSearch from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/search.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
@@ -67,7 +66,9 @@ export default function HomeContent() {
 
     const results = chapters.filter((chapter) =>
       chapter.title.toLowerCase().includes(value.toLowerCase()) ||
-      chapter.description.blocks[0].text.toLowerCase().includes(value.toLowerCase()) ||
+      chapter.description.blocks[0].text.toLowerCase().includes(
+        value.toLowerCase(),
+      ) ||
       chapter.sections.some((section) =>
         section.title.toLowerCase().includes(value.toLowerCase()) ||
         section.description?.blocks.some((block) =>
@@ -253,22 +254,21 @@ export default function HomeContent() {
     if (sourceChapterId && sourceChapterId !== targetChapterId) {
       setChapters((prevChapters) => {
         const newChapters = [...prevChapters];
-        const sourceIndex = newChapters.findIndex((ch) =>
-          ch.index === sourceChapterId
-        );
-        const targetIndex = newChapters.findIndex((ch) =>
-          ch.index === targetChapterId
-        );
+        const sourceIndex = newChapters.findIndex((ch) => ch.index === sourceChapterId);
+        const targetIndex = newChapters.findIndex((ch) => ch.index === targetChapterId);
 
         if (sourceIndex !== -1 && targetIndex !== -1) {
           const [removed] = newChapters.splice(sourceIndex, 1);
           newChapters.splice(targetIndex, 0, removed);
 
           // Update indices
-          return newChapters.map((ch, index) => ({
+          const updatedChapters = newChapters.map((ch, index) => ({
             ...ch,
             index: index.toString(),
           }));
+
+          // We don't need to sort here as the indices are already correct
+          return updatedChapters;
         }
 
         return prevChapters;
@@ -277,14 +277,28 @@ export default function HomeContent() {
 
     setDraggedChapter(null);
   };
+
   const onDragEnd = () => {
     setDraggedChapter(null);
   };
+
+  const sortChapters = useCallback((chaptersToSort: Chapter[]) => {
+    return [...chaptersToSort].sort((a, b) => parseInt(a.index) - parseInt(b.index));
+  }, []);
 
   useEffect(() => {
     loadChapters();
     // if(chapters.length === 0) handleGenerate()
   }, []);
+
+  useEffect(() => {
+    if (!isReordering) {
+      const sortedChapters = [...chapters].sort((a, b) => parseInt(a.index) - parseInt(b.index));
+      if (JSON.stringify(sortedChapters) !== JSON.stringify(chapters)) {
+        setChapters(sortedChapters);
+      }
+    }
+  }, [chapters, isReordering]);
 
   useEffect(() => {
     window.scrollTo(0, scrollPositionRef.current);
@@ -297,7 +311,6 @@ export default function HomeContent() {
   }, [chapters, isReordering]);
 
   const updateChapterOrder = async (newChapters: Chapter[]) => {
-    // updateScrollPosition();
     try {
       const db = await new Promise<IDBDatabase>((resolve, reject) => {
         const request = indexedDB.open(dbName, dbVersion);
@@ -325,6 +338,7 @@ export default function HomeContent() {
     }
   };
 
+
   const loadChapters = async () => {
     setLoading(true);
     setLoadError(null);
@@ -344,9 +358,9 @@ export default function HomeContent() {
           setLoadError("Failed to fetch chapters");
         };
         getAll.onsuccess = () => {
-          const chapters = getAll.result;
-          console.log("Chapters loaded:", chapters);
-          setChapters(chapters);
+          const loadedChapters = getAll.result;
+          console.log("Chapters loaded:", loadedChapters);
+          setChapters(sortChapters(loadedChapters));
         };
       };
     } catch (error) {
@@ -475,18 +489,19 @@ export default function HomeContent() {
   const updateChapter = (updatedChapter: Chapter) => {
     updateScrollPosition();
 
+    setChapters((prevChapters) => {
+      const newChapters = prevChapters.map((ch) =>
+        ch.index === updatedChapter.index ? { ...updatedChapter } : ch
+      );
+      return sortChapters(newChapters);
+    });
+
     const request = indexedDB.open(dbName, dbVersion);
     request.onsuccess = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       const transaction = db.transaction(storeName, "readwrite");
       const objectStore = transaction.objectStore(storeName);
       objectStore.put(updatedChapter);
-
-      setChapters((prevChapters) =>
-        prevChapters.map((ch) => {
-          return ch.index === updatedChapter.index ? { ...updatedChapter } : ch;
-        })
-      );
     };
   };
 
