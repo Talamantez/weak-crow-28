@@ -27,7 +27,7 @@ export default function LoaderIsland() {
     // Simulate content loading (remove this in production)
     const contentLoadTimeout = setTimeout(() => {
       setLoading(false);
-    }, 2000); // Simulated 2-second content load time
+    }, 0); // Simulated 2-second content load time
 
     return () => {
       globalThis.removeEventListener("error", handleError);
