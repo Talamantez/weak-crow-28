@@ -1,7 +1,5 @@
-// LoaderIsland.tsx
 import { useEffect, useState } from "preact/hooks";
-
-import Loader from "../components/Loader.tsx";
+import ContextAwareNAMILoader from "../components/ContextAwareNAMILoader.tsx";
 import HomeContent from "./HomeContent.tsx";
 
 export default function LoaderIsland() {
@@ -9,17 +7,18 @@ export default function LoaderIsland() {
 
   useEffect(() => {
     // deno-lint-ignore no-explicit-any
-    const handleError = (event:any) => {
+    const handleError = (event: any) => {
       console.error("An error occurred:", event.error);
       // Refresh the page on the first error
       window.location.reload();
     };
-
     globalThis.addEventListener("error", handleError);
-
     // Set loading state to false when the component mounts
-    setLoading(false);
-
+    // delay for debugging purposes
+    setTimeout(() => {
+      setLoading(false);
+    }, 10000);
+    // setLoading(false);
     return () => {
       globalThis.removeEventListener("error", handleError);
     };
@@ -27,7 +26,7 @@ export default function LoaderIsland() {
 
   return (
     <div>
-      {loading ? <Loader message={`We're setting up your editor...`} /> : <HomeContent />}
+      {loading ? <ContextAwareNAMILoader context="general" /> : <HomeContent />}
     </div>
   );
 }

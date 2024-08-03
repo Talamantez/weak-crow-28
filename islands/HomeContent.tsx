@@ -27,6 +27,8 @@ import { Chapter } from "../util/types.ts";
 import { useSearch } from "./useSearch.tsx";
 import { SearchResults } from "./SearchResults.tsx";
 import Expandable from "../components/ExpandableComponent.tsx";
+import GeneralizedNAMILoader from "../components/GeneralizedNAMILoader.tsx";
+import { LoaderOverlay } from "../components/LoaderOverlay.tsx";
 
 export default function HomeContent() {
   const [versions, setVersions] = useState<RoadmapVersion[]>([]);
@@ -44,6 +46,7 @@ export default function HomeContent() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmMessage, setConfirmMessage] = useState("");
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const initialSearchResults = [];
 
@@ -443,6 +446,7 @@ export default function HomeContent() {
   };
 
   const handlePrint = async () => {
+    setIsGeneratingPDF(true);
     try {
       const includedChapters = chapters.filter((chapter) => chapter.isIncluded);
       const response = await fetch("/api/generate-pdf", {
@@ -452,7 +456,6 @@ export default function HomeContent() {
         },
         body: JSON.stringify(includedChapters),
       });
-
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -468,6 +471,8 @@ export default function HomeContent() {
       }
     } catch (error) {
       console.error("Error generating PDF:", error);
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -637,7 +642,8 @@ export default function HomeContent() {
                 />
               </div>
             </div>
-
+            <button onClick={handlePrint}>Generate PDF</button>
+            <LoaderOverlay isVisible={isGeneratingPDF} />
             {loading
               ? <p>Loading chapters...</p>
               : loadError
