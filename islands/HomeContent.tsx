@@ -30,6 +30,7 @@ import Expandable from "../components/ExpandableComponent.tsx";
 import { LoaderOverlay } from "../components/LoaderOverlay.tsx";
 
 export default function HomeContent() {
+  const [isVisible, setIsVisible] = useState(false);
   const [versions, setVersions] = useState<RoadmapVersion[]>([]);
   const [isVersionModalOpen, setIsVersionModalOpen] = useState(false);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -254,6 +255,9 @@ export default function HomeContent() {
   useEffect(() => {
     loadChapters();
     // if(chapters.length === 0) handleGenerate()
+        // Set a small timeout to ensure the component has mounted
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -525,7 +529,7 @@ export default function HomeContent() {
       });
   };
   return (
-    <div>
+    <div className={`transition-opacity duration-1000 ease-in ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
       <Head>
         <title>Resource Roadmap Editor</title>
       </Head>
