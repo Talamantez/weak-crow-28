@@ -10,7 +10,7 @@ const messagesByContext = {
 const colorsByContext = {
   general: {
     primary: "#00A1DF",
-    secondary: "#262262",
+    secondary: "#9370DB",
     complementary: "#DF5600",
     accent: "#32CD32",
   },
