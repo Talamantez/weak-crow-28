@@ -47,7 +47,7 @@ export default function HomeContent() {
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmMessage, setConfirmMessage] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-
+  
   const initialSearchResults = [];
 
   const { searchTerm, setSearchTerm, searchResults, setSearchResults } =

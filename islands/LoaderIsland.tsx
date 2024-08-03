@@ -6,6 +6,11 @@ import HomeContent from "./HomeContent.tsx";
 export default function LoaderIsland() {
   const [loading, setLoading] = useState(true);
 
+  const handleLoadComplete = () => {
+    // You can add a small delay here if you want to ensure the animation is fully visible
+    setTimeout(() => setLoading(false), 1000);
+  };
+
   useEffect(() => {
     // deno-lint-ignore no-explicit-any
     const handleError = (event: any) => {
@@ -27,7 +32,7 @@ export default function LoaderIsland() {
 
   return (
     <div>
-      {loading ? <ContextAwareNAMILoader context="general" /> : <HomeContent />}
+      {loading ? <ContextAwareNAMILoader context="general" onLoadComplete={handleLoadComplete}/> : <HomeContent />}
     </div>
   );
 }

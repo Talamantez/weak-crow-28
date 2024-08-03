@@ -91,10 +91,9 @@ const icons = [
     label: "Resources",
   },
 ];
-
-const ContextAwareNAMILoader = ({ context = "general" }) => {
+const ContextAwareNAMILoader = ({ context = "general", onLoadComplete }) => {
   const [currentMessage, setCurrentMessage] = useState(
-    messagesByContext[context][0],
+    messagesByContext[context][0]
   );
   const [progress, setProgress] = useState(0);
   const [randomIcons, setRandomIcons] = useState([]);
@@ -115,19 +114,21 @@ const ContextAwareNAMILoader = ({ context = "general" }) => {
       setProgress((prevProgress) => {
         if (prevProgress >= 100) {
           clearInterval(progressInterval);
+          if (onLoadComplete) onLoadComplete();
           return 100;
         }
-        return prevProgress + 0.5;
+        // Increase speed: adjust this value to make the animation faster or slower
+        return prevProgress + 1;
       });
-    }, 50);
+    }, 30); // Decreased interval for smoother animation
 
     return () => {
       clearInterval(messageInterval);
       clearInterval(progressInterval);
     };
-  }, [context]);
+  }, [context, onLoadComplete]);
 
-  const getIconOpacity = (index) => progress >= (index + 1) * 25 ? 1 : 0.3;
+  const getIconOpacity = (index) => (progress >= (index + 1) * 25 ? 1 : 0.3);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
