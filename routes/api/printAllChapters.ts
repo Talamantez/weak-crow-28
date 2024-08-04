@@ -8,53 +8,17 @@ import {
 import { decode } from "https://deno.land/std@0.152.0/encoding/base64.ts";
 import { Handlers } from "https://deno.land/x/fresh@1.6.8/server.ts";
 import { coverImageUrl } from "../../data/coverImageUrl.js";
-import { Block, BlockType, Section, Chapter, ResourceRoadmap, RichText } from "../../util/types.ts"
-
-// Define types
-// type BlockType = "paragraph" | "header" | "unordered-list-item";
-
-// interface RichText {
-//   blocks: Block[];
-// }
-
-// interface Section {
-//   title: string;
-//   description?: RichText | string;
-//   content?: RichText | string;
-//   sections?: Section[];
-// }
-
-// interface Chapter {
-//   index: number;
-//   title: string;
-//   description: RichText | string;
-//   sections: Section[];
-//   imageUrl?: string;
-// }
-
-// interface Data {
-//   Chapters: Chapter[];
-// }
+import { Block, Section, Chapter, ResourceRoadmap, RichText } from "../../util/types.ts"
 
 async function fetchImageAsArrayBuffer(url: string): Promise<ArrayBuffer> {
   const response = await fetch(url);
   return await response.arrayBuffer();
 }
 
-async function fetchImageAsBase64(url: string): Promise<string> {
-  const response = await fetch(url);
-  const arrayBuffer = await response.arrayBuffer();
-  const uint8Array = new Uint8Array(arrayBuffer);
-  const base64 = btoa(String.fromCharCode.apply(null, uint8Array));
-  const mimeType = response.headers.get("content-type") || "image/jpeg";
-  return `data:${mimeType};base64,${base64}`;
-}
-
 export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.create();
   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-  const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
   const timesRomanBoldFont = await pdfDoc.embedFont(
     StandardFonts.TimesRomanBold,
   );
@@ -630,14 +594,6 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
 
     return { page, y };
   }
-  // Add calming background to first page
-  page.drawRectangle({
-    x: 0,
-    y: 0,
-    width: width,
-    height: height,
-    color: colors.background,
-  });
 
   function drawTableOfContents(
     pdfDoc: PDFDocument,
@@ -844,7 +800,7 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
   // Number content pages first
   for (let i = contentStartPage; i < pdfDoc.getPageCount(); i++) {
     const page = pdfDoc.getPage(i);
-    const pageNumber = i - contentStartPage + 1;
+    const pageNumber = i - contentStartPage;
     const pageNumberText = `${pageNumber}`;
     const { width } = page.getSize();
     const textWidth = helveticaFont.widthOfTextAtSize(pageNumberText, 10);
