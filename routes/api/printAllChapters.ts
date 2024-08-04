@@ -8,38 +8,33 @@ import {
 import { decode } from "https://deno.land/std@0.152.0/encoding/base64.ts";
 import { Handlers } from "https://deno.land/x/fresh@1.6.8/server.ts";
 import { coverImageUrl } from "../../data/coverImageUrl.js";
-import { bold } from "https://deno.land/std@0.216.0/fmt/colors.ts";
+import { Block, BlockType, Section, Chapter, ResourceRoadmap, RichText } from "../../util/types.ts"
 
 // Define types
-type BlockType = "paragraph" | "header" | "unordered-list-item";
+// type BlockType = "paragraph" | "header" | "unordered-list-item";
 
-interface Block {
-  type: BlockType;
-  text: string;
-}
+// interface RichText {
+//   blocks: Block[];
+// }
 
-interface RichText {
-  blocks: Block[];
-}
+// interface Section {
+//   title: string;
+//   description?: RichText | string;
+//   content?: RichText | string;
+//   sections?: Section[];
+// }
 
-interface Section {
-  title: string;
-  description?: RichText | string;
-  content?: RichText | string;
-  sections?: Section[];
-}
+// interface Chapter {
+//   index: number;
+//   title: string;
+//   description: RichText | string;
+//   sections: Section[];
+//   imageUrl?: string;
+// }
 
-interface Chapter {
-  index: number;
-  title: string;
-  description: RichText | string;
-  sections: Section[];
-  imageUrl?: string;
-}
-
-interface Data {
-  Chapters: Chapter[];
-}
+// interface Data {
+//   Chapters: Chapter[];
+// }
 
 async function fetchImageAsArrayBuffer(url: string): Promise<ArrayBuffer> {
   const response = await fetch(url);
@@ -55,7 +50,7 @@ async function fetchImageAsBase64(url: string): Promise<string> {
   return `data:${mimeType};base64,${base64}`;
 }
 
-export async function generatePDF(data: Data): Promise<Uint8Array> {
+export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.create();
   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -112,7 +107,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
         if (chapter.imageUrl.startsWith("data:image")) {
           const [, base64Data] = chapter.imageUrl.split(",");
           imageBytes = decode(base64Data);
-          [imageType] = chapter.imageUrl.match(/data:(image\/[^;]+)/);
+          [, imageType] = chapter.imageUrl.match(/data:(image\/[^;]+)/) ?? [];
         } else {
           // It's a URL, fetch it
           const arrayBuffer = await fetchImageAsArrayBuffer(chapter.imageUrl);
@@ -142,7 +137,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
             height: scaledHeight,
           });
 
-          imageDarkness = chapter.index % 2 === 0 ? "left" : "right";
+          imageDarkness = parseInt(chapter.index) % 2 === 0 ? "left" : "right";
         }
       } catch (error) {
         console.error("Error processing image:", error);
@@ -610,15 +605,10 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
     page = result.page;
     y = result.y - titleFontSize * lineSpacing;
 
-    // Draw section description or content
-    if (section.description || section.content) {
+    // Draw section description
+    if (section.description) {
       if (section.description) {
         result = drawRichText(page, section.description, y, indent, depth);
-        page = result.page;
-        y = result.y - 20;
-      }
-      if (section.content) {
-        result = drawRichText(page, section.content, y, indent, depth);
         page = result.page;
         y = result.y - 20;
       }
@@ -799,7 +789,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   }
 
   try {
-    for (const [_index, chapter] of data.Chapters.entries()) {
+    for (const [_index, chapter] of resourceRoadmap.chapters.entries()) {
       // Generate chapter cover page
       const chapterCoverPage = await generateChapterCoverPage({
         ...chapter,
@@ -849,7 +839,7 @@ export async function generatePDF(data: Data): Promise<Uint8Array> {
   }
 
   // Generate TOC entries
-  const tocEntries = generateTableOfContents(data.Chapters);
+  const tocEntries = generateTableOfContents(resourceRoadmap.chapters);
 
   // Number content pages first
   for (let i = contentStartPage; i < pdfDoc.getPageCount(); i++) {
@@ -893,12 +883,12 @@ export const handler: Handlers = {
     const requestBody = await req.json();
     const chapters: Chapter[] = requestBody;
 
-    const data: Data = {
-      Chapters: chapters.sort((a, b) => a.index - b.index),
+    const resourceRoadmap: ResourceRoadmap = {
+      chapters: chapters.sort((a, b) => parseInt(a.index) - parseInt(b.index)),
     };
 
     try {
-      const pdfBytes = await generatePDF(data);
+      const pdfBytes = await generatePDF(resourceRoadmap);
 
       return new Response(pdfBytes, {
         status: 200,
