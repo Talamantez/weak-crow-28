@@ -414,16 +414,6 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
       y -= 10; // Reduced space after header
     }
 
-    if (isHeader && depth !== 0) {
-      page.drawLine({
-        start: { x: margin + indent, y },
-        end: { x: width - margin, y },
-        thickness: 0.5,
-        color: colors.secondary,
-      });
-      // y -= 10; // Reduced space after header
-    }
-
     return { page, y };
   }
   function convertPlainTextToRichText(text: string): RichText {
