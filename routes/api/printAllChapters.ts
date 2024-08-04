@@ -548,13 +548,13 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
     let y = startY;
     const indent = depth * 20; // Increase indentation for nested subsections
     const titleFontSize = Math.max(18 - depth * 2, 12); // Decrease font size for deeper subsections, but not below 12
-
+  
     // Check if we need a new page for the section title
     if (y - titleFontSize * lineSpacing < pageBottom) {
       page = addNewPage();
       y = page.getHeight() - margin;
     }
-
+  
     // Draw section title
     let result = drawWrappedText(
       page,
@@ -568,16 +568,19 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
     );
     page = result.page;
     y = result.y - titleFontSize * lineSpacing;
-
+  
     // Draw section description
     if (section.description) {
-      if (section.description) {
-        result = drawRichText(page, section.description, y, indent, depth);
-        page = result.page;
-        y = result.y - 20;
+      // Check if we need a new page for the description
+      if (y - 11 * lineSpacing < pageBottom) {
+        page = addNewPage();
+        y = page.getHeight() - margin;
       }
+      result = drawRichText(page, section.description, y, indent, depth);
+      page = result.page;
+      y = result.y - 30;
     }
-
+  
     // Draw subsections
     if (section.sections) {
       for (const subSection of section.sections) {
@@ -589,9 +592,15 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
         result = drawSection(page, subSection, depth + 1, y, addNewPage);
         page = result.page;
         y = result.y - 20; // Add some space between subsections
+  
+        // Check if we need a new page after the subsection
+        if (y < pageBottom) {
+          page = addNewPage();
+          y = page.getHeight() - margin;
+        }
       }
     }
-
+  
     return { page, y };
   }
 
