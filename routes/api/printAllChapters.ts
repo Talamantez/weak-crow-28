@@ -8,14 +8,22 @@ import {
 import { decode } from "https://deno.land/std@0.152.0/encoding/base64.ts";
 import { Handlers } from "https://deno.land/x/fresh@1.6.8/server.ts";
 import { coverImageUrl } from "../../data/coverImageUrl.js";
-import { Block, Section, Chapter, ResourceRoadmap, RichText } from "../../util/types.ts"
+import {
+  Block,
+  Chapter,
+  ResourceRoadmap,
+  RichText,
+  Section,
+} from "../../util/types.ts";
 
 async function fetchImageAsArrayBuffer(url: string): Promise<ArrayBuffer> {
   const response = await fetch(url);
   return await response.arrayBuffer();
 }
 
-export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uint8Array> {
+async function generatePDF(
+  resourceRoadmap: ResourceRoadmap,
+): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.create();
   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -25,17 +33,18 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
 
   const margin = 50;
   const lineSpacing = 1.3;
+  const columnGap = 20;
 
   let pageCount = 0;
   let contentStartPage = 0;
   const pageToContentMap = new Map();
 
   let page = pdfDoc.addPage();
-
   let { width, height } = page.getSize();
   let y = height - margin;
 
-  const maxWidth = width - 2 * margin;
+  const columnWidth = (width - 2 * margin - columnGap) / 2;
+  const fullWidth = width - 2 * margin;
   const pageBottom = margin + 50;
 
   // Calm color palette
@@ -328,23 +337,24 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
     text: string,
     maxWidth: number,
     fontSize: number,
-    font: any,
+    font: PDFFont,
   ): string[] {
     const words = text.split(" ");
-    let lines: string[] = [];
+    const lines: string[] = [];
     let currentLine = "";
 
     for (const word of words) {
-      const testLine = currentLine + (currentLine ? " " : "") + word;
-      const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      const width = font.widthOfTextAtSize(testLine, fontSize);
 
-      if (testWidth > maxWidth && currentLine !== "") {
+      if (width <= maxWidth) {
+        currentLine = testLine;
+      } else {
         lines.push(currentLine);
         currentLine = word;
-      } else {
-        currentLine = testLine;
       }
     }
+
     if (currentLine) {
       lines.push(currentLine);
     }
@@ -361,57 +371,53 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
     startY: number,
     indent: number = 0,
     depth: number = 0,
+    column: "left" | "right" | "full" = "full",
   ): { page: PDFPage; y: number } {
     const { width } = page.getSize();
-    let font;
-    let textColor;
+    let x = margin + indent;
+    let maxWidth = columnWidth - indent;
 
-    if (isHeader) {
-      if (depth === 0) {
-        font = timesRomanBoldFont;
-        textColor = colors.primary;
-      } else if (depth === 1) {
-        font = helveticaBoldFont;
-        textColor = colors.text;
-      } else {
-        font = helveticaFont;
-        textColor = rgb(0.4, 0.4, 0.4); // Lighter gray for deeper headings
-      }
-    } else {
-      font = isBold ? helveticaBoldFont : helveticaFont;
-      textColor = colors.text;
+    if (column === "full") {
+      maxWidth = width - 2 * margin - indent;
+    } else if (column === "right") {
+      x = margin + columnWidth + columnGap + indent;
     }
 
-    const lines = splitTextIntoLines(
-      text,
-      width - 2 * margin - indent,
-      fontSize,
-      font,
-    );
-    const lineHeight = fontSize * lineSpacing;
+    const font = isBold ? helveticaBoldFont : helveticaFont;
+    const lines = splitTextIntoLines(text, maxWidth, fontSize, font);
     let y = startY;
 
-    lines.forEach((line, index) => {
+    for (const line of lines) {
+      // Ensure x is a valid number
+      if (isNaN(x)) {
+        console.error("Invalid x coordinate calculated:", {
+          column,
+          indent,
+          margin,
+          columnWidth,
+          columnGap,
+        });
+        x = margin; // Fallback to a safe value
+      }
+
       page.drawText(line, {
-        x: margin + indent,
-        y: y - lineHeight * index,
+        x: x,
+        y: y,
         size: fontSize,
         font: font,
-        color: textColor,
+        color: isHeader ? colors.primary : colors.text,
       });
-    });
+      y -= fontSize * lineSpacing;
+    }
 
-    y -= lineHeight * lines.length;
-
-    // Only draw the line for chapter headings (depth === 0)
     if (isHeader && depth === 0) {
       page.drawLine({
-        start: { x: margin + indent, y },
-        end: { x: width - margin, y },
+        start: { x: x, y: y + 5 },
+        end: { x: x + maxWidth, y: y + 5 },
         thickness: 0.5,
         color: colors.secondary,
       });
-      y -= 10; // Reduced space after header
+      y -= 10;
     }
 
     return { page, y };
@@ -455,12 +461,14 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
     return result;
   }
 
+  // Modify the drawRichText function to handle both full width and column layouts
   function drawRichText(
     page: PDFPage,
     richText: RichText | string,
     startY: number,
-    indent: number = 0,
+    indent: number,
     depth: number,
+    column: "left" | "right" | "full",
   ): { page: PDFPage; y: number } {
     let y = startY;
 
@@ -488,6 +496,7 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
               y,
               indent,
               depth,
+              column,
             );
           } else if (block.type === "header") {
             result = drawWrappedText(
@@ -499,6 +508,7 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
               y,
               indent,
               depth,
+              column,
             );
           } else if (block.type === "unordered-list-item") {
             result = drawWrappedText(
@@ -510,13 +520,14 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
               y,
               indent + 10,
               depth,
+              column,
             );
           } else {
             console.warn(`Unsupported block type: ${block.type}`);
             continue;
           }
           page = result.page;
-          y = result.y - 10; // Reduced space between blocks
+          return { page, y: startY - 10 }; // Return updated y position
         }
       }
     } else {
@@ -533,18 +544,13 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
     section: Section,
     depth: number,
     startY: number,
-    addNewPage: () => PDFPage,
+    column: "left" | "right",
+    addNewPage: () => { page: PDFPage; y: number },
   ): { page: PDFPage; y: number } {
     let y = startY;
-    const indent = depth * 20; // Increase indentation for nested subsections
-    const titleFontSize = Math.max(18 - depth * 2, 12); // Decrease font size for deeper subsections, but not below 12
-  
-    // Check if we need a new page for the section title
-    if (y - titleFontSize * lineSpacing < pageBottom) {
-      page = addNewPage();
-      y = page.getHeight() - margin;
-    }
-  
+    const indent = depth * 10; // Reduced indent
+    const titleFontSize = Math.max(16 - depth * 2, 10); // Adjusted font sizes
+
     // Draw section title
     let result = drawWrappedText(
       page,
@@ -555,42 +561,41 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
       y,
       indent,
       depth,
+      column,
     );
     page = result.page;
-    y = result.y - titleFontSize * lineSpacing;
-  
+    y = result.y - titleFontSize;
+
     // Draw section description
     if (section.description) {
-      // Check if we need a new page for the description
-      if (y - 11 * lineSpacing < pageBottom) {
-        page = addNewPage();
-        y = page.getHeight() - margin;
-      }
-      result = drawRichText(page, section.description, y, indent, depth);
+      result = drawRichText(
+        page,
+        section.description,
+        y,
+        indent,
+        depth,
+        column,
+      );
       page = result.page;
-      y = result.y - 30;
+      y = result.y - 15;
     }
-  
+
     // Draw subsections
-    if (section.sections) {
-      for (const subSection of section.sections) {
-        // Check if we need a new page before drawing the subsection
-        if (y - titleFontSize * lineSpacing < pageBottom) {
-          page = addNewPage();
-          y = page.getHeight() - margin;
-        }
-        result = drawSection(page, subSection, depth + 1, y, addNewPage);
-        page = result.page;
-        y = result.y - 20; // Add some space between subsections
-  
-        // Check if we need a new page after the subsection
-        if (y < pageBottom) {
-          page = addNewPage();
-          y = page.getHeight() - margin;
-        }
-      }
-    }
-  
+    // if (section.sections) {
+    //   for (const subSection of section.sections) {
+    //     result = drawSection(
+    //       page,
+    //       subSection,
+    //       depth + 1,
+    //       y,
+    //       column,
+    //       addNewPage,
+    //     );
+    //     page = result.page;
+    //     y = result.y - 10; // Reduced space between subsections
+    //   }
+    // }
+
     return { page, y };
   }
 
@@ -630,7 +635,7 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
           numberFontSize,
         )
         : 0;
-      const availableWidth = maxWidth - indent - pageNumWidth - 20;
+      const availableWidth = width - margin - indent - pageNumWidth - 20;
 
       const wrappedLines = wrapText(text, availableWidth, font, fontSize);
 
@@ -703,15 +708,15 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
     const pages: PDFPage[] = [];
     let currentPage = pdfDoc.addPage();
     pages.push(currentPage);
-    let y = currentPage.getHeight() - margin;
+    let y = currentPage.getHeight() - margin - 40; // Add extra space at top of chapter
 
-    const addNewPage = (): PDFPage => {
+    const addNewPage = (): { page: PDFPage; y: number } => {
       currentPage = pdfDoc.addPage();
       pages.push(currentPage);
-      return currentPage;
+      return { page: currentPage, y: currentPage.getHeight() - margin - 40 }; // Add extra space at top of new page
     };
 
-    // Draw chapter title
+    // Draw chapter title (full width)
     const titleFontSize = 24;
     let result = drawWrappedText(
       currentPage,
@@ -722,22 +727,56 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
       y,
       0,
       0,
+      "full",
     );
     currentPage = result.page;
-    y = result.y - titleFontSize;
+    y = result.y - titleFontSize; // Increase spacing after title
 
-    // Draw chapter description
+    // Draw chapter description (full width)
     if (chapter.description) {
-      result = drawRichText(currentPage, chapter.description, y, 0, 0);
+      result = drawRichText(currentPage, chapter.description, y, 0, 0, "full");
       currentPage = result.page;
-      y = result.y - 20;
+      y = result.y - 50; // Increase spacing after description
     }
 
-    // Draw sections
+    // Draw sections in two columns
+    let leftY = y - 40;
+    let rightY = y - 40;
+    let isLeftColumn = true;
+
     for (const section of chapter.sections) {
-      result = drawSection(currentPage, section, 0, y, addNewPage);
+      const column = isLeftColumn ? "left" : "right";
+      let currentY = isLeftColumn ? leftY : rightY;
+
+      // Check if we need a new page
+      if (currentY - 150 < pageBottom) { // Increased threshold for new page
+        const newPageResult = addNewPage();
+        currentPage = newPageResult.page;
+        leftY = rightY = newPageResult.y;
+        currentY = newPageResult.y;
+        isLeftColumn = true; // Reset to left column on new page
+      }
+
+      result = drawSection(
+        currentPage,
+        section,
+        0,
+        currentY,
+        column,
+        addNewPage,
+      );
       currentPage = result.page;
-      y = result.y - 20;
+
+      if (isLeftColumn) {
+        leftY = result.y - 200; // Add extra space between sections
+      } else {
+        rightY = result.y - 200;
+        // After drawing the right column, set both Y values to the lower of the two
+        const lowerY = Math.min(leftY, rightY);
+        leftY = rightY = lowerY;
+      }
+
+      isLeftColumn = !isLeftColumn; // Switch columns
     }
 
     return pages;
@@ -798,6 +837,9 @@ export async function generatePDF(resourceRoadmap: ResourceRoadmap): Promise<Uin
 
   // Number content pages first
   for (let i = contentStartPage; i < pdfDoc.getPageCount(); i++) {
+    if (i === contentStartPage) {
+      continue; // Skip the placeholder TOC page
+    }
     const page = pdfDoc.getPage(i);
     const pageNumber = i - contentStartPage;
     const pageNumberText = `${pageNumber}`;
@@ -858,4 +900,3 @@ export const handler: Handlers = {
     }
   },
 };
-

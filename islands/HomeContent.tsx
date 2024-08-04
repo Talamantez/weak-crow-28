@@ -47,7 +47,7 @@ export default function HomeContent() {
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmMessage, setConfirmMessage] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  
+
   const initialSearchResults = [];
 
   const { searchTerm, setSearchTerm, searchResults, setSearchResults } =
@@ -87,23 +87,6 @@ export default function HomeContent() {
               : ch
           )
         );
-
-        // Scroll to the section
-        setTimeout(() => {
-          const sectionElement = document.getElementById(
-            `chapter-${chapterIndex}-section-${sectionIndex}`,
-          );
-          if (sectionElement) {
-            sectionElement.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-            setHighlightedElement(
-              `chapter-${chapterIndex}-section-${sectionIndex}`,
-            );
-            setTimeout(() => setHighlightedElement(null), 2000);
-          }
-        }, 100);
       }
     }
   };
@@ -220,8 +203,12 @@ export default function HomeContent() {
     if (sourceChapterId && sourceChapterId !== targetChapterId) {
       setChapters((prevChapters) => {
         const newChapters = [...prevChapters];
-        const sourceIndex = newChapters.findIndex((ch) => ch.index === sourceChapterId);
-        const targetIndex = newChapters.findIndex((ch) => ch.index === targetChapterId);
+        const sourceIndex = newChapters.findIndex((ch) =>
+          ch.index === sourceChapterId
+        );
+        const targetIndex = newChapters.findIndex((ch) =>
+          ch.index === targetChapterId
+        );
 
         if (sourceIndex !== -1 && targetIndex !== -1) {
           const [removed] = newChapters.splice(sourceIndex, 1);
@@ -249,20 +236,24 @@ export default function HomeContent() {
   };
 
   const sortChapters = useCallback((chaptersToSort: Chapter[]) => {
-    return [...chaptersToSort].sort((a, b) => parseInt(a.index) - parseInt(b.index));
+    return [...chaptersToSort].sort((a, b) =>
+      parseInt(a.index) - parseInt(b.index)
+    );
   }, []);
 
   useEffect(() => {
     loadChapters();
     // if(chapters.length === 0) handleGenerate()
-        // Set a small timeout to ensure the component has mounted
+    // Set a small timeout to ensure the component has mounted
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
     if (!isReordering) {
-      const sortedChapters = [...chapters].sort((a, b) => parseInt(a.index) - parseInt(b.index));
+      const sortedChapters = [...chapters].sort((a, b) =>
+        parseInt(a.index) - parseInt(b.index)
+      );
       if (JSON.stringify(sortedChapters) !== JSON.stringify(chapters)) {
         setChapters(sortedChapters);
       }
@@ -306,7 +297,6 @@ export default function HomeContent() {
       console.error("Error updating chapter order:", error);
     }
   };
-
 
   const loadChapters = async () => {
     setLoading(true);
@@ -443,17 +433,13 @@ export default function HomeContent() {
   };
 
   const handleGenerate = async () => {
-    console.log("Generate button clicked");
-    if (chapters.length === 0) {
-      try {
-        await generateChaptersFromJSON(dbName, storeName);
-        console.log("Generation completed successfully");
-        loadChapters(); // Reload chapters after generation
-      } catch (error) {
-        console.error("Error generating chapters:", error);
-      }
-    } else {
-      console.log("Chapters already exist, skipping generation");
+    try {
+      await generateChaptersFromJSON(dbName, storeName);
+      console.log("Generation completed successfully");
+      console.log("chapters");
+      console.log(chapters);
+    } catch (error) {
+      console.error("Error generating chapters:", error);
     }
   };
 
@@ -529,7 +515,11 @@ export default function HomeContent() {
       });
   };
   return (
-    <div className={`transition-opacity duration-1000 ease-in ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+    <div
+      className={`transition-opacity duration-1000 ease-in ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <Head>
         <title>Resource Roadmap Editor</title>
       </Head>
