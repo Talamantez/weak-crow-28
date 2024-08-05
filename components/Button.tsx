@@ -23,7 +23,7 @@ export default function Button(
   return (
     <button class={styles} onClick={onClick} disabled={disabled}>
       {Icon &&
-        <Icon size={20} class="ml-2" />}
+        <Icon size={20} class="mr-2" />}
       <span>{text}</span>
     </button>
   );

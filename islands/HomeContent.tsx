@@ -7,6 +7,7 @@ import IconPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/plus.tsx";
 import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import IconArrowsSort from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/arrows-sort.tsx";
 import IconCheck from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/check.tsx";
+import IconWand from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/wand.tsx";
 import { useLoadChapters } from "../services/useLoadChapters.ts";
 import { dbName, dbVersion, storeName } from "../util/dbInfo.ts";
 import { generateChaptersFromJSON } from "../services/generateChaptersFromJSON.ts";
@@ -47,7 +48,7 @@ export default function HomeContent() {
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmMessage, setConfirmMessage] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  
+
   const initialSearchResults = [];
 
   const { searchTerm, setSearchTerm, searchResults, setSearchResults } =
@@ -220,8 +221,12 @@ export default function HomeContent() {
     if (sourceChapterId && sourceChapterId !== targetChapterId) {
       setChapters((prevChapters) => {
         const newChapters = [...prevChapters];
-        const sourceIndex = newChapters.findIndex((ch) => ch.index === sourceChapterId);
-        const targetIndex = newChapters.findIndex((ch) => ch.index === targetChapterId);
+        const sourceIndex = newChapters.findIndex((ch) =>
+          ch.index === sourceChapterId
+        );
+        const targetIndex = newChapters.findIndex((ch) =>
+          ch.index === targetChapterId
+        );
 
         if (sourceIndex !== -1 && targetIndex !== -1) {
           const [removed] = newChapters.splice(sourceIndex, 1);
@@ -249,20 +254,24 @@ export default function HomeContent() {
   };
 
   const sortChapters = useCallback((chaptersToSort: Chapter[]) => {
-    return [...chaptersToSort].sort((a, b) => parseInt(a.index) - parseInt(b.index));
+    return [...chaptersToSort].sort((a, b) =>
+      parseInt(a.index) - parseInt(b.index)
+    );
   }, []);
 
   useEffect(() => {
     loadChapters();
     // if(chapters.length === 0) handleGenerate()
-        // Set a small timeout to ensure the component has mounted
+    // Set a small timeout to ensure the component has mounted
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
     if (!isReordering) {
-      const sortedChapters = [...chapters].sort((a, b) => parseInt(a.index) - parseInt(b.index));
+      const sortedChapters = [...chapters].sort((a, b) =>
+        parseInt(a.index) - parseInt(b.index)
+      );
       if (JSON.stringify(sortedChapters) !== JSON.stringify(chapters)) {
         setChapters(sortedChapters);
       }
@@ -306,7 +315,6 @@ export default function HomeContent() {
       console.error("Error updating chapter order:", error);
     }
   };
-
 
   const loadChapters = async () => {
     setLoading(true);
@@ -529,7 +537,11 @@ export default function HomeContent() {
       });
   };
   return (
-    <div className={`transition-opacity duration-1000 ease-in ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+    <div
+      className={`transition-opacity duration-1000 ease-in ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <Head>
         <title>Resource Roadmap Editor</title>
       </Head>
@@ -541,15 +553,24 @@ export default function HomeContent() {
               <p class="mb-4">
                 Welcome to Your Local Resource Publication Creator!
               </p>
+              <p class="mb-4">
+                You can use this tool to create, edit, and manage chapters for
+                your resource roadmap.
+              </p>
+              <p class="mb-4">
+                Click "Generate Example Chapters" or "Add New Chapter" to get
+                started.
+              </p>
               <Button
                 text={chapters.length === 0
                   ? "Generate Example Chapters"
                   : "Example Chapters Already Generated"}
-                styles={`bg-white text-gray-800 rounded px-4 py-2 mb-2 w-full ${
+                styles={`bg-green-500 hover:bg-green-600 text-white rounded-lg px-8 py-4 mb-4 w-full shadow-lg hover:shadow-xl border-2 border-green-400 transition-all duration-300 flex items-center justify-center ${
                   chapters.length > 0 ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 onClick={handleGenerate}
                 disabled={chapters.length > 0}
+                icon={IconWand}
               />
               <Button
                 text="Print Your Roadmap"
@@ -572,7 +593,7 @@ export default function HomeContent() {
                 <Button
                   text="Add New Chapter"
                   onClick={() => setIsModalOpen(true)}
-                  styles="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 rounded-md py-2 px-4 text-white transition-colors focus:outline-none outline-none"
+                  styles="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 rounded-lg px-8 py-4 text-white shadow-lg hover:shadow-xl border-2 border-green-400 transition-all duration-300 focus:outline-none outline-none"
                   icon={IconPlus}
                 />
                 {isReordering
